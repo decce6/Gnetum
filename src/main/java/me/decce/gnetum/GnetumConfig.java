@@ -1,0 +1,26 @@
+package me.decce.gnetum;
+
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+@Mod.EventBusSubscriber(modid = Tags.MOD_ID)
+@Config(modid = Tags.MOD_ID, name = Tags.MOD_NAME)
+public class GnetumConfig {
+    @Config.Name("Enabled")
+    public static boolean enabled = true;
+
+    public static boolean isEnabled() {
+        return enabled && OpenGlHelper.isFramebufferEnabled();
+    }
+
+    @SubscribeEvent
+    public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(Tags.MOD_ID)) {
+            ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
+        }
+    }
+}
