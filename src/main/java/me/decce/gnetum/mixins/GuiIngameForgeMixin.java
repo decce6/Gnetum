@@ -164,8 +164,8 @@ public class GuiIngameForgeMixin {
 
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
     public void renderGameOverlay(float partialTicks, CallbackInfo ci) {
-        if (GnetumConfig.isEnabled()) ci.cancel();
-        else return;
+        if (!GnetumConfig.isEnabled()) return;
+        ci.cancel();
         res = new ScaledResolution(gnetum$mc);
         eventParent = new RenderGameOverlayEvent(partialTicks, res);
         int width = res.getScaledWidth();
@@ -183,7 +183,7 @@ public class GuiIngameForgeMixin {
         if (renderCrosshairs) renderCrosshairs(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
-        gnetum$mc.entityRenderer.setupOverlayRendering();
+        // gnetum$mc.entityRenderer.setupOverlayRendering();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
         FramebufferManager.getInstance().blit();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
