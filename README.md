@@ -8,10 +8,10 @@ When Gnetum is installed, HUD rendering is divided into multiple "passes." Only 
 
 Currently the HUD rendering passes are configured as follows:
 
-- **Pass 0** renders some of the texts on the HUD, including but not limited to the F3 debug info and the HUD added by The One Probe.
-- **Pass 1** renders the hotbar. This is because the items in the hotbar are pretty slow to render, especially when they use custom models.
-- **Pass 2** renders some of the modded HUD elements, e.g. the minimap provided by JourneyMap
-- **Pass 3** renders the remaining parts of the HUD.
+- **Pass 0** renders the parts of the HUD that are not included in the following passes, and, if enabled, the hand.
+- **Pass 1** renders some of the texts on the HUD, including but not limited to the F3 debug info and the HUD added by The One Probe.
+- **Pass 2** renders the hotbar. This is because the items in the hotbar are pretty slow to render, especially when they use custom models.
+- **Pass 3** renders some of the modded HUD elements, e.g. the minimap provided by JourneyMap
 
 ### FAQs
 

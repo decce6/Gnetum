@@ -6,13 +6,12 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION)
 public class Gnetum {
-
     //TODO: customization
     public static class Passes {
-        public final static int HUD_TEXT = 0;
-        public final static int HOTBAR = 1;
-        public final static int FORGE_PRE = 2;
-        public final static int OTHER = 3;
+        public final static int MISC = 0;
+        public final static int HUD_TEXT = 1;
+        public final static int HOTBAR = 2;
+        public final static int FORGE_PRE = 3;
     }
 
     public static int pass = 0;

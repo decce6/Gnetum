@@ -8,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -183,14 +184,10 @@ public class GuiIngameForgeMixin {
         if (renderCrosshairs) renderCrosshairs(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
-        // gnetum$mc.entityRenderer.setupOverlayRendering();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
         FramebufferManager.getInstance().blit();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-        if (FramebufferManager.getInstance().shouldClear) {
-            FramebufferManager.getInstance().clear();
-            FramebufferManager.getInstance().shouldClear = false;
-        }
+
         FramebufferManager.getInstance().bind();
 
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -207,20 +204,19 @@ public class GuiIngameForgeMixin {
 
         profiler.startSection("pass" + Gnetum.pass);
         switch (Gnetum.pass) {
+            case Gnetum.Passes.MISC:
+                gnetum$renderPass0(width, height, partialTicks);
+                break;
             //Having separate methods makes it easier to see which pass took the longest, during profiling
             case Gnetum.Passes.HUD_TEXT: //F3, The One Probe, etc.
-                gnetum$renderPass0(width, height);
+                gnetum$renderPass1(width, height);
                 break;
             case Gnetum.Passes.HOTBAR: //Items in the hotbar can be quite slow to render, so let's give them a pass
-                gnetum$renderPass1(partialTicks);
+                gnetum$renderPass2(partialTicks);
                 break;
             case Gnetum.Passes.FORGE_PRE:
-                gnetum$renderPass2();
+                gnetum$renderPass3();
                 break;
-            case Gnetum.Passes.OTHER:
-                gnetum$renderPass3(width, height, partialTicks);
-                break;
-
         }
         profiler.endSection();
         Gnetum.rendering = false;
@@ -235,26 +231,10 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
-    private void gnetum$renderPass0(int width, int height){
-        renderHUDText(width, height);
-    }
+    private void gnetum$renderPass0(int width, int height, float partialTicks) {
+        // we should render the hand here, so it's possible to see the actual time spent on this pass via a profiler
+        // the config for hand buffering should be kept disabled by default before this gets resolved
 
-    @Unique
-    private void gnetum$renderPass1(float partialTicks){
-        GlStateManager.enableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        if (renderHotbar) renderHotbar(res, partialTicks);
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-    }
-
-    @Unique
-    private void gnetum$renderPass2(){
-        pre(ALL); //TODO: cancellation ignored
-    }
-
-    @Unique
-    private void gnetum$renderPass3(int width, int height, float partialTicks){
         fontrenderer = gnetum$mc.fontRenderer;
         GlStateManager.enableBlend();
 
@@ -330,5 +310,24 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableAlpha();
 
         post(ALL);
+    }
+
+    @Unique
+    private void gnetum$renderPass1(int width, int height){
+        renderHUDText(width, height);
+    }
+
+    @Unique
+    private void gnetum$renderPass2(float partialTicks){
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        if (renderHotbar) renderHotbar(res, partialTicks);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+    }
+
+    @Unique
+    private void gnetum$renderPass3(){
+        pre(ALL); //TODO: cancellation ignored
     }
 }

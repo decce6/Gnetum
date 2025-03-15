@@ -13,6 +13,7 @@
     "GlStateManagerMixin",
     "GuiAccessor",
     "GuiIngameAccessor",
-    "GuiIngameForgeMixin"
+    "GuiIngameForgeMixin",
+    "ItemRendererMixin"
   ]
 }

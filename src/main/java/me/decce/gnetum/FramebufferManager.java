@@ -5,6 +5,7 @@ import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 
 public class FramebufferManager {
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static final FramebufferManager instance = new FramebufferManager();
     private int width;
     private int height;
@@ -15,8 +16,8 @@ public class FramebufferManager {
     public boolean shouldClear;
 
     private FramebufferManager() {
-        width = Minecraft.getMinecraft().displayWidth;
-        height = Minecraft.getMinecraft().displayHeight;
+        width = mc.displayWidth;
+        height = mc.displayHeight;
         backFramebuffer = new Framebuffer(width, height, true);
         backFramebuffer.setFramebufferColor(0, 0, 0, 0);
         backFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
@@ -25,7 +26,7 @@ public class FramebufferManager {
         frontFramebuffer.setFramebufferColor(0, 0, 0, 0);
         frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         frontFramebuffer.framebufferClear();
-        guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
+        guiScale = mc.gameSettings.guiScale;
     }
 
     public static FramebufferManager getInstance() {
@@ -33,36 +34,40 @@ public class FramebufferManager {
     }
 
     public void ensureSize() {
-        if (Minecraft.getMinecraft().displayWidth != width ||
-                Minecraft.getMinecraft().displayHeight != height ||
-                Minecraft.getMinecraft().gameSettings.guiScale != guiScale) {
-            width = Minecraft.getMinecraft().displayWidth;
-            height = Minecraft.getMinecraft().displayHeight;
+        if (mc.displayWidth != width ||
+                mc.displayHeight != height ||
+                mc.gameSettings.guiScale != guiScale) {
+            width = mc.displayWidth;
+            height = mc.displayHeight;
+            guiScale = mc.gameSettings.guiScale;
             frontFramebuffer.createBindFramebuffer(width, height);
             frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
             backFramebuffer.createBindFramebuffer(width, height);
             backFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-            guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
         }
     }
 
-    public void clear(){
+    public void clear() {
         backFramebuffer.framebufferClear();
     }
 
     public void bind() {
+        if (FramebufferManager.getInstance().shouldClear) {
+            this.clear();
+            FramebufferManager.getInstance().shouldClear = false;
+        }
         backFramebuffer.bindFramebuffer(false);
     }
 
     public void unbind() {
-        Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
+        mc.getFramebuffer().bindFramebuffer(false);
     }
 
     public void blit() {
         frontFramebuffer.framebufferRenderExt(width, height, false);
     }
 
-    public void swapFramebuffers(){
+    public void swapFramebuffers() {
         Framebuffer temp = backFramebuffer;
         backFramebuffer = frontFramebuffer;
         frontFramebuffer = temp;

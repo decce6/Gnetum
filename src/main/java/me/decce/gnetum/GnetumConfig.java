@@ -10,8 +10,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 @Config(modid = Tags.MOD_ID, name = Tags.MOD_NAME)
 public class GnetumConfig {
-    @Config.Name("Enabled")
+    @Config.LangKey("gnetum.config.enabled")
     public static boolean enabled = true;
+
+    @Config.LangKey("gnetum.config.hand")
+    public static boolean bufferHand = false;
 
     public static boolean isEnabled() {
         return enabled && OpenGlHelper.isFramebufferEnabled();
