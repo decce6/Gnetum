@@ -181,6 +181,9 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
 
+        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
+            renderVignette(gnetum$mc.player.getBrightness(), res);
+        }
         if (renderCrosshairs) renderCrosshairs(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
@@ -237,12 +240,8 @@ public class GuiIngameForgeMixin {
         fontrenderer = gnetum$mc.fontRenderer;
         GlStateManager.enableBlend();
 
-        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
-            renderVignette(gnetum$mc.player.getBrightness(), res);
-        } else {
-            GlStateManager.enableDepth();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        }
+        GlStateManager.enableDepth();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
         if (renderHelmet) renderHelmet(res, partialTicks);
 
