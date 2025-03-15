@@ -200,14 +200,11 @@ public class GuiIngameForgeMixin {
         Gnetum.rendering = true;
         gnetum$mc.entityRenderer.setupOverlayRendering();
 
-        Profiler profiler = gnetum$mc.profiler;
-
-        profiler.startSection("pass" + Gnetum.pass);
         switch (Gnetum.pass) {
+            //Having separate methods makes it easier to see which pass took the longest, during profiling
             case Gnetum.Passes.MISC:
                 gnetum$renderPass0(width, height, partialTicks);
                 break;
-            //Having separate methods makes it easier to see which pass took the longest, during profiling
             case Gnetum.Passes.HUD_TEXT: //F3, The One Probe, etc.
                 gnetum$renderPass1(width, height);
                 break;
@@ -218,7 +215,7 @@ public class GuiIngameForgeMixin {
                 gnetum$renderPass3();
                 break;
         }
-        profiler.endSection();
+
         Gnetum.rendering = false;
 
         FramebufferManager.getInstance().unbind();
@@ -232,6 +229,8 @@ public class GuiIngameForgeMixin {
 
     @Unique
     private void gnetum$renderPass0(int width, int height, float partialTicks) {
+        gnetum$mc.profiler.startSection("pass0");
+
         // we should render the hand here, so it's possible to see the actual time spent on this pass via a profiler
         // the config for hand buffering should be kept disabled by default before this gets resolved
 
@@ -310,24 +309,38 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableAlpha();
 
         post(ALL);
+
+        gnetum$mc.profiler.endSection();
     }
 
     @Unique
-    private void gnetum$renderPass1(int width, int height){
+    private void gnetum$renderPass1(int width, int height) {
+        gnetum$mc.profiler.startSection("pass1");
+
         renderHUDText(width, height);
+
+        gnetum$mc.profiler.endSection();
     }
 
     @Unique
-    private void gnetum$renderPass2(float partialTicks){
+    private void gnetum$renderPass2(float partialTicks) {
+        gnetum$mc.profiler.startSection("pass2");
+
         GlStateManager.enableDepth();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         if (renderHotbar) renderHotbar(res, partialTicks);
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+
+        gnetum$mc.profiler.endSection();
     }
 
     @Unique
-    private void gnetum$renderPass3(){
+    private void gnetum$renderPass3() {
+        gnetum$mc.profiler.startSection("pass3");
+
         pre(ALL); //TODO: cancellation ignored
+
+        gnetum$mc.profiler.endSection();
     }
 }
