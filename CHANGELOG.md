@@ -10,3 +10,7 @@
 - Adjusted rendering order
 - Besides the HUD, it is now possible to also buffer the hand, which should give an extra performance boost (currently disabled by default)
 - I18n support
+
+## 1.1.1
+
+- Fixed blackscreen (caused by vignette rendering)
