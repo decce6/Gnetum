@@ -181,6 +181,7 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
 
+        // TODO: optifine has an option dedicated to vignette control, which is ignored currently
         if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
