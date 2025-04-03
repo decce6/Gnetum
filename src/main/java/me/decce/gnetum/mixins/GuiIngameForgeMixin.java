@@ -200,9 +200,6 @@ public class GuiIngameForgeMixin {
     private void post(RenderGameOverlayEvent.ElementType type) {
     }
 
-
-    @Shadow protected abstract boolean pre(RenderGameOverlayEvent.ElementType type);
-
     @Unique
     private void gnetum$renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
         gnetum$getGuiIngameAccessor().callRenderScoreboard(objective, scaledRes);

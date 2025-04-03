@@ -14,3 +14,10 @@
 ## 1.1.1
 
 - Fixed blackscreen (caused by vignette rendering)
+
+## 1.1.2
+
+- Corrected rendering order
+- Fixed Xaero's Minimap ingame waypoint rendering
+- Fixed incompatibility with Quark's Better Nausea feature
+- Fixed blackscreen when holding a bow/crossbow from the Tinker's Construct mod
