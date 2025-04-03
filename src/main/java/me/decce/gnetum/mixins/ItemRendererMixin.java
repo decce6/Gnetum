@@ -1,8 +1,8 @@
 package me.decce.gnetum.mixins;
 
 import me.decce.gnetum.FramebufferManager;
-import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
+import me.decce.gnetum.Passes;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class ItemRendererMixin {
         if (!GnetumConfig.isEnabled() || !GnetumConfig.bufferHand) {
             return;
         }
-        if (Gnetum.pass == Gnetum.Passes.MISC) {
+        if (Passes.current == Passes.FORGE_PRE) {
             FramebufferManager.getInstance().bind();
         }
         else {
@@ -32,7 +32,7 @@ public class ItemRendererMixin {
         if (!GnetumConfig.isEnabled() || !GnetumConfig.bufferHand) {
             return;
         }
-        if (Gnetum.pass == Gnetum.Passes.MISC) {
+        if (Passes.current == Passes.FORGE_PRE) {
             FramebufferManager.getInstance().unbind();
         }
     }

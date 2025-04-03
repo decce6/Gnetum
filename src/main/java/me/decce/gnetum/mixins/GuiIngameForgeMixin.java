@@ -3,17 +3,16 @@ package me.decce.gnetum.mixins;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
+import me.decce.gnetum.Passes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
-import net.minecraft.profiler.Profiler;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -162,7 +161,6 @@ public class GuiIngameForgeMixin {
         return (GuiAccessor) (Gui) gui;
     }
 
-
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
     public void renderGameOverlay(float partialTicks, CallbackInfo ci) {
         if (!GnetumConfig.isEnabled()) return;
@@ -204,19 +202,19 @@ public class GuiIngameForgeMixin {
         Gnetum.rendering = true;
         gnetum$mc.entityRenderer.setupOverlayRendering();
 
-        switch (Gnetum.pass) {
+        switch (Passes.current) {
             //Having separate methods makes it easier to see which pass took the longest, during profiling
-            case Gnetum.Passes.MISC:
-                gnetum$renderPass0(width, height, partialTicks);
+            case Passes.FORGE_PRE:
+                gnetum$renderPass0();
                 break;
-            case Gnetum.Passes.HUD_TEXT: //F3, The One Probe, etc.
-                gnetum$renderPass1(width, height);
+            case Passes.HOTBAR: //Items in the hotbar can be quite slow to render, so let's give them a pass
+                gnetum$renderPass1(partialTicks);
                 break;
-            case Gnetum.Passes.HOTBAR: //Items in the hotbar can be quite slow to render, so let's give them a pass
-                gnetum$renderPass2(partialTicks);
+            case Passes.HUD_TEXT: //F3, The One Probe, etc.
+                gnetum$renderPass2(width, height);
                 break;
-            case Gnetum.Passes.FORGE_PRE:
-                gnetum$renderPass3();
+            case Passes.MISC:
+                gnetum$renderPass3(width, height, partialTicks);
                 break;
         }
 
@@ -224,7 +222,7 @@ public class GuiIngameForgeMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        Gnetum.nextPass();
+        Passes.step();
 
         GlStateManager.enableDepth();
         GlStateManager.enableBlend();
@@ -232,8 +230,39 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
-    private void gnetum$renderPass0(int width, int height, float partialTicks) {
+    private void gnetum$renderPass0() {
         gnetum$mc.profiler.startSection("pass0");
+
+        pre(ALL); //TODO: cancellation ignored
+
+        gnetum$mc.profiler.endSection();
+    }
+
+    @Unique
+    private void gnetum$renderPass1(float partialTicks) {
+        gnetum$mc.profiler.startSection("pass1");
+
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        if (renderHotbar) renderHotbar(res, partialTicks);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+
+        gnetum$mc.profiler.endSection();
+    }
+
+    @Unique
+    private void gnetum$renderPass2(int width, int height) {
+        gnetum$mc.profiler.startSection("pass2");
+
+        renderHUDText(width, height);
+
+        gnetum$mc.profiler.endSection();
+    }
+
+    @Unique
+    private void gnetum$renderPass3(int width, int height, float partialTicks) {
+        gnetum$mc.profiler.startSection("pass3");
 
         // we should render the hand here, so it's possible to see the actual time spent on this pass via a profiler
         // the config for hand buffering should be kept disabled by default before this gets resolved
@@ -309,37 +338,6 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableAlpha();
 
         post(ALL);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass1(int width, int height) {
-        gnetum$mc.profiler.startSection("pass1");
-
-        renderHUDText(width, height);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass2(float partialTicks) {
-        gnetum$mc.profiler.startSection("pass2");
-
-        GlStateManager.enableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        if (renderHotbar) renderHotbar(res, partialTicks);
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass3() {
-        gnetum$mc.profiler.startSection("pass3");
-
-        pre(ALL); //TODO: cancellation ignored
 
         gnetum$mc.profiler.endSection();
     }
