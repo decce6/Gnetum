@@ -291,7 +291,10 @@ public class GuiIngameForgeMixin {
         if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
-        if (renderCrosshairs) renderCrosshairs(partialTicks);
+        if (renderCrosshairs) {
+            renderCrosshairs(partialTicks);
+            GlStateManager.enableBlend(); // Fix Tinker's Construct causing blackscreen when holding a crossbow
+        }
 
         gnetum$mc.profiler.endSection();
     }
