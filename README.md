@@ -2,6 +2,8 @@
 
 A Minecraft mod that improves performance by distributing HUD updates over multiple frames.
 
+**Requires [MixinBooter](https://www.curseforge.com/minecraft/mc-mods/mixin-booter)!**
+
 ### Overview
 
 When Gnetum is installed, HUD rendering is divided into multiple "passes." Only one pass is rendered each frame, which should provide a decent FPS boost, especially when many HUD elements are present.
