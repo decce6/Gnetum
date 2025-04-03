@@ -232,15 +232,9 @@ public class GuiIngameForgeMixin {
         right_height = 39;
         left_height = 39;
 
-        GlStateManager.enableBlend();
-        GlStateManager.enableDepth();
-
         gnetum$renderUncached(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        FramebufferManager.getInstance().blit();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
 
         FramebufferManager.getInstance().bind();
 
@@ -279,12 +273,17 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableDepth();
         GlStateManager.enableBlend();
 
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
     }
 
     @Unique
     private void gnetum$renderUncached(float partialTicks) {
         gnetum$mc.profiler.startSection("uncached");
 
+        GlStateManager.enableBlend();
+        GlStateManager.enableDepth();
         if (XaeroMinimapCompat.installed) {
             XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
         }

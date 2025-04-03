@@ -1,6 +1,10 @@
 package me.decce.gnetum;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 
@@ -63,8 +67,26 @@ public class FramebufferManager {
         mc.getFramebuffer().bindFramebuffer(false);
     }
 
-    public void blit() {
-        frontFramebuffer.framebufferRenderExt(width, height, false);
+    public void blit(double width, double height) {
+        frontFramebuffer.bindFramebufferTexture();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        builder.pos(0, height, 0).tex(0, 0).endVertex();
+        builder.pos(width, height, 0).tex(1, 0).endVertex();
+        builder.pos(width, 0, 0).tex(1, 1).endVertex();
+        builder.pos(0, 0, 0).tex(0, 1).endVertex();
+        tessellator.draw();
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
     }
 
     public void swapFramebuffers() {
