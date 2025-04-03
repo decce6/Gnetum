@@ -6,6 +6,7 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
 import me.decce.gnetum.Passes;
 import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.mixins.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -200,6 +201,8 @@ public class GuiIngameForgeMixin {
     }
 
 
+    @Shadow protected abstract boolean pre(RenderGameOverlayEvent.ElementType type);
+
     @Unique
     private void gnetum$renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
         gnetum$getGuiIngameAccessor().callRenderScoreboard(objective, scaledRes);
@@ -285,6 +288,9 @@ public class GuiIngameForgeMixin {
     private void gnetum$renderUncached(float partialTicks) {
         gnetum$mc.profiler.startSection("uncached");
 
+        if (XaeroMinimapCompat.installed) {
+            XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
+        }
         gnetum$callUncachedEventListeners(ALL);
 
         // TODO: optifine has an option dedicated to vignette control, which is ignored currently
