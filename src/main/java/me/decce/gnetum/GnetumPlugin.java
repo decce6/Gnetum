@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class FMLPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
+public class GnetumPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public String[] getASMTransformerClass() {
         return new String[0];
