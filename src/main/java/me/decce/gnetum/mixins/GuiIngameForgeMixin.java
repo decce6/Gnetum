@@ -1,9 +1,12 @@
 package me.decce.gnetum.mixins;
 
+import com.google.common.base.Throwables;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
 import me.decce.gnetum.Passes;
+import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.mixins.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -18,6 +21,9 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.IEventListener;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -134,9 +140,59 @@ public class GuiIngameForgeMixin {
     protected void renderPlayerList(int width, int height) {
     }
 
-    @Shadow
-    private boolean pre(RenderGameOverlayEvent.ElementType type) {
-        throw new AssertionError();
+    @Unique
+    private void gnetum$callUncachedEventListeners(RenderGameOverlayEvent.ElementType type) {
+        EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
+
+        if (eventBusAccessor.isShutdown()) return;
+
+        Event event = new RenderGameOverlayEvent.Pre(eventParent, type);
+
+        int index = 0;
+
+        try
+        {
+            for (; index < UncachedEventListeners.list.size(); index++)
+            {
+                UncachedEventListeners.list.get(index).invoke(event);
+            }
+        }
+        catch (Throwable throwable)
+        {
+            IEventListener[] listenersArray = new IEventListener[UncachedEventListeners.list.size()];
+            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, UncachedEventListeners.list.toArray(listenersArray), index, throwable);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    @Unique
+    private void gnetum$pre(RenderGameOverlayEvent.ElementType type) {
+        EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
+
+        if (eventBusAccessor.isShutdown()) return;
+
+        Event event = new RenderGameOverlayEvent.Pre(eventParent, type);
+
+        IEventListener[] listeners = event.getListenerList().getListeners(eventBusAccessor.getBusID());
+        int index = 0;
+        try
+        {
+            for (; index < listeners.length; index++)
+            {
+                IEventListener listener = listeners[index];
+                if (UncachedEventListeners.matchEventListener(listener)) {
+                    continue;
+                }
+                listener.invoke(event);
+            }
+        }
+        catch (Throwable throwable)
+        {
+            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, listeners, index, throwable);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
+        }
     }
 
     @Shadow
@@ -179,11 +235,7 @@ public class GuiIngameForgeMixin {
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
 
-        // TODO: optifine has an option dedicated to vignette control, which is ignored currently
-        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
-            renderVignette(gnetum$mc.player.getBrightness(), res);
-        }
-        if (renderCrosshairs) renderCrosshairs(partialTicks);
+        gnetum$renderUncached(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -230,10 +282,26 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
+    private void gnetum$renderUncached(float partialTicks) {
+        gnetum$mc.profiler.startSection("uncached");
+
+        gnetum$callUncachedEventListeners(ALL);
+
+        // TODO: optifine has an option dedicated to vignette control, which is ignored currently
+        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
+            renderVignette(gnetum$mc.player.getBrightness(), res);
+        }
+        if (renderCrosshairs) renderCrosshairs(partialTicks);
+
+        gnetum$mc.profiler.endSection();
+    }
+
+
+    @Unique
     private void gnetum$renderPass0() {
         gnetum$mc.profiler.startSection("pass0");
 
-        pre(ALL); //TODO: cancellation ignored
+        gnetum$pre(ALL); //TODO: cancellation ignored
 
         gnetum$mc.profiler.endSection();
     }
