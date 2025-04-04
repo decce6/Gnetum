@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins;
 
 import com.google.common.base.Throwables;
+import me.decce.gnetum.ConfigHelper;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
@@ -289,8 +290,7 @@ public class GuiIngameForgeMixin {
         }
         gnetum$callUncachedEventListeners(ALL);
 
-        // TODO: optifine has an option dedicated to vignette control, which is ignored currently
-        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
+        if (renderVignette && ConfigHelper.isVignetteEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
         if (renderCrosshairs) {
