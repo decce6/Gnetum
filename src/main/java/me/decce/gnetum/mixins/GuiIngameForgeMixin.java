@@ -293,12 +293,13 @@ public class GuiIngameForgeMixin {
 
         Passes.step();
 
-        GlStateManager.enableDepth();
         GlStateManager.enableBlend();
 
+        GlStateManager.disableDepth();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
         FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        GlStateManager.enableDepth();
     }
 
     @Unique
