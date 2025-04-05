@@ -35,6 +35,8 @@ Currently the FPS of the HUD is equal to one quarter of the game FPS, which mean
 
 ⚠️ StellarCore: make sure their HUD Caching feature is disabled.
 
+⚠️ RandomPatches: make sure ```patchMinecraftClass``` is disabled in their config.
+
 ### Credits
 
 This mod is inspired by the [HUDCaching](https://github.com/Moulberry/MCHUDCaching) mod by [Moulberry](https://github.com/moulberry), and a small portion of code is used under the CC-BY 3.0 [license](https://github.com/Moulberry/MCHUDCaching/blob/master/LICENSE).
