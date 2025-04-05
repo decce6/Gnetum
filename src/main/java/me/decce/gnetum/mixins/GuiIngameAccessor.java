@@ -15,6 +15,8 @@ public interface GuiIngameAccessor {
     Random getRand();
     @Invoker
     void callRenderScoreboard(ScoreObjective objective, ScaledResolution scaledRes);
+    @Invoker
+    void callRenderPumpkinOverlay(ScaledResolution scaledRes);
     @Accessor
     int getUpdateCounter();
 }

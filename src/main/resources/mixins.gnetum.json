@@ -14,8 +14,9 @@
     "GuiAccessor",
     "GuiIngameAccessor",
     "GuiIngameForgeMixin",
+    "GuiIngameMixin",
     "ItemRendererMixin",
-    "compat.EventBusMixin",
-    "compat.EventBusAccessor"
+    "compat.EventBusAccessor",
+    "compat.EventBusMixin"
   ]
 }

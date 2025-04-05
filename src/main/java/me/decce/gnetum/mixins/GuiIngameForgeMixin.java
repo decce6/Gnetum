@@ -18,7 +18,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -312,6 +315,17 @@ public class GuiIngameForgeMixin {
         if (renderVignette && ConfigHelper.isVignetteEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
+
+        ItemStack itemstack = gnetum$mc.player.inventory.armorItemInSlot(3);
+        if (gnetum$mc.gameSettings.thirdPersonView == 0 && !itemstack.isEmpty())
+        {
+            Item item = itemstack.getItem();
+            if (item == Item.getItemFromBlock(Blocks.PUMPKIN))
+            {
+                gnetum$getGuiIngameAccessor().callRenderPumpkinOverlay(res);
+            }
+        }
+
         if (renderCrosshairs) {
             renderCrosshairs(partialTicks);
             GlStateManager.enableBlend(); // Fix Tinker's Construct causing blackscreen when holding a crossbow
