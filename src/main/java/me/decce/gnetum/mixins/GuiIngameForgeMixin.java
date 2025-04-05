@@ -7,6 +7,7 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
 import me.decce.gnetum.Passes;
 import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.compat.scalingguis.ScalingGuisCompat;
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.mixins.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,8 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class GuiIngameForgeMixin {
     @Unique
     private final Minecraft gnetum$mc = Minecraft.getMinecraft();
+    @Unique
+    private boolean gnetum$overlayRenderingCanceled;
     @Shadow
     private ScaledResolution res;
     @Shadow
@@ -169,10 +172,10 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
-    private void gnetum$pre(RenderGameOverlayEvent.ElementType type) {
+    private boolean gnetum$pre(RenderGameOverlayEvent.ElementType type) {
         EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
 
-        if (eventBusAccessor.isShutdown()) return;
+        if (eventBusAccessor.isShutdown()) return false;
 
         Event event = new RenderGameOverlayEvent.Pre(eventParent, type);
 
@@ -195,6 +198,7 @@ public class GuiIngameForgeMixin {
             Throwables.throwIfUnchecked(throwable);
             throw new RuntimeException(throwable);
         }
+        return event.isCancelable() && event.isCanceled();
     }
 
     @Shadow
@@ -218,9 +222,24 @@ public class GuiIngameForgeMixin {
         return (GuiAccessor) (Gui) gui;
     }
 
+    @Inject(method = "renderCrosshairs", at = @At("HEAD"), cancellable = true, remap = false)
+    private void gnetum$preRenderCrosshairs(float partialTicks, CallbackInfo ci) {
+        if (Gnetum.rendering) ci.cancel(); // fixes compatibility with ScalingGUIs mod
+    }
+
+    @Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
+    private void gnetum$preRenderVignette(float lightLevel, ScaledResolution scaledRes, CallbackInfo ci) {
+        if (Gnetum.rendering) ci.cancel(); // fixes compatibility with ScalingGUIs mod
+    }
+
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
     public void renderGameOverlay(float partialTicks, CallbackInfo ci) {
-        if (!GnetumConfig.isEnabled()) return;
+        if (!GnetumConfig.isEnabled()) {
+            return;
+        }
+        if (Gnetum.rendering) { // fixes compatibility with ScalingGUIs mod
+            return;
+        }
         ci.cancel();
         res = new ScaledResolution(gnetum$mc);
         eventParent = new RenderGameOverlayEvent(partialTicks, res);
@@ -285,7 +304,7 @@ public class GuiIngameForgeMixin {
 
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
-        if (XaeroMinimapCompat.installed) {
+        if (XaeroMinimapCompat.installed && !ScalingGuisCompat.modInstalled) {
             XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
         }
         gnetum$callUncachedEventListeners(ALL);
@@ -306,13 +325,15 @@ public class GuiIngameForgeMixin {
     private void gnetum$renderPass0() {
         gnetum$mc.profiler.startSection("pass0");
 
-        gnetum$pre(ALL); //TODO: cancellation ignored
+        gnetum$overlayRenderingCanceled = gnetum$pre(ALL);
 
         gnetum$mc.profiler.endSection();
     }
 
     @Unique
     private void gnetum$renderPass1(float partialTicks) {
+        if (gnetum$overlayRenderingCanceled) return;
+
         gnetum$mc.profiler.startSection("pass1");
 
         GlStateManager.enableDepth();
@@ -326,6 +347,8 @@ public class GuiIngameForgeMixin {
 
     @Unique
     private void gnetum$renderPass2(int width, int height) {
+        if (gnetum$overlayRenderingCanceled) return;
+
         gnetum$mc.profiler.startSection("pass2");
 
         renderHUDText(width, height);
@@ -335,10 +358,9 @@ public class GuiIngameForgeMixin {
 
     @Unique
     private void gnetum$renderPass3(int width, int height, float partialTicks) {
-        gnetum$mc.profiler.startSection("pass3");
+        if (gnetum$overlayRenderingCanceled) return;
 
-        // we should render the hand here, so it's possible to see the actual time spent on this pass via a profiler
-        // the config for hand buffering should be kept disabled by default before this gets resolved
+        gnetum$mc.profiler.startSection("pass3");
 
         fontrenderer = gnetum$mc.fontRenderer;
         GlStateManager.enableBlend();
