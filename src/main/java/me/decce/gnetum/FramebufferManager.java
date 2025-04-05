@@ -14,6 +14,7 @@ public class FramebufferManager {
     private int width;
     private int height;
     private int guiScale;
+    private boolean fullscreen;
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
 
@@ -31,6 +32,7 @@ public class FramebufferManager {
         frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         frontFramebuffer.framebufferClear();
         guiScale = mc.gameSettings.guiScale;
+        fullscreen = mc.gameSettings.fullScreen;
     }
 
     public static FramebufferManager getInstance() {
@@ -40,10 +42,12 @@ public class FramebufferManager {
     public void ensureSize() {
         if (mc.displayWidth != width ||
                 mc.displayHeight != height ||
-                mc.gameSettings.guiScale != guiScale) {
+                mc.gameSettings.guiScale != guiScale ||
+                mc.gameSettings.fullScreen != fullscreen) {
             width = mc.displayWidth;
             height = mc.displayHeight;
             guiScale = mc.gameSettings.guiScale;
+            fullscreen = mc.gameSettings.fullScreen;
             frontFramebuffer.createBindFramebuffer(width, height);
             frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
             backFramebuffer.createBindFramebuffer(width, height);
