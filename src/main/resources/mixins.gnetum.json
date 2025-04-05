@@ -16,6 +16,7 @@
     "GuiIngameForgeMixin",
     "GuiIngameMixin",
     "ItemRendererMixin",
+    "MinecraftMixin",
     "compat.EventBusAccessor",
     "compat.EventBusMixin"
   ]

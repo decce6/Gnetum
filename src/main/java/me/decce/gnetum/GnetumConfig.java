@@ -13,11 +13,18 @@ public class GnetumConfig {
     @Config.LangKey("gnetum.config.enabled")
     public static boolean enabled = true;
 
+    @Config.LangKey("gnetum.config.fastBlit")
+    public static boolean fastFramebufferBlits = true;
+
     @Config.LangKey("gnetum.config.hand")
     public static boolean bufferHand = false;
 
     public static boolean isEnabled() {
         return enabled && OpenGlHelper.isFramebufferEnabled();
+    }
+
+    public static boolean useFastFramebufferBlits() {
+        return fastFramebufferBlits && OpenGlHelper.isFramebufferEnabled();
     }
 
     @SubscribeEvent
