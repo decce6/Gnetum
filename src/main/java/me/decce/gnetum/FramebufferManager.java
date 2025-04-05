@@ -51,7 +51,7 @@ public class FramebufferManager {
         }
     }
 
-    public void clear() {
+    private void clear() {
         GlStateManager.clearColor(0, 0, 0, 0);
         GlStateManager.clearDepth(1.0D);
         GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);

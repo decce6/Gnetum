@@ -304,7 +304,7 @@ public class GuiIngameForgeMixin {
 
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
-        if (XaeroMinimapCompat.installed && !ScalingGuisCompat.modInstalled) {
+        if (XaeroMinimapCompat.modInstalled && !ScalingGuisCompat.modInstalled) {
             XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
         }
         gnetum$callUncachedEventListeners(ALL);

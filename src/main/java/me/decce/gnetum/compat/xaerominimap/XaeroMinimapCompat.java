@@ -12,7 +12,7 @@ import java.lang.invoke.MethodType;
 // workaround.
 // This is only for the ingame waypoint rendering. Minimap rendering is not relevant.
 public class XaeroMinimapCompat {
-    public static boolean installed;
+    public static boolean modInstalled;
     private static MethodHandle methodHandle;
     static {
         if (Loader.isModLoaded("xaerominimap")) {
@@ -21,7 +21,7 @@ public class XaeroMinimapCompat {
                 MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
                 MethodType methodType = MethodType.methodType(void.class, float.class);
                 methodHandle = publicLookup.findStatic(clazzXaeroMinimapCore, "beforeIngameGuiRender", methodType);
-                installed = true;
+                modInstalled = true;
             }
             catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ignored) {}
         }
