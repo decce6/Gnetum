@@ -313,6 +313,8 @@ public class GuiIngameForgeMixin {
         }
         gnetum$callUncachedEventListeners(ALL);
 
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
         if (renderVignette && ConfigHelper.isVignetteEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
