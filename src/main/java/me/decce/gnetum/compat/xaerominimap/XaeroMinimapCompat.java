@@ -32,6 +32,7 @@ public class XaeroMinimapCompat {
             methodHandle.invokeExact(partialTicks);
         } catch (Throwable e) {
             Gnetum.LOGGER.error("Error invoking Xaero's Minimap method!", e);
+            modInstalled = false;
         }
     }
 }

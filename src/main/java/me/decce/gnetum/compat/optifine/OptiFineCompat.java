@@ -31,6 +31,7 @@ public class OptiFineCompat {
             return (boolean)methodHandle.invokeExact();
         } catch (Throwable e) {
             Gnetum.LOGGER.error("Error invoking OptiFine method when retrieving vignette status.", e);
+            optifineInstalled = false;
         }
         return Minecraft.getMinecraft().gameSettings.fancyGraphics;
     }
