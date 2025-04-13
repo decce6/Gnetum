@@ -28,11 +28,10 @@ This is a major update to Gnetum, coming with new performance improvements and g
 
 ### Performance
 
-- Improved performance by avoiding unnecessary bind/unbind operations when clearing framebuffer
 - Added new optimization for framebuffer blitting
   - This was added because Gnetum is incompatible with OptiFine's Fast Render option, and can be considered as a less effective but much more compatible alternative to that option.
   - Unlike Fast Render, which makes the game completely skip the framebuffer copy process (and thus causing a lot of incompatibilities), this optimization makes the copy process much more efficient.
-- Added an alternative method for framebuffer clear, which might be slightly faster
+- Added an alternative method for framebuffer clear, which does not introduce additional bind/unbind operations and should be slightly faster
 
 ### Fixes
 

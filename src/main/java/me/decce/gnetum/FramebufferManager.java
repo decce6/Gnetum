@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL44;
 
@@ -24,17 +25,17 @@ public class FramebufferManager {
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
 
-    public boolean shouldClear;
-
     private FramebufferManager() {
         width = mc.displayWidth;
         height = mc.displayHeight;
         clearColor = GLAllocation.createDirectFloatBuffer(4);
         clearColor.put(0).put(0).put(0).put(0);
         backFramebuffer = new Framebuffer(width, height, true);
+        backFramebuffer.setFramebufferColor(0, 0, 0, 0);
         backFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         backFramebuffer.framebufferClear();
         frontFramebuffer = new Framebuffer(width, height, true);
+        frontFramebuffer.setFramebufferColor(0, 0, 0, 0);
         frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         frontFramebuffer.framebufferClear();
         guiScale = mc.gameSettings.guiScale;
@@ -62,22 +63,23 @@ public class FramebufferManager {
     }
 
     private void clear() {
+        GlStateManager.clearDepth(1.0D);
         if (GnetumConfig.useFastFramebufferClear()) {
             GL44.glClearTexImage(backFramebuffer.framebufferTexture, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (FloatBuffer) null);
+            GL44.glClearTexImage(backFramebuffer.depthBuffer, 0,
+                    backFramebuffer.isStencilEnabled() ? GL30.GL_DEPTH_STENCIL : GL11.GL_DEPTH,
+                    backFramebuffer.isStencilEnabled() ? GL14.GL_DEPTH_COMPONENT24 : GL30.GL_DEPTH24_STENCIL8, (FloatBuffer) null);
         }
         else {
+            this.bind();
             GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+            this.unbind();
         }
-        GlStateManager.clearDepth(1.0D);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     public void bind() {
         backFramebuffer.bindFramebuffer(false);
-        if (FramebufferManager.getInstance().shouldClear) {
-            this.clear();
-            FramebufferManager.getInstance().shouldClear = false;
-        }
     }
 
     public void unbind() {
@@ -110,6 +112,6 @@ public class FramebufferManager {
         Framebuffer temp = backFramebuffer;
         backFramebuffer = frontFramebuffer;
         frontFramebuffer = temp;
-        shouldClear = true;
+        this.clear();
     }
 }
