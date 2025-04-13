@@ -6,15 +6,21 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GLContext;
 
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 @Config(modid = Tags.MOD_ID, name = Tags.MOD_NAME)
 public class GnetumConfig {
+    private static Boolean gl44;
+
     @Config.LangKey("gnetum.config.enabled")
     public static boolean enabled = true;
 
     @Config.LangKey("gnetum.config.fastBlit")
     public static boolean fastFramebufferBlits = true;
+
+    @Config.LangKey("gnetum.config.fastClear")
+    public static boolean fastFramebufferClear = true;
 
     @Config.LangKey("gnetum.config.hand")
     public static boolean bufferHand = false;
@@ -23,8 +29,19 @@ public class GnetumConfig {
         return enabled && OpenGlHelper.isFramebufferEnabled();
     }
 
+    private static boolean isGl44Supported() {
+        if (gl44 == null) {
+            gl44 = GLContext.getCapabilities().OpenGL44;
+        }
+        return gl44;
+    }
+
     public static boolean useFastFramebufferBlits() {
         return fastFramebufferBlits && OpenGlHelper.isFramebufferEnabled();
+    }
+
+    public static boolean useFastFramebufferClear() {
+        return fastFramebufferClear && isGl44Supported();
     }
 
     @SubscribeEvent

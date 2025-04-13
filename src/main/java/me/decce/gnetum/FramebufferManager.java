@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL44;
 
 import java.nio.FloatBuffer;
 
@@ -19,7 +20,7 @@ public class FramebufferManager {
     private int height;
     private int guiScale;
     private boolean fullscreen;
-    private FloatBuffer clearColor;
+    private final FloatBuffer clearColor;
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
 
@@ -61,7 +62,12 @@ public class FramebufferManager {
     }
 
     private void clear() {
-        GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+        if (GnetumConfig.useFastFramebufferClear()) {
+            GL44.glClearTexImage(backFramebuffer.framebufferTexture, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (FloatBuffer) null);
+        }
+        else {
+            GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+        }
         GlStateManager.clearDepth(1.0D);
         GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
     }

@@ -4,3 +4,5 @@ gnetum.config.hand=Buffer Hand
 gnetum.config.hand.tooltip=When enabled, the hand will be buffered along with the HUD and will render at a lower framerate. This should give an extra performance boost.\n\nRequires "Enabled" to be set to true.
 gnetum.config.fastBlit=Fast Framebuffer Blits
 gnetum.config.fastBlit.tooltip=Enable to use an alternative method for framebuffer blits, which should improve performance slightly (up to 5%)
+gnetum.config.fastClear=Fast Framebuffer Clear
+gnetum.config.fastClear.tooltip=Enable to use an alternative method for clearing framebuffers, which might be slightly faster.
