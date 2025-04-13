@@ -1,27 +1,5 @@
 # Changelog
 
-## 1.0.0
-
-- Initial release
-
-## 1.1.0
-
-- Slightly improved performance by removing a redundant method call
-- Adjusted rendering order
-- Besides the HUD, it is now possible to also buffer the hand, which should give an extra performance boost (currently disabled by default)
-- I18n support
-
-## 1.1.1
-
-- Fixed blackscreen (caused by vignette rendering)
-
-## 1.1.2
-
-- Corrected rendering order
-- Fixed Xaero's Minimap ingame waypoint rendering
-- Fixed incompatibility with Quark's Better Nausea feature
-- Fixed blackscreen when holding a bow/crossbow from the Tinker's Construct mod
-
 ## 1.2.0
 
 This is a major update to Gnetum, coming with new performance improvements and greatly enhanced mod compatibility.
@@ -45,4 +23,26 @@ This is a major update to Gnetum, coming with new performance improvements and g
 - Fixed framebuffer sometimes not resized properly when switching fullscreen
 - Fixed OptiFine's vignette option not respected
 - Fixed rendering with pumpkin head
-- Fixed blackscreen when falling into the void
+- Fixed blackscreen when falling into the void with shaders enabled
+
+## 1.1.2
+
+- Corrected rendering order
+- Fixed Xaero's Minimap ingame waypoint rendering
+- Fixed incompatibility with Quark's Better Nausea feature
+- Fixed blackscreen when holding a bow/crossbow from the Tinker's Construct mod
+
+## 1.1.1
+
+- Fixed blackscreen (caused by vignette rendering)
+
+## 1.1.0
+
+- Slightly improved performance by removing a redundant method call
+- Adjusted rendering order
+- Besides the HUD, it is now possible to also buffer the hand, which should give an extra performance boost (currently disabled by default)
+- I18n support
+
+## 1.0.0
+
+- Initial release
