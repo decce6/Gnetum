@@ -2,11 +2,15 @@ package me.decce.gnetum;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+
+import java.nio.FloatBuffer;
 
 public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -15,6 +19,7 @@ public class FramebufferManager {
     private int height;
     private int guiScale;
     private boolean fullscreen;
+    private FloatBuffer clearColor;
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
 
@@ -23,12 +28,12 @@ public class FramebufferManager {
     private FramebufferManager() {
         width = mc.displayWidth;
         height = mc.displayHeight;
+        clearColor = GLAllocation.createDirectFloatBuffer(4);
+        clearColor.put(0).put(0).put(0).put(0);
         backFramebuffer = new Framebuffer(width, height, true);
-        backFramebuffer.setFramebufferColor(0, 0, 0, 0);
         backFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         backFramebuffer.framebufferClear();
         frontFramebuffer = new Framebuffer(width, height, true);
-        frontFramebuffer.setFramebufferColor(0, 0, 0, 0);
         frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
         frontFramebuffer.framebufferClear();
         guiScale = mc.gameSettings.guiScale;
@@ -56,9 +61,9 @@ public class FramebufferManager {
     }
 
     private void clear() {
-        GlStateManager.clearColor(0, 0, 0, 0);
+        GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
         GlStateManager.clearDepth(1.0D);
-        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     public void bind() {
