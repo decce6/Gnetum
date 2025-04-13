@@ -6,8 +6,9 @@ import java.util.ArrayList;
 
 public class UncachedEventListeners {
     private static final String[] uncachedModIds = new String[] {
+            "customnausea",
             "quark", //for its Better Nausea feature
-            "customnausea"
+            "timeisup" //using incompatible blend functions
     };
 
     public static ArrayList<IEventListener> list = new ArrayList<>();
