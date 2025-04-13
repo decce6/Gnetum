@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL44;
 
@@ -24,6 +23,8 @@ public class FramebufferManager {
     private final FloatBuffer clearColor;
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
+
+    private boolean shouldClearDepthBuffer;
 
     private FramebufferManager() {
         width = mc.displayWidth;
@@ -63,16 +64,14 @@ public class FramebufferManager {
     }
 
     private void clear() {
-        GlStateManager.clearDepth(1.0D);
         if (GnetumConfig.useFastFramebufferClear()) {
             GL44.glClearTexImage(backFramebuffer.framebufferTexture, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (FloatBuffer) null);
-            GL44.glClearTexImage(backFramebuffer.depthBuffer, 0,
-                    backFramebuffer.isStencilEnabled() ? GL30.GL_DEPTH_STENCIL : GL11.GL_DEPTH,
-                    backFramebuffer.isStencilEnabled() ? GL14.GL_DEPTH_COMPONENT24 : GL30.GL_DEPTH24_STENCIL8, (FloatBuffer) null);
+            shouldClearDepthBuffer = true; // delays clearing depth buffer to avoid bind/unbind here
         }
         else {
             this.bind();
             GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+            GlStateManager.clearDepth(1.0D);
             GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
             this.unbind();
         }
@@ -80,6 +79,11 @@ public class FramebufferManager {
 
     public void bind() {
         backFramebuffer.bindFramebuffer(false);
+        if (shouldClearDepthBuffer) {
+            GlStateManager.clearDepth(1.0D);
+            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+            shouldClearDepthBuffer = false;
+        }
     }
 
     public void unbind() {
