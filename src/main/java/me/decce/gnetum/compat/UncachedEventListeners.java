@@ -8,6 +8,7 @@ public class UncachedEventListeners {
     private static final String[] uncachedModIds = new String[] {
             "customnausea",
             "quark", //for its Better Nausea feature
+            "thaumcraft",
             "timeisup" //using incompatible blend functions
     };
 
