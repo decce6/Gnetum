@@ -24,10 +24,15 @@ public class MinecraftMixin {
                 );
         OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
 
-        // This line is required to fix sky color when in F1 and hovering over an item
-        // A similar issue exists when using Fast Render: https://github.com/sp614x/optifine/issues/7769
-        // Many thanks to @boredhuman for opening that issue with a very clear description and analysis.
+        // Ensure GL states (as done in the original method) to prevent issues
+        GlStateManager.disableDepth();
+        GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
+        GlStateManager.disableAlpha();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.depthMask(true);
+        GlStateManager.colorMask(true, true, true, true);
+
 
         return false;
     }
