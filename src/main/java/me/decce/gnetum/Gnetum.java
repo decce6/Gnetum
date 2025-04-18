@@ -25,7 +25,8 @@ public class Gnetum {
     ));
 
     public static UncachedEventListeners uncachedPostEventListeners = new UncachedEventListeners(Lists.newArrayList(
-            "fluxloading"
+            "fluxloading",
+            "ingameinfo" // InGame Info Reborn has its own framebuffers and refresh rate limit
     ));
 
     @Mod.EventHandler
