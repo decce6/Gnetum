@@ -31,5 +31,6 @@ public class UncachedEventListeners {
 
     public void trim() {
         this.uncachedModIds = null;
+        this.list.trimToSize();
     }
 }

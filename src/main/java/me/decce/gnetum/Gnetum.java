@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION)
 public class Gnetum {
     public static boolean rendering;
+    public static boolean forceFullRebuild; // forces a full rebuild of the HUD on the first frame after joining world
 
     public static Logger LOGGER;
 
@@ -42,6 +43,7 @@ public class Gnetum {
     public static void onJoinWorld(WorldEvent.Load event) {
         if (event.getWorld().isRemote){
             FramebufferManager.getInstance().reset();
+            forceFullRebuild = true;
         }
     }
 }

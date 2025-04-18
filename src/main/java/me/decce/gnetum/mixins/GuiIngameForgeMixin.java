@@ -276,19 +276,29 @@ public class GuiIngameForgeMixin {
             //Having separate methods makes it easier to see which pass took the longest, during profiling
             case Passes.FORGE_PRE:
                 gnetum$renderPass0();
-                break;
+                if (!Gnetum.forceFullRebuild) {
+                    break;
+                }
             case Passes.HOTBAR: //Items in the hotbar can be quite slow to render, so let's give them a pass
                 gnetum$renderPass1(partialTicks);
-                break;
+                if (!Gnetum.forceFullRebuild) {
+                    break;
+                }
             case Passes.HUD_TEXT: //F3, The One Probe, etc.
                 gnetum$renderPass2(width, height);
-                break;
+                if (!Gnetum.forceFullRebuild) {
+                    break;
+                }
             case Passes.MISC:
                 gnetum$renderPass3(width, height, partialTicks);
                 break;
         }
 
         Gnetum.rendering = false;
+        if (Gnetum.forceFullRebuild) {
+            Gnetum.forceFullRebuild = false;
+            Passes.current = 3; // We have finished rendering the passes so we correctly set this for framebuffers to be swapped
+        }
 
         FramebufferManager.getInstance().unbind();
 

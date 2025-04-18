@@ -1,5 +1,6 @@
 package me.decce.gnetum;
 
+import me.decce.gnetum.compat.fluxloading.FluxLoadingCompat;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -26,6 +27,9 @@ public class GnetumConfig {
     public static boolean bufferHand = false;
 
     public static boolean isEnabled() {
+        if (FluxLoadingCompat.modInstalled && FluxLoadingCompat.isFadingOut()) {
+            return false; // Temporarily disables Gnetum when FluxLoading is fading in the HUD element (only during world load - does not impact performance during gameplay)
+        }
         return enabled && OpenGlHelper.isFramebufferEnabled();
     }
 
