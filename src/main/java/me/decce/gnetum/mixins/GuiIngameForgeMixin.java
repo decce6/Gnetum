@@ -28,7 +28,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.IEventListener;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -149,38 +148,10 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
-    private void gnetum$callUncachedEventListeners(RenderGameOverlayEvent.ElementType type) {
-        EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
-
-        if (eventBusAccessor.isShutdown()) return;
-
-        Event event = new RenderGameOverlayEvent.Pre(eventParent, type);
-
-        int index = 0;
-
-        try
-        {
-            for (; index < UncachedEventListeners.list.size(); index++)
-            {
-                UncachedEventListeners.list.get(index).invoke(event);
-            }
-        }
-        catch (Throwable throwable)
-        {
-            IEventListener[] listenersArray = new IEventListener[UncachedEventListeners.list.size()];
-            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, UncachedEventListeners.list.toArray(listenersArray), index, throwable);
-            Throwables.throwIfUnchecked(throwable);
-            throw new RuntimeException(throwable);
-        }
-    }
-
-    @Unique
-    private boolean gnetum$pre(RenderGameOverlayEvent.ElementType type) {
+    private boolean gnetum$callCachedEventListeners(RenderGameOverlayEvent event, UncachedEventListeners uncachedEventListeners) {
         EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
 
         if (eventBusAccessor.isShutdown()) return false;
-
-        Event event = new RenderGameOverlayEvent.Pre(eventParent, type);
 
         IEventListener[] listeners = event.getListenerList().getListeners(eventBusAccessor.getBusID());
         int index = 0;
@@ -189,7 +160,7 @@ public class GuiIngameForgeMixin {
             for (; index < listeners.length; index++)
             {
                 IEventListener listener = listeners[index];
-                if (UncachedEventListeners.matchEventListener(listener)) {
+                if (uncachedEventListeners.matchEventListener(listener)) {
                     continue;
                 }
                 listener.invoke(event);
@@ -204,8 +175,38 @@ public class GuiIngameForgeMixin {
         return event.isCancelable() && event.isCanceled();
     }
 
-    @Shadow
-    private void post(RenderGameOverlayEvent.ElementType type) {
+    @Unique
+    private void gnetum$callUncachedEventListeners(RenderGameOverlayEvent event, UncachedEventListeners uncachedEventListeners) {
+        EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
+
+        if (eventBusAccessor.isShutdown()) return;
+
+        int index = 0;
+
+        try
+        {
+            for (; index < uncachedEventListeners.list.size(); index++)
+            {
+                uncachedEventListeners.list.get(index).invoke(event);
+            }
+        }
+        catch (Throwable throwable)
+        {
+            IEventListener[] listenersArray = new IEventListener[uncachedEventListeners.list.size()];
+            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, uncachedEventListeners.list.toArray(listenersArray), index, throwable);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    @Unique
+    private boolean gnetum$pre(RenderGameOverlayEvent.ElementType type) {
+        return gnetum$callCachedEventListeners(new RenderGameOverlayEvent.Pre(eventParent, type), Gnetum.uncachedPreEventListeners);
+    }
+
+    @Unique
+    private void gnetum$post(RenderGameOverlayEvent.ElementType type) {
+        gnetum$callCachedEventListeners(new RenderGameOverlayEvent.Post(eventParent, type), Gnetum.uncachedPostEventListeners);
     }
 
     @Unique
@@ -255,7 +256,7 @@ public class GuiIngameForgeMixin {
         right_height = 39;
         left_height = 39;
 
-        gnetum$renderUncached(partialTicks);
+        gnetum$renderUncachedPre(partialTicks);
 
         FramebufferManager.getInstance().ensureSize();
 
@@ -293,8 +294,9 @@ public class GuiIngameForgeMixin {
 
         Passes.step();
 
-        GlStateManager.enableBlend();
+        gnetum$renderUncachedPost(partialTicks);
 
+        GlStateManager.enableBlend();
         GlStateManager.disableDepth();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
         FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
@@ -303,7 +305,7 @@ public class GuiIngameForgeMixin {
     }
 
     @Unique
-    private void gnetum$renderUncached(float partialTicks) {
+    private void gnetum$renderUncachedPre(float partialTicks) {
         gnetum$mc.profiler.startSection("uncached");
 
         GlStateManager.enableBlend();
@@ -311,7 +313,7 @@ public class GuiIngameForgeMixin {
         if (XaeroMinimapCompat.modInstalled && !ScalingGuisCompat.modInstalled) {
             XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
         }
-        gnetum$callUncachedEventListeners(ALL);
+        gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Pre(eventParent, ALL), Gnetum.uncachedPreEventListeners);
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -337,6 +339,16 @@ public class GuiIngameForgeMixin {
         gnetum$mc.profiler.endSection();
     }
 
+    @Unique
+    private void gnetum$renderUncachedPost(float partialTicks) {
+        if (gnetum$overlayRenderingCanceled) return;
+
+        gnetum$mc.profiler.startSection("uncached");
+
+        gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Post(eventParent, ALL), Gnetum.uncachedPostEventListeners);
+
+        gnetum$mc.profiler.endSection();
+    }
 
     @Unique
     private void gnetum$renderPass0() {
@@ -449,7 +461,7 @@ public class GuiIngameForgeMixin {
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
 
-        post(ALL);
+        gnetum$post(ALL);
 
         gnetum$mc.profiler.endSection();
     }

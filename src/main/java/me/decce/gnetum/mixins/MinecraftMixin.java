@@ -33,7 +33,6 @@ public class MinecraftMixin {
         GlStateManager.depthMask(true);
         GlStateManager.colorMask(true, true, true, true);
 
-
         return false;
     }
 }

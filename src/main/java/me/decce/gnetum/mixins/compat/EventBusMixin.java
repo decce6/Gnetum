@@ -1,7 +1,7 @@
 package me.decce.gnetum.mixins.compat;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.Gnetum;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -18,8 +18,13 @@ public class EventBusMixin {
     private void register(Class<?> eventType, Object target, Method method, ModContainer owner, CallbackInfo ci, @Local IEventListener listener)
     {
         if (eventType.isAssignableFrom(RenderGameOverlayEvent.Pre.class)) {
-            if (UncachedEventListeners.matchModId(owner.getModId())) {
-                UncachedEventListeners.list.add(listener);
+            if (Gnetum.uncachedPreEventListeners.matchModId(owner.getModId())) {
+                Gnetum.uncachedPreEventListeners.list.add(listener);
+            }
+        }
+        else if (eventType.isAssignableFrom(RenderGameOverlayEvent.Post.class)) {
+            if (Gnetum.uncachedPostEventListeners.matchModId(owner.getModId())) {
+                Gnetum.uncachedPostEventListeners.list.add(listener);
             }
         }
     }
