@@ -185,15 +185,14 @@ public class GuiIngameForgeMixin {
 
         try
         {
-            for (; index < uncachedEventListeners.list.size(); index++)
+            for (; index < uncachedEventListeners.list.length; index++)
             {
-                uncachedEventListeners.list.get(index).invoke(event);
+                uncachedEventListeners.list[index].invoke(event);
             }
         }
         catch (Throwable throwable)
         {
-            IEventListener[] listenersArray = new IEventListener[uncachedEventListeners.list.size()];
-            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, uncachedEventListeners.list.toArray(listenersArray), index, throwable);
+            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, uncachedEventListeners.list, index, throwable);
             Throwables.throwIfUnchecked(throwable);
             throw new RuntimeException(throwable);
         }

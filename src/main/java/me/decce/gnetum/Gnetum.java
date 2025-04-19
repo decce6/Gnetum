@@ -36,7 +36,9 @@ public class Gnetum {
 
     @Mod.EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
+        uncachedPreEventListeners.sort();
         uncachedPreEventListeners.trim();
+        uncachedPostEventListeners.sort();
         uncachedPostEventListeners.trim();
     }
 
