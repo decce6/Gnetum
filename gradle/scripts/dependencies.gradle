@@ -34,9 +34,6 @@ dependencies {
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
 
-    implementation ('curse.maven:fluxloading-1207328:6436912') {
-        transitive = false
-    }
     implementation ('curse.maven:xaeros-minimap-263420:6310964')
 
     // Example - Dependency descriptor:
