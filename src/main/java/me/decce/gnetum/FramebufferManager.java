@@ -34,6 +34,7 @@ public class FramebufferManager {
         fullscreen = mc.gameSettings.fullScreen;
         clearColor = GLAllocation.createDirectFloatBuffer(4);
         clearColor.put(0).put(0).put(0).put(0);
+        clearColor.flip();
         this.reset();
     }
 
