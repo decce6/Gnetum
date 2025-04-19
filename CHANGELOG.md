@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1
+
+- Fixed crash when Fast Framebuffer Clear is disabled in config
+- Fixed FancyMenu rendering
+- Fixed visual glitches with FluxLoading mod
+- Improved compatibility with InGame Info Reborn mod
+- Improved performance when using OptiFine
+- Improved performance when using Xaero's Minimap
+
 ## 1.2.0
 
 This is a major update to Gnetum, coming with new performance improvements and greatly enhanced mod compatibility.

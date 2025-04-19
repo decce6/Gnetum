@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
-@Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION)
+@Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION, clientSideOnly = true, acceptableRemoteVersions = "*")
 public class Gnetum {
     public static boolean rendering;
     public static boolean forceFullRebuild; // forces a full rebuild of the HUD on the first frame after joining world
