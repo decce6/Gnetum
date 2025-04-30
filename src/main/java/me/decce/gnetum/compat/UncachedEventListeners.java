@@ -30,6 +30,9 @@ public class UncachedEventListeners {
     }
 
     public boolean matchEventListener(IEventListener listener) {
+        if (listener instanceof EventPriority) {
+            return false;
+        }
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < list.length; i++) {
             if (listener == list[i]) {
