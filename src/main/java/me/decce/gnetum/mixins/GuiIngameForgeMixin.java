@@ -236,7 +236,7 @@ public class GuiIngameForgeMixin {
     }
 
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
-    public void renderGameOverlay(float partialTicks, CallbackInfo ci) {
+    public void gnetum$renderGameOverlay(float partialTicks, CallbackInfo ci) {
         if (!GnetumConfig.isEnabled()) {
             return;
         }
