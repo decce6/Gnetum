@@ -44,7 +44,7 @@ public class Gnetum {
 
     @SubscribeEvent
     public static void onJoinWorld(WorldEvent.Load event) {
-        if (event.getWorld().isRemote){
+        if (GnetumConfig.isEnabled() && event.getWorld().isRemote){
             FramebufferManager.getInstance().reset();
             forceFullRebuild = true;
         }
