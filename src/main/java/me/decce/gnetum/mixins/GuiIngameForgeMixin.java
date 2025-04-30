@@ -1,7 +1,8 @@
 package me.decce.gnetum.mixins;
 
 import com.google.common.base.Throwables;
-import me.decce.gnetum.ConfigHelper;
+import me.decce.gnetum.GuiHelper;
+import me.decce.gnetum.compat.CompatHelper;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
@@ -12,7 +13,6 @@ import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.mixins.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -219,12 +219,6 @@ public class GuiIngameForgeMixin {
         return (GuiIngameAccessor) (GuiIngame) gui;
     }
 
-    @Unique
-    private GuiAccessor gnetum$getGuiAccessor() {
-        GuiIngameForge gui = (GuiIngameForge) (Object) this;
-        return (GuiAccessor) (Gui) gui;
-    }
-
     @Inject(method = "renderCrosshairs", at = @At("HEAD"), cancellable = true, remap = false)
     private void gnetum$preRenderCrosshairs(float partialTicks, CallbackInfo ci) {
         if (Gnetum.rendering) ci.cancel(); // fixes compatibility with ScalingGUIs mod
@@ -326,7 +320,7 @@ public class GuiIngameForgeMixin {
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        if (renderVignette && ConfigHelper.isVignetteEnabled()) {
+        if (renderVignette && CompatHelper.isVignetteEnabled()) {
             renderVignette(gnetum$mc.player.getBrightness(), res);
         }
 
@@ -415,7 +409,7 @@ public class GuiIngameForgeMixin {
         //if (renderHotbar) renderHotbar(res, partialTicks);
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        gnetum$getGuiAccessor().setZLevel(-90.0F);
+        GuiHelper.setZLevel(-90.0F);
         gnetum$getGuiIngameAccessor().getRand().setSeed((long) (gnetum$getGuiIngameAccessor().getUpdateCounter() * 312871));
 
         if (renderBossHealth) renderBossHealth();
