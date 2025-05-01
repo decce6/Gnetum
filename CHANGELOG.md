@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2
+
+- Fixed crash when framebuffer is not supported
+- Fixed EventPriority listeners being incorrectly skipped
+- Fixed HUD elements sometimes losing transparency (inspired by a similar fix in [Angelica](https://github.com/GTNewHorizons/Angelica/pull/232))
+- Fixed crash when using RandomPatches
+
 ## 1.2.1
 
 - Fixed crash when Fast Framebuffer Clear is disabled in config
