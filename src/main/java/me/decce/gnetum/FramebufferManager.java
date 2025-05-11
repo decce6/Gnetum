@@ -4,13 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL44;
 
 import java.nio.FloatBuffer;
 
@@ -25,7 +23,7 @@ public class FramebufferManager {
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
 
-    private boolean shouldClearDepthBuffer;
+    private boolean shouldClear;
 
     private FramebufferManager() {
         width = mc.displayWidth;
@@ -52,11 +50,15 @@ public class FramebufferManager {
         backFramebuffer = new Framebuffer(width, height, true);
         backFramebuffer.setFramebufferColor(0, 0, 0, 0);
         backFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-        this.clear(false, backFramebuffer);
+        backFramebuffer.bindFramebuffer(false);
+        this.clear();
+        this.unbind();
         frontFramebuffer = new Framebuffer(width, height, true);
         frontFramebuffer.setFramebufferColor(0, 0, 0, 0);
         frontFramebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-        this.clear(false, frontFramebuffer);
+        frontFramebuffer.bindFramebuffer(false);
+        this.clear();
+        this.unbind();
         Passes.current = 0;
     }
 
@@ -74,29 +76,16 @@ public class FramebufferManager {
     }
 
     private void clear() {
-        this.clear(true, backFramebuffer);
-    }
-
-    private void clear(boolean allowDelay, Framebuffer framebuffer) {
-        if (GnetumConfig.useFastFramebufferClear() && allowDelay) {
-            GL44.glClearTexImage(framebuffer.framebufferTexture, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (FloatBuffer) null);
-            shouldClearDepthBuffer = true; // delays clearing depth buffer to avoid bind/unbind here
-        }
-        else {
-            OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer.framebufferObject);
-            GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
-            GlStateManager.clearDepth(1.0D);
-            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-            OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, Minecraft.getMinecraft().getFramebuffer().framebufferObject);
-        }
+        GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+        GlStateManager.clearDepth(1.0D);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     public void bind() {
         backFramebuffer.bindFramebuffer(false);
-        if (shouldClearDepthBuffer) {
-            GlStateManager.clearDepth(1.0D);
-            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-            shouldClearDepthBuffer = false;
+        if (shouldClear) {
+            this.clear();
+            shouldClear = false;
         }
     }
 
@@ -130,6 +119,6 @@ public class FramebufferManager {
         Framebuffer temp = backFramebuffer;
         backFramebuffer = frontFramebuffer;
         frontFramebuffer = temp;
-        this.clear();
+        this.shouldClear = true;
     }
 }
