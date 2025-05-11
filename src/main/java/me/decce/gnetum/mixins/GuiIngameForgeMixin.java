@@ -246,6 +246,8 @@ public class GuiIngameForgeMixin {
         renderFood = gnetum$mc.player.getRidingEntity() == null;
         renderJumpBar = gnetum$mc.player.isRidingHorse();
 
+        fontrenderer = gnetum$mc.fontRenderer;
+
         right_height = 39;
         left_height = 39;
 
@@ -394,7 +396,6 @@ public class GuiIngameForgeMixin {
 
         gnetum$mc.profiler.startSection("pass3");
 
-        fontrenderer = gnetum$mc.fontRenderer;
         GlStateManager.enableBlend();
 
         GlStateManager.enableDepth();
