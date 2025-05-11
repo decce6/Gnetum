@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.decce.gnetum.GnetumConfig;

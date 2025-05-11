@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins.compat;
+package me.decce.gnetum.mixins.early.compat;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.decce.gnetum.Gnetum;

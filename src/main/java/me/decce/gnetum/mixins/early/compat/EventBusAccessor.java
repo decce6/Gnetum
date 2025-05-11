@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins.compat;
+package me.decce.gnetum.mixins.early.compat;
 
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.IEventExceptionHandler;

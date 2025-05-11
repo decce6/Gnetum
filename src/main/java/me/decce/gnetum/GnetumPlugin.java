@@ -37,6 +37,6 @@ public class GnetumPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return Collections.singletonList("mixins.gnetum.json");
+        return Collections.singletonList("mixins.gnetum.early.json");
     }
 }

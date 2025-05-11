@@ -35,6 +35,7 @@ dependencies {
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
 
     implementation ('curse.maven:xaeros-minimap-263420:6310964')
+    implementation ("curse.maven:better-hud-286066:3327633")
 
     // Example - Dependency descriptor:
     // 'com.google.code.gson:gson:2.8.6' << group: com.google.code.gson, name:gson, version:2.8.6

@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;

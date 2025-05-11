@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import com.google.common.base.Throwables;
 import me.decce.gnetum.GuiHelper;
@@ -8,9 +8,10 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
 import me.decce.gnetum.Passes;
 import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.compat.betterhud.BetterHudCompat;
 import me.decce.gnetum.compat.scalingguis.ScalingGuisCompat;
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
-import me.decce.gnetum.mixins.compat.EventBusAccessor;
+import me.decce.gnetum.mixins.early.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiIngame;
@@ -318,6 +319,7 @@ public class GuiIngameForgeMixin {
         if (XaeroMinimapCompat.modInstalled && !ScalingGuisCompat.modInstalled) {
             XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
         }
+
         gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Pre(eventParent, ALL), Gnetum.uncachedPreEventListeners);
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -350,6 +352,9 @@ public class GuiIngameForgeMixin {
 
         gnetum$mc.profiler.startSection("uncached");
 
+        if (BetterHudCompat.modInstalled) {
+            BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
+        }
         gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Post(eventParent, ALL), Gnetum.uncachedPostEventListeners);
 
         gnetum$mc.profiler.endSection();
@@ -369,6 +374,8 @@ public class GuiIngameForgeMixin {
         if (gnetum$overlayRenderingCanceled) return;
 
         gnetum$mc.profiler.startSection("pass1");
+
+        if (BetterHudCompat.modInstalled) BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
 
         GlStateManager.enableDepth();
         GlStateManager.enableBlend();
@@ -395,6 +402,8 @@ public class GuiIngameForgeMixin {
         if (gnetum$overlayRenderingCanceled) return;
 
         gnetum$mc.profiler.startSection("pass3");
+
+        if (BetterHudCompat.modInstalled) BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
 
         GlStateManager.enableBlend();
 

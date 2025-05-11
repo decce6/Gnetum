@@ -1,7 +1,7 @@
 package me.decce.gnetum.compat.optifine;
 
 import me.decce.gnetum.Gnetum;
-import me.decce.gnetum.mixins.compat.optifine.ConfigAccessor;
+import me.decce.gnetum.mixins.early.compat.optifine.ConfigAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.FMLClientHandler;
 

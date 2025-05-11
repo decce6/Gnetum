@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins.compat.optifine;
+package me.decce.gnetum.mixins.early.compat.optifine;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;

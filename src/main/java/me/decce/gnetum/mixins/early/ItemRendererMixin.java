@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.GnetumConfig;

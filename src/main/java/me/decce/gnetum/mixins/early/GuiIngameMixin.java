@@ -1,4 +1,4 @@
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.decce.gnetum.Gnetum;

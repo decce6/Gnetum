@@ -2,7 +2,7 @@
 //Adapted from https://github.com/Moulberry/MCHUDCaching/blob/33750bed95cfbbf6e63dca90bdb9c9d767a218e2/src/main/java/io/github/moulberry/hudcaching/mixins/MixinFrameBuffer.java
 //under the CC BY 3.0 license (https://github.com/Moulberry/MCHUDCaching/blob/33750bed95cfbbf6e63dca90bdb9c9d767a218e2/LICENSE)
 
-package me.decce.gnetum.mixins;
+package me.decce.gnetum.mixins.early;
 
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
