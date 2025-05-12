@@ -18,11 +18,12 @@ import java.util.List;
 import static jobicade.betterhud.element.HudElement.*;
 
 public class BetterHudCompat {
-    public static final boolean modInstalled = Loader.isModLoaded("betterhud");
+    public static final boolean modInstalled;
 
     public static Reference2IntMap<HudElement> element2PassMap = new Reference2IntOpenHashMap<>();
 
     static {
+        modInstalled = Loader.isModLoaded("betterhud");
         if (modInstalled) {
             List<HudElement> uncached = Lists.newArrayList(HudElement.CROSSHAIR, HudElement.VIGNETTE, HudElement.HELMET_OVERLAY);
             List<HudElement> pass0 = new ArrayList<>();

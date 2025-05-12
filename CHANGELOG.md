@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3
+
+- Fixed FontRenderer NPE
+- Fixed BetterHUD compatibility
+
 ## 1.2.2
 
 - Fixed crash when framebuffer is not supported
