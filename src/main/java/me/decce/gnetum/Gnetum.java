@@ -13,6 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -42,17 +43,18 @@ public final class Gnetum {
             GLFW.GLFW_KEY_END,
             "key.categories.misc"));
 
-
-    public Gnetum(FMLJavaModLoadingContext context) {
+    public Gnetum() {
         Gnetum.passManager = new PassManager();
         Gnetum.uncachedVanillaElements = new UncachedVanillaElements();
         GnetumConfig.reload();
 
-        context.getModEventBus().addListener(Gnetum::registerBindings);
+        //noinspection removal // we want the mod to be loadable on an older version of forge
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Gnetum::registerBindings);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
-        context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen()));
+        //noinspection removal
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen()));
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
