@@ -1,39 +1,83 @@
 package me.decce.gnetum;
 
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import me.decce.gnetum.util.AnyBooleanValue;
+import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraftforge.fml.loading.FMLPaths;
 
-@Mod.EventBusSubscriber(modid = Tags.MOD_ID)
-@Config(modid = Tags.MOD_ID, name = Tags.MOD_NAME)
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.Map;
+
 public class GnetumConfig {
-    @Config.LangKey("gnetum.config.enabled")
-    public static boolean enabled = true;
+    public static final int UNLIMITED_FPS = 125; // when maxFps is set to this value it means unlimited
+    private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("gnetum.json");
 
-    @Config.LangKey("gnetum.config.fastBlit")
-    public static boolean fastFramebufferBlits = true;
+    public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
+    public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
+    public int numberOfPasses = 4;
+    public int maxFps = 30;
 
-    @Config.LangKey("gnetum.config.fastClear")
-    public static boolean fastFramebufferClear = true; //TODO: remove this when we implement our own config screen
+    public Map<String, CacheSetting> mapVanillaElements = new HashMap<>();
+    public Map<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
+    public Map<String, CacheSetting> mapModdedElementsPost = new HashMap<>();
 
-    @Config.LangKey("gnetum.config.hand")
-    public static boolean bufferHand = false;
-
-    public static boolean isEnabled() {
-        return enabled && OpenGlHelper.isFramebufferEnabled();
+    public boolean isEnabled() {
+        return enabled.get();
     }
 
-    public static boolean useFastFramebufferBlits() {
-        return fastFramebufferBlits && OpenGlHelper.isFramebufferEnabled();
+    private static GnetumConfig load() {
+        try {
+            String json = Files.readString(PATH);
+            Gson gson = new Gson();
+            GnetumConfig config = gson.fromJson(json, GnetumConfig.class);
+            config.validate(true);
+            return config;
+        } catch (IOException e) {
+            Gnetum.LOGGER.error("Failed to read configuration!", e);
+        }
+        return new GnetumConfig();
     }
 
-    @SubscribeEvent
-    public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(Tags.MOD_ID)) {
-            ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
+    public void validate(boolean full) {
+        if (full) {
+            this.numberOfPasses = clamp(this.numberOfPasses, 2, 10);
+            this.mapVanillaElements.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
+            this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
+            this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
+        }
+        this.mapModdedElementsPre.forEach((s, c) -> {
+            c.pass = clamp(c.pass, 1, this.numberOfPasses);
+            c.enabled.defaultValue = switch (s) {
+                case "xaerominimap" -> false;
+                default -> true;
+            };
+        });
+    }
+
+    private static int clamp(int value, int min, int max) { // min & max: inclusive
+        return Math.max(Math.min(value, max), min);
+    }
+
+    public static void reload() {
+        Gnetum.config = load();
+    }
+
+    public void save() {
+        this.validate(true);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(this);
+        try {
+            Files.writeString(PATH, json, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            Gnetum.LOGGER.error("Failed to save config file!", e);
+        }
+        if (PerformanceAnalyzer.latestAnalysisResult != null) {
+            PerformanceAnalyzer.latestAnalysisResult.markOutdated();
         }
     }
 }
