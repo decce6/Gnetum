@@ -1,5 +1,6 @@
 package me.decce.gnetum;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -27,7 +28,7 @@ public class GnetumConfig {
     }
 
     public static boolean useFastFramebufferBlits() {
-        return fastFramebufferBlits && OpenGlHelper.isFramebufferEnabled();
+        return fastFramebufferBlits && OpenGlHelper.isFramebufferEnabled() && Minecraft.getMinecraft().world != null;
     }
 
     @SubscribeEvent
