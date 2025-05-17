@@ -43,12 +43,15 @@ public class ElementsScreen extends BaseScreen {
 
         int wb = 130;
         int ws = 50;
+        int extrawb = width - wb * 2 - ws * 2 - 60;
+        extrawb = Math.max(0, Math.min(60, extrawb));
+        wb += extrawb;
         int h = 20;
         int margin = 5;
-        int xlb = width / 2 - 2 - ws - 1 - wb;
+        int xlb = width / 2 - 2 - ws - wb;
         int xls = width / 2 - 2 - ws;
         int xrb = width / 2 + 2;
-        int xrs = width / 2 + 2 + wb + 1;
+        int xrs = width / 2 + 2 + wb;
         int y = height / 2 - h / 2 - margin - h - margin - h - 15;
         int i = 0;
         boolean left = true;
