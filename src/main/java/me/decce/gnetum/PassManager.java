@@ -29,7 +29,6 @@ public class PassManager {
             long nanos = Util.getNanos();
             Minecraft.getInstance().getProfiler().push(getPassText());
             passBeginNanos = nanos;
-            // if (current == 1) Gnetum.lastSwapNanos = nanos;
         }
     }
 
@@ -59,6 +58,7 @@ public class PassManager {
                 else {
                     current = 1;
                     FramebufferManager.getInstance().swapFramebuffers();
+                    Gnetum.lastSwapNanos = nanos;
                 }
             }
         }
