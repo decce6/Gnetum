@@ -24,6 +24,7 @@ import org.lwjgl.glfw.GLFW;
 public final class Gnetum {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "gnetum";
+    public static final String HAND_ELEMENT = "gnetum:minecraft_hand";
 
     public static final FpsCounter FPS_COUNTER = new FpsCounter();
     public static GnetumConfig config;

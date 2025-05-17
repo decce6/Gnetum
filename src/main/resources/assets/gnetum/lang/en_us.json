@@ -49,5 +49,6 @@
   "gnetum.config.element.minecraft.subtitles": "Subtitles",
   "gnetum.config.element.minecraft.scoreboard": "Scoreboard",
   "gnetum.config.element.minecraft.chat_panel": "Chat Panel",
-  "gnetum.config.element.minecraft.player_list": "Player List"
+  "gnetum.config.element.minecraft.player_list": "Player List",
+  "gnetum.config.element.gnetum.minecraft_hand": "Hand (Experimental)"
 }

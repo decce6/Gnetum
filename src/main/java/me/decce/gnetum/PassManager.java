@@ -8,13 +8,15 @@ public class PassManager {
     private final int SAVED_DURATIONS = 30; // specifies how many previous frames should be used for analysis of time taken on each pass
     private String[] PASS_TEXT;
     private long[][] durations;
+    private long currentPassDuration;
     private int index;
     private long passBeginNanos;
     public int current = 1; // Range: [1, numberOfPasses]
 
-    private String getPassText() {
+    public String getPassText() {
         if (PASS_TEXT == null || PASS_TEXT.length != Gnetum.config.numberOfPasses + 1) {
             PASS_TEXT = new String[Gnetum.config.numberOfPasses + 1];
+            PASS_TEXT[0] = "sleep";
             for (int i = 1; i <= Gnetum.config.numberOfPasses; i++) {
                 PASS_TEXT[i] = "pass" + i;
             }
@@ -26,13 +28,21 @@ public class PassManager {
         if (current > Gnetum.config.numberOfPasses) current = 1;
 
         if (current > 0) {
-            long nanos = Util.getNanos();
-            Minecraft.getInstance().getProfiler().push(getPassText());
-            passBeginNanos = nanos;
+            passBeginNanos = Util.getNanos();
         }
+
+        Minecraft.getInstance().getProfiler().push(getPassText());
     }
 
     public void end() {
+        Minecraft.getInstance().getProfiler().pop();
+
+        if (current > 0) {
+            currentPassDuration += Util.getNanos() - passBeginNanos;
+        }
+    }
+
+    public void nextPass() {
         long nanos = Util.getNanos();
 
         if (current == 0) {
@@ -43,11 +53,11 @@ public class PassManager {
             }
         }
         else {
-            Minecraft.getInstance().getProfiler().pop();
             if (durations == null || durations.length != Gnetum.config.numberOfPasses + 1) {
                 durations = new long[Gnetum.config.numberOfPasses + 1][SAVED_DURATIONS];
             }
-            durations[current][index] = nanos - passBeginNanos;
+            durations[current][index] = currentPassDuration;
+            currentPassDuration = 0L;
             if (current == Gnetum.config.numberOfPasses) index++;
             if (index == SAVED_DURATIONS) index = 0;
 

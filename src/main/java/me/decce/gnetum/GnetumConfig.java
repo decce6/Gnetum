@@ -3,6 +3,7 @@ package me.decce.gnetum;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
+import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -32,17 +33,27 @@ public class GnetumConfig {
         return enabled.get();
     }
 
+    private static GnetumConfig createDefault() {
+        var config = new GnetumConfig();
+        config.mapVanillaElements.put(Gnetum.HAND_ELEMENT, new CacheSetting(1, new TriStateBoolean(AnyBooleanValue.AUTO, false)));
+        return config;
+    }
+
     private static GnetumConfig load() {
         try {
             String json = Files.readString(PATH);
             Gson gson = new Gson();
             GnetumConfig config = gson.fromJson(json, GnetumConfig.class);
+            if (!config.mapVanillaElements.containsKey(Gnetum.HAND_ELEMENT)) {
+                config.mapVanillaElements.put(Gnetum.HAND_ELEMENT, new CacheSetting(1, new TriStateBoolean(AnyBooleanValue.AUTO, false)));
+            }
+            config.mapVanillaElements.get(Gnetum.HAND_ELEMENT).enabled.defaultValue = false;
             config.validate(true);
             return config;
         } catch (IOException e) {
             Gnetum.LOGGER.error("Failed to read configuration!", e);
         }
-        return new GnetumConfig();
+        return createDefault();
     }
 
     public void validate(boolean full) {

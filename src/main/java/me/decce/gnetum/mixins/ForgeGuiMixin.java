@@ -98,6 +98,7 @@ public class ForgeGuiMixin {
             Gnetum.currentElement = null;
         }
         Gnetum.passManager.end();
+        Gnetum.passManager.nextPass();
         FramebufferManager.getInstance().unbind();
 
         FramebufferManager.getInstance().blit();
