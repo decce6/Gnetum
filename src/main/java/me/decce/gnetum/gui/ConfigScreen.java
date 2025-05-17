@@ -103,6 +103,7 @@ public class ConfigScreen extends BaseScreen {
 
     private Map<String, CacheSetting> sorted(Map<String, CacheSetting> original) {
         return original.entrySet().stream().
+                //TODO: should compare display string instead of key
                 sorted(Map.Entry.comparingByKey()).
                 collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));

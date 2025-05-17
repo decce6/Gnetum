@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+- Fixed some modded elements being rendered twice (which resulted in Jade looking like it lost transparency)
+- Fixed max FPS option not working
+- Implemented hand caching that further improves performance when enabled (experimental, currently must be manually enabled at Vanilla Elements -> Hand by changing ```AUTO``` to ```ON```)
+
 ## 2.0.0
 
 ### Highlights

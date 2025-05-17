@@ -103,7 +103,9 @@ public class ForgeGuiMixin {
 
         FramebufferManager.getInstance().blit();
 
+        Minecraft.getInstance().getProfiler().push("uncached");
         gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     @Unique
