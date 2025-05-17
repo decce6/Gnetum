@@ -186,7 +186,9 @@ public class ForgeGuiMixin {
                             }
                         }
                         else {
-                            wrapper.invoke(listener, event);
+                            if (!Gnetum.rendering || listener instanceof EventPriority) { // do not cache listeners that are not ASMEventHandler
+                                wrapper.invoke(listener, event);
+                            }
                         }
                     }
                 }
