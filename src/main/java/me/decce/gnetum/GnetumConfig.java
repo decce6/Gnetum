@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,7 @@ public class GnetumConfig {
             this.mapVanillaElements.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
             this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
             this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
+            this.removeElementsFromUninstalledMods();
         }
         this.mapModdedElementsPre.forEach((s, c) -> {
             c.pass = clamp(c.pass, 1, this.numberOfPasses);
@@ -57,6 +60,26 @@ public class GnetumConfig {
                 default -> true;
             };
         });
+    }
+
+    private void removeElementsFromUninstalledMods() {
+        var toRemove = new ArrayList<String>();
+        mapModdedElementsPre.forEach((s, c) -> {
+            if (!ModList.get().isLoaded(s)) toRemove.add(s);
+        });
+        mapModdedElementsPost.forEach((s, c) -> {
+            if (!ModList.get().isLoaded(s)) toRemove.add(s);
+        });
+        toRemove.forEach(s -> {
+            mapModdedElementsPre.remove(s);
+            mapModdedElementsPost.remove(s);
+        });
+        toRemove.clear();
+        mapVanillaElements.forEach((s, c) -> {
+            String modid = s.substring(0, s.indexOf(':'));
+            if (!ModList.get().isLoaded(modid)) toRemove.add(s);
+        });
+        toRemove.forEach(s -> mapVanillaElements.remove(s));
     }
 
     private static int clamp(int value, int min, int max) { // min & max: inclusive
