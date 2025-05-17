@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4
+
+- Fixed Custom Main Menu rendering
+
 ## 1.2.3
 
 - Fixed FontRenderer NPE
