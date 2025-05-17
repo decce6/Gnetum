@@ -40,11 +40,9 @@ public class FramebufferManager {
     }
 
     public void clear(TextureTarget framebuffer) {
+        mc.getProfiler().push("clear");
         framebuffer.clear(Minecraft.ON_OSX);
-    }
-
-    public int getFramebufferId() {
-        return backFramebuffer.frameBufferId;
+        mc.getProfiler().pop();
     }
 
     public void reset() {
@@ -72,16 +70,20 @@ public class FramebufferManager {
     }
 
     public void blit() {
+        mc.getProfiler().push("blit");
+
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 
         frontFramebuffer.blitToScreen(width, height, false);
 
-        var window = Minecraft.getInstance().getWindow();
+        var window = mc.getWindow();
         Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ForgeHooksClient.getGuiFarPlane());
         RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
 
         RenderSystem.defaultBlendFunc();
+
+        mc.getProfiler().pop();
     }
 
     public void swapFramebuffers() {
