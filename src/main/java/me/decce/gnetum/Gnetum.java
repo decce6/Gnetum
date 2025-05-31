@@ -7,6 +7,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -52,6 +53,7 @@ public final class Gnetum {
         //noinspection removal // we want the mod to be loadable on an older version of forge
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Gnetum::registerBindings);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+        MinecraftForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
         //noinspection removal
@@ -96,6 +98,15 @@ public final class Gnetum {
                 if (!(Minecraft.getInstance().screen instanceof ConfigScreen)) {
                     Minecraft.getInstance().setScreen(new ConfigScreen(PerformanceAnalyzer.analyze()));
                 }
+            }
+        }
+    }
+
+    public void onCustomizeF3Text(CustomizeGuiOverlayEvent.DebugText event) {
+        if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().options.renderDebug) {
+            var left = event.getLeft();
+            if (left.size() > 2) {
+                event.getLeft().add(2, String.format("HUD: %d fps (nr=%d, cap=%s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps));
             }
         }
     }
