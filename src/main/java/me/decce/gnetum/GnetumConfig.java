@@ -24,7 +24,7 @@ public class GnetumConfig {
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public int numberOfPasses = 4;
-    public int maxFps = 30;
+    public int maxFps = 60;
 
     public Map<String, CacheSetting> mapVanillaElements = new HashMap<>();
     public Map<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
@@ -42,6 +42,7 @@ public class GnetumConfig {
 
     private static GnetumConfig load() {
         try {
+            if (!Files.exists(PATH)) return createDefault();
             String json = Files.readString(PATH);
             Gson gson = new Gson();
             GnetumConfig config = gson.fromJson(json, GnetumConfig.class);
