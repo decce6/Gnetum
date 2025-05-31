@@ -47,6 +47,14 @@ public class ForgeGuiMixin {
     public int rightHeight;
     @Shadow
     private Font font;
+    @Unique
+    private int gnetum$lastLeftHeight = 39;
+    @Unique
+    private int gnetum$lastRightHeight = 39;
+    @Unique
+    private int gnetum$currentLeftHeight;
+    @Unique
+    private int gnetum$currentRightHeight;
 
     @Unique
     private GuiAccessor gnetum$getGuiAccessor() {
@@ -65,6 +73,10 @@ public class ForgeGuiMixin {
         gnetum$getGuiAccessor().setScreenWidth(this.minecraft.getWindow().getGuiScaledWidth());
         gnetum$getGuiAccessor().setScreenHeight(this.minecraft.getWindow().getGuiScaledHeight());
 
+        if (Gnetum.passManager.current == 1) {
+            gnetum$currentLeftHeight = 39;
+            gnetum$currentRightHeight = 39;
+        }
         rightHeight = 39;
         leftHeight = 39;
 
@@ -83,6 +95,10 @@ public class ForgeGuiMixin {
 
             Gnetum.renderingCanceled = gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE));
 
+            if (Gnetum.passManager.current != 1) {
+                leftHeight = gnetum$currentLeftHeight;
+                rightHeight = gnetum$currentRightHeight;
+            }
             font = minecraft.font;
 
             gnetum$getGuiAccessor().getRandom().setSeed(gnetum$getGuiAccessor().getTickCount() * 312871L);
@@ -93,11 +109,26 @@ public class ForgeGuiMixin {
 
             gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
 
+            gnetum$currentLeftHeight = leftHeight;
+            gnetum$currentRightHeight = rightHeight;
+
             Gnetum.rendering = false;
             Gnetum.currentElement = null;
         }
         Gnetum.passManager.end();
+
+        if (Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
+            leftHeight = gnetum$lastLeftHeight;
+            rightHeight = gnetum$lastRightHeight;
+        }
+
         Gnetum.passManager.nextPass();
+
+        if (Gnetum.passManager.current == Gnetum.config.numberOfPasses) {
+            gnetum$lastLeftHeight = leftHeight;
+            gnetum$lastRightHeight = rightHeight;
+        }
+
         FramebufferManager.getInstance().unbind();
 
         FramebufferManager.getInstance().blit();
