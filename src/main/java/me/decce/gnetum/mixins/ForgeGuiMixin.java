@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-@Mixin(ForgeGui.class)
+@Mixin(value = ForgeGui.class, priority = 1500)
 public class ForgeGuiMixin {
     @Unique
     private Minecraft minecraft = Minecraft.getInstance();
