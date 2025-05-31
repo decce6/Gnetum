@@ -10,7 +10,7 @@
   "gnetum.config.reset": "Reset Configurations...",
   "gnetum.config.confirmReset": "Are you sure you want to reset all the configurations?\n\nResetting the configurations might help solve some issues. However, this action cannot be undone.",
   "gnetum.config.moddedPre": "Modded Elements (Pre)...",
-  "gnetum.config.vanilla": "Vanilla Elements...",
+  "gnetum.config.vanilla": "Named Elements...",
   "gnetum.config.moddedPost": "Modded Elements (Post)...",
   "gnetum.config.pass": "Pass",
   "gnetum.config.tooltip.auto": "Gnetum will automatically decide whether to cache this element.\n\nCurrent Status: %s",
