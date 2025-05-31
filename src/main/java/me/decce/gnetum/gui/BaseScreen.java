@@ -12,12 +12,16 @@ public class BaseScreen extends Screen {
     protected final Screen parent;
 
     public BaseScreen() {
-        this(Component.literal("Gnetum"));
+        this(Minecraft.getInstance().screen);
     }
 
-    protected BaseScreen(Component p_96550_) {
+    protected BaseScreen(Screen parent) {
+        this(Component.literal("Gnetum"), parent);
+    }
+
+    protected BaseScreen(Component p_96550_, Screen parent) {
         super(p_96550_);
-        parent = Minecraft.getInstance().screen;
+        this.parent = parent;
     }
 
     public void close() { // called when "Done" is pressed
@@ -25,6 +29,7 @@ public class BaseScreen extends Screen {
         Minecraft.getInstance().setScreen(parent);
     }
 
+    //TODO: add confirmation
     public void onClose() { //called when ESC is pressed: drop config changes by reloading from disk
         super.onClose();
         GnetumConfig.reload();

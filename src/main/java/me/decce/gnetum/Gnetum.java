@@ -57,7 +57,7 @@ public final class Gnetum {
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
         //noinspection removal
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen()));
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen(parent)));
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {

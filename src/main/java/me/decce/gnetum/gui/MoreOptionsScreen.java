@@ -2,8 +2,11 @@ package me.decce.gnetum.gui;
 
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
+import me.decce.gnetum.PerformanceAnalyzer;
 import me.decce.gnetum.gui.widgets.IntSlider;
 import me.decce.gnetum.gui.widgets.ToggleButton;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -28,8 +31,10 @@ public class MoreOptionsScreen extends BaseScreen {
         IntSlider sliderMaxFps = new IntSlider(xl, y, w, h, () -> I18n.get("gnetum.config.maxFps") + ": %s fps", 5, GnetumConfig.UNLIMITED_FPS, Gnetum.config.maxFps, 5, true, i -> Gnetum.config.maxFps = i, i -> i == 125, () -> I18n.get("gnetum.config.maxFps") + ": Unlimited");
         sliderMaxFps.setTooltip(Tooltip.create(Component.translatable("gnetum.config.maxFps.tooltip")));
         sliderMaxFps.setTooltipDelay(0);
+        Button btnReset = Button.builder(Component.translatable("gnetum.config.reset"), b -> Minecraft.getInstance().setScreen(new ConfirmationScreen(() -> new ConfigScreen(null, PerformanceAnalyzer.latestAnalysisResult), () -> this, GnetumConfig::reset))).pos(xr, y).size(w, h).build();
         this.addRenderableWidget(btnShowFps);
         this.addRenderableWidget(sliderNumberOfPasses);
         this.addRenderableWidget(sliderMaxFps);
+        this.addRenderableWidget(btnReset);
     }
 }

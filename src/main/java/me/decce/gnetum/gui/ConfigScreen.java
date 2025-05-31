@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.TextAndImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -24,11 +25,20 @@ public class ConfigScreen extends BaseScreen {
     private PerformanceAnalyzer.Result analysis;
 
     public ConfigScreen() {
-        this(null);
+        this((PerformanceAnalyzer.Result)null);
+    }
+
+    public ConfigScreen(Screen parent) {
+        super(parent);
     }
 
     public ConfigScreen(PerformanceAnalyzer.Result analysis) {
         super();
+        this.analysis = analysis;
+    }
+
+    public ConfigScreen(Screen parent, PerformanceAnalyzer.Result analysis) {
+        super(parent);
         this.analysis = analysis;
     }
 

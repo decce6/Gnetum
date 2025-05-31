@@ -110,6 +110,11 @@ public class GnetumConfig {
         Gnetum.config = load();
     }
 
+    public static void reset() {
+        Gnetum.config = createDefault();
+        Gnetum.config.save();
+    }
+
     public void save() {
         this.validate(true);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
