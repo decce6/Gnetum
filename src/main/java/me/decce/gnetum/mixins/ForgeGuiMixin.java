@@ -188,7 +188,10 @@ public class ForgeGuiMixin {
                             }
                         }
                         else {
-                            if (!Gnetum.rendering || listener instanceof EventPriority) { // do not cache listeners that are not ASMEventHandler
+                            // do not cache listeners that are not ASMEventHandler
+                            // Listeners that listen to RenderGuiEvent may trigger this path 2 times each frame (one in uncached, one in cached), and we only actually render them once
+                            // Listeners that listen to RenderGuiOverlayEvent only trigger this path 1 time
+                            if (!Gnetum.rendering || listener instanceof EventPriority || event instanceof RenderGuiOverlayEvent) {
                                 wrapper.invoke(listener, event);
                             }
                         }
