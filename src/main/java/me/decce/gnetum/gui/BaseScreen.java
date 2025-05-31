@@ -29,10 +29,10 @@ public class BaseScreen extends Screen {
         Minecraft.getInstance().setScreen(parent);
     }
 
-    //TODO: add confirmation
-    public void onClose() { //called when ESC is pressed: drop config changes by reloading from disk
+    public void onClose() { // TODO: this is called when ESC is pressed: ideally we should have a dialog asking the user whether to save or discard changes
         super.onClose();
-        GnetumConfig.reload();
+        Gnetum.config.save();
+        //or: GnetumConfig.reload();
     }
 
     @Override

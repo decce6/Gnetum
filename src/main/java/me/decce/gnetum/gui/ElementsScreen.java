@@ -77,7 +77,8 @@ public class ElementsScreen extends BaseScreen {
 
         y = height / 2 + h / + margin + h + margin + h + margin;
         int lineHeight = Minecraft.getInstance().font.lineHeight;
-        String pageString = (this.page + 1) + " / " + pageCount;
+        int currentPage = map.isEmpty() ? 0 : this.page + 1;
+        String pageString = currentPage + " / " + pageCount;
         int stringWidth = Minecraft.getInstance().font.width(pageString);
         var page = new StringWidget(width / 2 - stringWidth / 2, y + lineHeight / 2, stringWidth, lineHeight, Component.literal(pageString), Minecraft.getInstance().font);
         btnPrevPage = Button
