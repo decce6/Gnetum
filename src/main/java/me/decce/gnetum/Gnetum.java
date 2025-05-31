@@ -61,6 +61,9 @@ public final class Gnetum {
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
+        if (PackedVanillaElements.isPacked(vanillaOverlay)) {
+            vanillaOverlay = PackedVanillaElements.getPacked(vanillaOverlay).getKey();
+        }
         if (!config.mapVanillaElements.containsKey(vanillaOverlay)) {
             config.mapVanillaElements.put(vanillaOverlay, new CacheSetting(SuggestedPass.get(vanillaOverlay)));
         }

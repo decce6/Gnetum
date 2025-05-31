@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +64,7 @@ public class GnetumConfig {
             this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
             this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
             this.removeElementsFromUninstalledMods();
+            this.removeObsoleteVanillaElements();
         }
         this.mapModdedElementsPre.forEach((s, c) -> {
             c.pass = clamp(c.pass, 1, this.numberOfPasses);
@@ -87,10 +89,17 @@ public class GnetumConfig {
         });
         toRemove.clear();
         mapVanillaElements.forEach((s, c) -> {
-            String modid = s.substring(0, s.indexOf(':'));
+            int semicolon = s.indexOf(':');
+            if (semicolon == -1) return;
+            String modid = s.substring(0, semicolon);
             if (!ModList.get().isLoaded(modid)) toRemove.add(s);
         });
         toRemove.forEach(s -> mapVanillaElements.remove(s));
+    }
+
+    private void removeObsoleteVanillaElements() {
+        PackedVanillaElements.getMap().forEach((key, value)
+                -> Arrays.stream(value.getOverlays()).forEach(key1 -> mapVanillaElements.remove(key1)));
     }
 
     private static int clamp(int value, int min, int max) { // min & max: inclusive

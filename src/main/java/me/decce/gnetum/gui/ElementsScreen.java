@@ -109,7 +109,10 @@ public class ElementsScreen extends BaseScreen {
 
     private String beautifyString(String string) {
         if (this.vanilla) {
-            String key1 = "gnetum.config.element." + string.replace(':', '.');
+            String key1 = string;
+            if (!string.startsWith("gnetum.packedElement")) {
+                key1 = "gnetum.config.element." + string.replace(':', '.');
+            }
             if (I18n.exists(key1)) {
                 return I18n.get(key1);
             }

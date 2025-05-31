@@ -65,10 +65,9 @@ public class ForgeGuiMixin {
         gnetum$getGuiAccessor().setScreenWidth(this.minecraft.getWindow().getGuiScaledWidth());
         gnetum$getGuiAccessor().setScreenHeight(this.minecraft.getWindow().getGuiScaledHeight());
 
-        if (Gnetum.passManager.current == 1) { // TODO: if health is rendered after armor it will be on top of the armor
-            rightHeight = 39;
-            leftHeight = 39;
-        }
+        rightHeight = 39;
+        leftHeight = 39;
+
         font = minecraft.font;
 
         Minecraft.getInstance().getProfiler().push("uncached");
