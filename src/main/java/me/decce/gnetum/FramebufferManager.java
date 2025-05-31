@@ -100,4 +100,8 @@ public class FramebufferManager {
     public void dropCurrentFrame() {
         this.dropCurrentFrame = true;
     }
+
+    public int id() {
+        return backFramebuffer.frameBufferId;
+    }
 }

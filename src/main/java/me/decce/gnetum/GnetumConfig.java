@@ -69,6 +69,10 @@ public class GnetumConfig {
         this.mapModdedElementsPre.forEach((s, c) -> {
             c.pass = clamp(c.pass, 1, this.numberOfPasses);
             c.enabled.defaultValue = switch (s) {
+                // this makes sure that the in-game waypoints from xaero's minimap are not cached by default, as those
+                // do not belong to the HUD. If anyone does want them to be cached they can do so by changing the
+                // setting from AUTO to ON.
+                // This does not affect the minimap caching, only the in-game waypoints.
                 case "xaerominimap" -> false;
                 default -> true;
             };

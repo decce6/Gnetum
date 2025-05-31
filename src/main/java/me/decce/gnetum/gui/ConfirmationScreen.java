@@ -32,8 +32,12 @@ public class ConfirmationScreen extends BaseScreen {
         int m = 20;
 
         String txt = I18n.get("gnetum.config.confirmReset");
-        int stringWidth = font.width(txt);
-        MultiLineTextWidget stringWidget = new MultiLineTextWidget(width / 2, height / 2 - font.lineHeight * 2, Component.literal(txt), font);
+        int stringWidth = 0;
+        for (String line : txt.split("\n")) {
+            stringWidth= Math.max(stringWidth, font.width(line));
+        }
+        stringWidth = Math.min(stringWidth, width - 20);
+        MultiLineTextWidget stringWidget = new MultiLineTextWidget(width / 2 - stringWidth / 2, height / 2 - font.lineHeight * 4, Component.literal(txt), font);
         Button btnYes = Button.builder(Component.translatable("gui.yes"), b -> onYes()).pos(width / 2 - w - m, height / 2 + 90).size(w, h).build();
         Button btnNo = Button.builder(Component.translatable("gui.no"), b -> onNo()).pos(width / 2 + m, height / 2 + 90).size(w, h).build();
 
