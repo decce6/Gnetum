@@ -23,7 +23,7 @@ public class GameRendererMixin {
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
     private void gnetum$preRenderItemInHand(PoseStack p_109121_, Camera p_109122_, float p_109123_, CallbackInfo ci) {
-        if (Gnetum.passManager.cachingDisabled(Gnetum.HAND_ELEMENT)) return;
+        if (!Gnetum.config.enabled.get() || Gnetum.passManager.cachingDisabled(Gnetum.HAND_ELEMENT)) return;
         if (Gnetum.passManager.shouldRender(Gnetum.HAND_ELEMENT)) {
             gnetum$previouslyBoundFbo = FramebufferTracker.getCurrentlyBoundFbo();
             Gnetum.passManager.begin();
