@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.1.0
+
+This release brings massive improvements to the compatibility department.
+
+### Highlights
+
+- Fixed compatibility with a lot of mods, including but not limited to [Cobblemon](https://www.curseforge.com/minecraft/mc-mods/cobblemon), [Overflowing Bars](https://www.curseforge.com/minecraft/mc-mods/overflowing-bars), and [Quark](https://www.curseforge.com/minecraft/mc-mods/quark)
+- Implemented the mechanism to automatically detect incompatible blending functions and disable caching for the corresponding element (can be force-enabled by changing the setting from ```AUTO``` to ```ON```)
+
+### Other Improvements
+
+- The pumpkin head overlay is now cached to improved performance
+- Improved handling of some vanilla elements
+- The category "Vanilla Elements" was renamed to "Named Elements" to avoid confusion
+- Fixed the issue where the hand sometimes disappears with hand caching enabled
+- Raised the default value of max HUD FPS to 60. If you prefer better performance over smoother HUD animations you can manually set this lower in the config
+- Added a button to reset configurations to default
+
 ## 2.0.1
 
 - Fixed some modded elements being rendered twice (which resulted in Jade looking like it lost transparency)
