@@ -26,8 +26,8 @@
   "gnetum.config.analysis.failedDuration": "Could not load pass duration data. Please try again later.",
   "gnetum.config.analysis.detailDuration": "[Rendering times]",
 
-  "gnetum.config.element.minecraft.vignette": "Vignette",
   "gnetum.config.element.minecraft.spyglass": "Spyglass",
+  "gnetum.config.element.minecraft.helmet": "Helmet",
   "gnetum.config.element.minecraft.frostbite": "Frostbite",
   "gnetum.config.element.minecraft.portal": "Portal",
   "gnetum.config.element.minecraft.hotbar": "Hotbar",

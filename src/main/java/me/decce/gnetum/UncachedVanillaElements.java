@@ -9,9 +9,8 @@ public class UncachedVanillaElements {
     public Set<String> set;
 
     public UncachedVanillaElements() {
-        set = new HashSet<>(3);
+        set = new HashSet<>(2);
         set.add(VanillaGuiOverlay.CROSSHAIR.id().toString());
         set.add(VanillaGuiOverlay.VIGNETTE.id().toString());
-        set.add(VanillaGuiOverlay.HELMET.id().toString());
     }
 }
