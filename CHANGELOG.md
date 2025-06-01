@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.5
+
+- Fixed warnings in the log (Thanks [WaitingIdly](https://github.com/WaitingIdly))
+- Fixed VoxelMap compatibility
+
 ## 1.2.4
 
 - Fixed Custom Main Menu rendering
