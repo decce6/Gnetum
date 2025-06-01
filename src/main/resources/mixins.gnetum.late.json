@@ -8,6 +8,7 @@
   "mixins": [],
   "server": [],
   "client": [
-    "compat.betterhud.HudElementMixin"
+    "compat.betterhud.HudElementMixin",
+    "compat.voxelmap.MapMixin"
   ]
 }
