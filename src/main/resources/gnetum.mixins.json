@@ -9,7 +9,8 @@
     "GameRendererMixin",
     "GlStateManagerMixin",
     "GuiAccessor",
-    "MinecraftAccessor"
+    "MinecraftAccessor",
+    "MinecraftMixin"
   ],
   "mixins": [],
   "injectors": {

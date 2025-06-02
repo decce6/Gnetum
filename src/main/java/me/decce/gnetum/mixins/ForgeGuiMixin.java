@@ -9,6 +9,7 @@ import me.decce.gnetum.EventBusHelper;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.ElementType;
+import me.decce.gnetum.HudDeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -85,6 +86,7 @@ public class ForgeGuiMixin {
         Minecraft.getInstance().getProfiler().pop();
 
         Gnetum.passManager.begin();
+        HudDeltaTracker.update();
         if (Gnetum.passManager.current > 0) {
             FramebufferManager.getInstance().ensureSize();
             FramebufferManager.getInstance().bind();
