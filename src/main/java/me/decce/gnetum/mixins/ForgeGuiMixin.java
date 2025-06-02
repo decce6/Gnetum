@@ -1,5 +1,8 @@
 package me.decce.gnetum.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.ASMEventHandlerHelper;
 import me.decce.gnetum.EventBusHelper;
@@ -20,6 +23,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.ASMEventHandler;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.IEventBusInvokeDispatcher;
 import net.minecraftforge.eventbus.api.IEventListener;
 import org.apache.logging.log4j.Logger;
@@ -28,14 +32,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-@Mixin(value = ForgeGui.class, priority = 1500)
+@Mixin(ForgeGui.class)
 public class ForgeGuiMixin {
     @Unique
     private Minecraft minecraft = Minecraft.getInstance();
@@ -61,24 +63,19 @@ public class ForgeGuiMixin {
         return (GuiAccessor)(Gui)(Object)this;
     }
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void gnetum$render(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci)
+    // We use WrapOperation in favor of Inject(at HEAD) because some mods inject into the tail of ForgeGui.render to
+    // render their HUD. If the whole method is canceled their HUD will not render.
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/eventbus/api/IEventBus;post(Lnet/minecraftforge/eventbus/api/Event;)Z", ordinal = 0))
+    public boolean gnetum$render(IEventBus instance, Event event, Operation<Boolean> original, @Local(argsOnly = true) GuiGraphics guiGraphics, @Local(argsOnly = true) float partialTick)
     {
         if (!Gnetum.config.isEnabled()) {
-            return;
+            return original.call(instance, event);
         }
-
-        ci.cancel();
-
-        gnetum$getGuiAccessor().setScreenWidth(this.minecraft.getWindow().getGuiScaledWidth());
-        gnetum$getGuiAccessor().setScreenHeight(this.minecraft.getWindow().getGuiScaledHeight());
 
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;
             gnetum$currentRightHeight = 39;
         }
-        rightHeight = 39;
-        leftHeight = 39;
 
         font = minecraft.font;
 
@@ -136,6 +133,8 @@ public class ForgeGuiMixin {
         Minecraft.getInstance().getProfiler().push("uncached");
         gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
         Minecraft.getInstance().getProfiler().pop();
+
+        return true;
     }
 
     @Unique
