@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1
+
+- Improved compatibility with mods that directly inject into ```ForgeGui.render```
+- Fixed delta frame time for HUDs
+
 ## 2.1.0
 
 This release brings massive improvements to the compatibility department.
