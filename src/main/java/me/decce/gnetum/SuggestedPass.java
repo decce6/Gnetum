@@ -1,13 +1,17 @@
 package me.decce.gnetum;
 
-import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
+import me.decce.gnetum.mixins.GuiAccessor;
+import me.decce.gnetum.mixins.GuiLayerManagerAccessor;
+import net.minecraft.client.Minecraft;
 
 public class SuggestedPass {
     public static int get(String name) {
         int pass = switch (name) {
-            case "minecraft:spyglass", "minecraft:helmet", "minecraft:frostbite", "minecraft:portal" -> 1;
-            case "minecraft:hotbar", "minecraft:boss_event_progress" -> 2;
-            case "gnetum.packedElement.left", "gnetum.packedElement.right", "minecraft:jump_bar", "minecraft:experience_bar" -> 3;
+            // note: camera_overlays, crosshair, etc. are uncached but are still included in here to make sure mods that insert layers beside them have a correct default pass
+            case "minecraft:camera_overlays", "minecraft:crosshair", "minecraft:hotbar" -> 1;
+            case "minecraft:jump_meter", "minecraft:experience_bar", "gnetum.packedElement.left", "gnetum.packedElement.right" -> 2;
+            case "minecraft:selected_item_name", "minecraft:spectator_tooltip", "minecraft:experience_level", "minecraft:effects", "minecraft:boss_overlay", "minecraft:sleep_overlay", "minecraft:demo_overlay", "minecraft:debug_overlay", "minecraft:scoreboard_sidebar", "minecraft:overlay_message", "minecraft:title" -> 3;
+            case "minecraft:chat", "minecraft:tab_list", "minecraft:subtitle_overlay", "minecraft:saving_indicator" -> 4;
             default -> {
                 if (name.startsWith("minecraft:")) {
                     if (PackedVanillaElements.isPacked(name)) {
@@ -15,11 +19,11 @@ public class SuggestedPass {
                     }
                     yield 4;
                 }
-                var overlays = GuiOverlayManager.getOverlays();
-                for (int i = 0; i < overlays.size(); i++) {
-                    if (overlays.get(i).id().toString().equals(name)) {
+                var layers = ((GuiLayerManagerAccessor)((GuiAccessor)Minecraft.getInstance().gui).getLayerManager()).getLayers();
+                for (int i = 0; i < layers.size(); i++) {
+                    if (layers.get(i).name().toString().equals(name)) {
                         if (i == 0) yield 1;
-                        yield get(overlays.get(i - 1).id().toString());
+                        yield get(layers.get(i - 1).name().toString());
                     }
                 }
                 yield 4;

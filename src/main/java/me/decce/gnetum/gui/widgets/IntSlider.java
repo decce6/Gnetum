@@ -1,13 +1,13 @@
 package me.decce.gnetum.gui.widgets;
 
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class IntSlider extends ForgeSlider {
+public class IntSlider extends ExtendedSlider {
     private Supplier<String> text;
     private Supplier<String> specialText;
     private Consumer<Integer> setter;

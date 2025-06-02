@@ -3,22 +3,23 @@ package me.decce.gnetum.gui;
 import me.decce.gnetum.CacheSetting;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.PerformanceAnalyzer;
+import me.decce.gnetum.gui.widgets.IconButton;
 import me.decce.gnetum.gui.widgets.ToggleButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.TextAndImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ConfigScreen extends BaseScreen {
     private Button btnMoreOptions;
-    private Button btnAnalysis;
+    private IconButton btnAnalysis;
     private Button btnModdedPre;
     private Button btnVanilla;
     private Button btnModdedPost;
@@ -58,15 +59,8 @@ public class ConfigScreen extends BaseScreen {
                 .size(w1, 20)
                 .build();
         if (analysis != null) {
-            btnAnalysis = TextAndImageButton
-                    .builder(Component.empty(), analysis.getIcon().icon(), b -> { Minecraft.getInstance().setScreen(new AnalysisScreen(analysis)); })
-                    .textureSize(16, 16)
-                    .usedTextureSize(16, 16)
-                    .offset(0, 2)
-                    .build();
-            btnAnalysis.setPosition(width / 2 + 10 + 120 - 20, height / 2 - 90);
-            btnAnalysis.setWidth(20);
-            btnAnalysis.setHeight(20);
+            btnAnalysis = new IconButton(width / 2 + 10 + 120 - 20, height / 2 - 90, 20, 20, Component.empty(), b -> { Minecraft.getInstance().setScreen(new AnalysisScreen(analysis)); });
+            btnAnalysis.setIcon(analysis.getIcon().icon(), 2, 2, 16, 16);
             btnAnalysis.active = !analysis.isOutdated();
 
             Component tooltip = Component.translatable(
@@ -74,7 +68,7 @@ public class ConfigScreen extends BaseScreen {
                             (analysis.getMessages().isEmpty() ? "gnetum.config.analysis.good" : "gnetum.config.analysis.suboptimal")
             );
             btnAnalysis.setTooltip(Tooltip.create(tooltip));
-            btnAnalysis.setTooltipDelay(0);
+            btnAnalysis.setTooltipDelay(Duration.ZERO);
 
             this.addRenderableWidget(btnAnalysis);
         }
@@ -122,17 +116,17 @@ public class ConfigScreen extends BaseScreen {
     @Override
     public void tick() {
         super.tick();
-        btnMoreOptions.active = Gnetum.config.enabled.get();
+        btnMoreOptions.active = Gnetum.config.isEnabled();
         if (btnAnalysis != null) {
-            btnAnalysis.active = Gnetum.config.enabled.get() && !analysis.isOutdated();
-            btnAnalysis.setTooltipDelay(btnAnalysis.active ? 0 : Integer.MAX_VALUE);
-            if (Gnetum.config.enabled.get() && analysis.isOutdated()) {
-                btnAnalysis.setTooltipDelay(0); // tells the user that the analysis is outdated
+            btnAnalysis.active = Gnetum.config.isEnabled() && !analysis.isOutdated();
+            btnAnalysis.setTooltipDelay(btnAnalysis.active ? Duration.ZERO : Duration.ofMillis(Long.MAX_VALUE));
+            if (Gnetum.config.isEnabled() && analysis.isOutdated()) {
+                btnAnalysis.setTooltipDelay(Duration.ZERO); // tells the user that the analysis is outdated
             }
         }
-        btnVanilla.active = Gnetum.config.enabled.get();
-        btnModdedPre.active = Gnetum.config.enabled.get();
-        btnModdedPost.active = Gnetum.config.enabled.get();
+        btnVanilla.active = Gnetum.config.isEnabled();
+        btnModdedPre.active = Gnetum.config.isEnabled();
+        btnModdedPost.active = Gnetum.config.isEnabled();
 
     }
 

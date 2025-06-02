@@ -1,20 +1,31 @@
 package me.decce.gnetum.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
+import me.decce.gnetum.ElementType;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
+import me.decce.gnetum.GuiHelper;
+import me.decce.gnetum.HudDeltaTracker;
+import me.decce.gnetum.compat.immediatelyfast.ImmediatelyFastCompat;
 import me.decce.gnetum.gl.FramebufferTracker;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GameRenderer.class)
+@Mixin(value = GameRenderer.class, priority = 1500) // priority needs to be higher than ImmediatelyFast
 public class GameRendererMixin {
     @Unique
     private int gnetum$previouslyBoundFbo;
@@ -22,8 +33,8 @@ public class GameRendererMixin {
     private boolean gnetum$renderingCachedHand;
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
-    private void gnetum$preRenderItemInHand(PoseStack p_109121_, Camera p_109122_, float p_109123_, CallbackInfo ci) {
-        if (!Gnetum.config.enabled.get() || Gnetum.passManager.cachingDisabled(Gnetum.HAND_ELEMENT)) return;
+    private void gnetum$preRenderItemInHand(Camera camera, float partialTick, Matrix4f projectionMatrix, CallbackInfo ci) {
+        if (!Gnetum.config.isEnabled() || Gnetum.passManager.cachingDisabled(Gnetum.HAND_ELEMENT)) return;
         if (Gnetum.passManager.shouldRender(Gnetum.HAND_ELEMENT)) {
             gnetum$previouslyBoundFbo = FramebufferTracker.getCurrentlyBoundFbo();
             Gnetum.passManager.begin();
@@ -36,11 +47,53 @@ public class GameRendererMixin {
     }
 
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void gnetum$postRenderItemInHand(PoseStack p_109121_, Camera p_109122_, float p_109123_, CallbackInfo ci) {
+    private void gnetum$postRenderItemInHand(Camera camera, float partialTick, Matrix4f projectionMatrix, CallbackInfo ci) {
         if (this.gnetum$renderingCachedHand) {
             this.gnetum$renderingCachedHand = false;
             GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, gnetum$previouslyBoundFbo);
             Gnetum.passManager.end();
+        }
+    }
+
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
+        if (Gnetum.config.isEnabled()) {
+            Minecraft.getInstance().getProfiler().push("uncached");
+            ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+                GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
+                GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+            });
+            Minecraft.getInstance().getProfiler().pop();
+
+            Gnetum.passManager.begin();
+            if (deltaTracker instanceof DeltaTracker.Timer timer) {
+                HudDeltaTracker.update(timer);
+            }
+            if (Gnetum.passManager.current > 0) {
+                FramebufferManager.getInstance().ensureSize();
+                FramebufferManager.getInstance().bind();
+                Gnetum.rendering = true;
+            }
+        }
+
+        original.call(instance, guiGraphics, deltaTracker);
+
+        if (Gnetum.config.isEnabled()) {
+            Gnetum.rendering = false;
+            Gnetum.currentElement = null;
+            Gnetum.passManager.end();
+
+            Gnetum.passManager.nextPass();
+
+            FramebufferManager.getInstance().unbind();
+
+            FramebufferManager.getInstance().blit();
+
+            Minecraft.getInstance().getProfiler().push("uncached");
+            ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+                GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+            });
+            Minecraft.getInstance().getProfiler().pop();
         }
     }
 }

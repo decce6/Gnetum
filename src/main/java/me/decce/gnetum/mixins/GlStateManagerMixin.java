@@ -43,7 +43,7 @@ public class GlStateManagerMixin {
             //  already filled with pixels then the DST_COLOR factors WILL work properly, and there is no need to
             //  disable caching.
             //  I'll just special-case Xaero's Minimap until I come up with a better solution.
-            if (Gnetum.currentElementType == ElementType.VANILLA && !"xaerominimap:xaero".equals(Gnetum.currentElement)) {
+            if (Gnetum.currentElementType == ElementType.VANILLA && !"xaerohud:hud".equals(Gnetum.currentElement)) {
                 Gnetum.disableCachingForCurrentElement();
             }
         }

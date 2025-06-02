@@ -5,23 +5,23 @@ import me.decce.gnetum.gui.ConfigScreen;
 import me.decce.gnetum.util.AnyBooleanValue;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
-@Mod(value = Gnetum.MOD_ID)
+@Mod(value = Gnetum.MOD_ID, dist = Dist.CLIENT)
 public final class Gnetum {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "gnetum";
@@ -45,19 +45,17 @@ public final class Gnetum {
             GLFW.GLFW_KEY_END,
             "key.categories.misc"));
 
-    public Gnetum() {
+    public Gnetum(FMLModContainer container, IEventBus modBus, Dist dist) {
         Gnetum.passManager = new PassManager();
         Gnetum.uncachedVanillaElements = new UncachedVanillaElements();
         GnetumConfig.reload();
 
-        //noinspection removal // we want the mod to be loadable on an older version of forge
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Gnetum::registerBindings);
-        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
-        MinecraftForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
-        MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
+        modBus.addListener(Gnetum::registerBindings);
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
+        NeoForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
+        NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
-        //noinspection removal
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen(parent)));
+        container.registerExtensionPoint(IConfigScreenFactory.class, new GnetumConfigScreenFactory());
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
@@ -90,23 +88,20 @@ public final class Gnetum {
         }
     }
 
-    @SubscribeEvent
     public static void registerBindings(RegisterKeyMappingsEvent event) {
         event.register(CONFIG_MAPPING.get());
     }
 
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            while (CONFIG_MAPPING.get().consumeClick()) {
-                if (!(Minecraft.getInstance().screen instanceof ConfigScreen)) {
-                    Minecraft.getInstance().setScreen(new ConfigScreen(PerformanceAnalyzer.analyze()));
-                }
+    public void onClientTick(ClientTickEvent.Post event) {
+        while (CONFIG_MAPPING.get().consumeClick()) {
+            if (!(Minecraft.getInstance().screen instanceof ConfigScreen)) {
+                Minecraft.getInstance().setScreen(new ConfigScreen(PerformanceAnalyzer.analyze()));
             }
         }
     }
 
     public void onCustomizeF3Text(CustomizeGuiOverlayEvent.DebugText event) {
-        if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().options.renderDebug) {
+        if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().getDebugOverlay().showDebugScreen()) {
             var left = event.getLeft();
             if (left.size() > 2) {
                 event.getLeft().add(2, String.format("HUD: %d fps (nr=%d, cap=%s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps));

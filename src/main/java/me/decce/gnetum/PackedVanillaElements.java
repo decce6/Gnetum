@@ -1,6 +1,6 @@
 package me.decce.gnetum;
 
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +9,8 @@ public class PackedVanillaElements {
     private static final Map<String, Pack> map;
 
     // The position of these elements depend on each other and cannot be allowed to be configured individually
-    private static final Pack leftElements = Pack.of("gnetum.packedElement.left", VanillaGuiOverlay.ARMOR_LEVEL, VanillaGuiOverlay.PLAYER_HEALTH);
-    private static final Pack rightElements = Pack.of("gnetum.packedElement.right", VanillaGuiOverlay.AIR_LEVEL, VanillaGuiOverlay.FOOD_LEVEL, VanillaGuiOverlay.MOUNT_HEALTH);
+    private static final Pack leftElements = Pack.of("gnetum.packedElement.left", VanillaGuiLayers.ARMOR_LEVEL.toString(), VanillaGuiLayers.PLAYER_HEALTH.toString(), "appleskin:health_offset", "appleskin:health_restored");
+    private static final Pack rightElements = Pack.of("gnetum.packedElement.right", VanillaGuiLayers.AIR_LEVEL.toString(), VanillaGuiLayers.FOOD_LEVEL.toString(), VanillaGuiLayers.VEHICLE_HEALTH.toString(), "appleskin:exhaustion_level", "appleskin:food_offset", "appleskin:hunger_restored", "appleskin:saturation_level");
 
     static {
         map = new HashMap<>(leftElements.getOverlays().length + rightElements.getOverlays().length);
@@ -38,13 +38,10 @@ public class PackedVanillaElements {
         private String[] overlays;
         private String key;
 
-        public static Pack of(String key, VanillaGuiOverlay... overlays) {
+        public static Pack of(String key, String... overlays) {
             Pack pack = new Pack();
             pack.key = key;
-            pack.overlays = new String[overlays.length];
-            for (int i = 0; i < overlays.length; i++) {
-                pack.overlays[i] = overlays[i].id().toString();
-            }
+            pack.overlays = overlays;
             return pack;
         }
 

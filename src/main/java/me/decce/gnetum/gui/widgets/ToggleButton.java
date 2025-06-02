@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
 public class ToggleButton extends Button {
@@ -48,7 +49,7 @@ public class ToggleButton extends Button {
         String str = tooltip.get();
         if (str != null && !str.isEmpty()) {
             super.setTooltip(Tooltip.create(Component.literal(str)));
-            super.setTooltipDelay(0);
+            super.setTooltipDelay(Duration.ZERO);
         }
         else super.setTooltip(null);
     }

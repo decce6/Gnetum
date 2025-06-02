@@ -62,6 +62,7 @@ public class PassManager {
             if (index == SAVED_DURATIONS) index = 0;
 
             if (current++ == Gnetum.config.numberOfPasses) {
+                HudDeltaTracker.reset();
                 if (Gnetum.config.maxFps != GnetumConfig.UNLIMITED_FPS && nanos > Gnetum.lastSwapNanos && nanos - Gnetum.lastSwapNanos < NANOS_IN_A_SECOND / Gnetum.config.maxFps) {
                     current = 0;
                 }
@@ -90,7 +91,7 @@ public class PassManager {
     }
 
     public boolean shouldRender(String vanillaOverlay) {
-        if (Gnetum.renderingCanceled) {
+        if (Gnetum.renderingCanceled) { // TODO: respect NeoForge receiveCancelled field
             return false;
         }
         if (Gnetum.uncachedVanillaElements.set.contains(vanillaOverlay)) {

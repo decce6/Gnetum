@@ -3,10 +3,7 @@ package me.decce.gnetum;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.ForgeHooksClient;
-import org.joml.Matrix4f;
 
 public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -49,12 +46,12 @@ public class FramebufferManager {
         this.width = mc.getWindow().getWidth();
         this.height = mc.getWindow().getHeight();
         this.guiScale = mc.getWindow().getGuiScale();
-        if (backFramebuffer != null && backFramebuffer.frameBufferId > 0) backFramebuffer.destroyBuffers();
+        if (backFramebuffer != null) backFramebuffer.destroyBuffers();
         backFramebuffer = new TextureTarget(width, height, true, false);
         backFramebuffer.setClearColor(0, 0, 0, 0);
         backFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(backFramebuffer);
-        if (frontFramebuffer != null && frontFramebuffer.frameBufferId > 0) frontFramebuffer.destroyBuffers();
+        if (frontFramebuffer != null) frontFramebuffer.destroyBuffers();
         frontFramebuffer = new TextureTarget(width, height, true, false);
         frontFramebuffer.setClearColor(0, 0, 0, 0);
         frontFramebuffer.setFilterMode(GlConst.GL_NEAREST);
@@ -73,13 +70,10 @@ public class FramebufferManager {
         mc.getProfiler().push("blit");
 
         RenderSystem.enableBlend();
+        RenderSystem.disableDepthTest();
         RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 
         frontFramebuffer.blitToScreen(width, height, false);
-
-        var window = mc.getWindow();
-        Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ForgeHooksClient.getGuiFarPlane());
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
 
         RenderSystem.defaultBlendFunc();
 

@@ -1,19 +1,21 @@
 package me.decce.gnetum;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.EventBus;
-import net.minecraftforge.eventbus.api.IEventExceptionHandler;
+import net.neoforged.bus.EventBus;
+import net.neoforged.bus.ListenerList;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventExceptionHandler;
+import net.neoforged.neoforge.common.NeoForge;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 
 public class EventBusHelper {
     private static final VarHandle shutdown;
-    private static final VarHandle trackPhases;
-    private static final VarHandle checkTypesOnDispatch;
-    private static final VarHandle baseType;
-    private static final VarHandle busID;
     private static final VarHandle exceptionHandler;
+    private static final MethodHandle doPostChecks;
+    private static final MethodHandle getListenerList;
 
     static {
         Class<EventBus> clazz = EventBus.class;
@@ -21,37 +23,37 @@ public class EventBusHelper {
         try {
             MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
             shutdown = privateLookup.findVarHandle(clazz, "shutdown", boolean.class);
-            trackPhases = privateLookup.findVarHandle(clazz, "trackPhases", boolean.class);
-            checkTypesOnDispatch = privateLookup.findVarHandle(clazz, "checkTypesOnDispatch", boolean.class);
-            baseType = privateLookup.findVarHandle(clazz, "baseType", Class.class);
-            busID = privateLookup.findVarHandle(clazz, "busID", int.class);
             exceptionHandler = privateLookup.findVarHandle(clazz, "exceptionHandler", IEventExceptionHandler.class);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            MethodType doPostChecksType = MethodType.methodType(void.class, Event.class);
+            doPostChecks = privateLookup.findVirtual(clazz, "doPostChecks", doPostChecksType);
+            MethodType getListenerListType = MethodType.methodType(ListenerList.class, Class.class);
+            getListenerList = privateLookup.findVirtual(clazz, "getListenerList", getListenerListType);
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static boolean isShutdown() {
-        return (boolean)shutdown.get(MinecraftForge.EVENT_BUS);
-    }
-
-    public static boolean isTrackPhases() {
-        return (boolean)trackPhases.get(MinecraftForge.EVENT_BUS);
-    }
-
-    public static boolean isCheckTypesOnDispatch() {
-        return (boolean)checkTypesOnDispatch.get(MinecraftForge.EVENT_BUS);
-    }
-
-    public static Class<?> getBaseType() {
-        return (Class<?>)baseType.get(MinecraftForge.EVENT_BUS);
-    }
-
-    public static int getBusID() {
-        return (int)busID.get(MinecraftForge.EVENT_BUS);
+        return (boolean)shutdown.get(NeoForge.EVENT_BUS);
     }
 
     public static IEventExceptionHandler getExceptionHandler() {
-        return (IEventExceptionHandler)exceptionHandler.get(MinecraftForge.EVENT_BUS);
+        return (IEventExceptionHandler)exceptionHandler.get(NeoForge.EVENT_BUS);
+    }
+
+    public static void doPostChecks(Event event) {
+        try {
+            doPostChecks.invokeExact((EventBus)NeoForge.EVENT_BUS, event);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ListenerList getListenerList(Class<?> eventType) {
+        try {
+            return (ListenerList) getListenerList.invokeExact((EventBus)NeoForge.EVENT_BUS, eventType);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }
