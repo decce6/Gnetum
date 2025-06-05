@@ -58,27 +58,34 @@ public class GameRendererMixin {
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
         if (Gnetum.config.isEnabled()) {
-            Minecraft.getInstance().getProfiler().push("uncached");
-            ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
-                GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
-                GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay));
-            });
-            Minecraft.getInstance().getProfiler().pop();
+            FramebufferManager.getInstance().ensureSize();
+
+            boolean complete = FramebufferManager.getInstance().isComplete();
+
+            if (complete) {
+                Minecraft.getInstance().getProfiler().push("uncached");
+                ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+                    GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
+                    GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+                });
+                Minecraft.getInstance().getProfiler().pop();
+            }
 
             Gnetum.passManager.begin();
             if (deltaTracker instanceof DeltaTracker.Timer timer) {
                 HudDeltaTracker.update(timer);
             }
             if (Gnetum.passManager.current > 0) {
-                FramebufferManager.getInstance().ensureSize();
                 FramebufferManager.getInstance().bind();
-                Gnetum.rendering = true;
             }
+            Gnetum.rendering = true;
         }
 
         original.call(instance, guiGraphics, deltaTracker);
 
         if (Gnetum.config.isEnabled()) {
+            boolean complete = FramebufferManager.getInstance().isComplete();
+
             Gnetum.rendering = false;
             Gnetum.currentElement = null;
             Gnetum.passManager.end();
@@ -87,13 +94,18 @@ public class GameRendererMixin {
 
             FramebufferManager.getInstance().unbind();
 
-            FramebufferManager.getInstance().blit();
+            if (complete) {
+                FramebufferManager.getInstance().blit();
 
-            Minecraft.getInstance().getProfiler().push("uncached");
-            ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
-                GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
-            });
-            Minecraft.getInstance().getProfiler().pop();
+                Minecraft.getInstance().getProfiler().push("uncached");
+                ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+                    GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+                });
+                Minecraft.getInstance().getProfiler().pop();
+            }
+            else {// render the HUD to screen if framebuffer does not contain the HUD
+                original.call(instance, guiGraphics, deltaTracker);
+            }
         }
     }
 }
