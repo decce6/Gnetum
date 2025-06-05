@@ -12,6 +12,7 @@ public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getInstance();
     private static final FramebufferManager instance = new FramebufferManager();
     private boolean dropCurrentFrame;
+    private boolean complete; // whether the frontFramebuffer contains a complete HUD texture
     private int width;
     private int height;
     private double guiScale;
@@ -59,6 +60,8 @@ public class FramebufferManager {
         frontFramebuffer.setClearColor(0, 0, 0, 0);
         frontFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(frontFramebuffer);
+        this.complete = false;
+        Gnetum.passManager.current = 1;
     }
 
     public void bind() {
@@ -91,6 +94,7 @@ public class FramebufferManager {
             TextureTarget temp = backFramebuffer;
             this.backFramebuffer = this.frontFramebuffer;
             this.frontFramebuffer = temp;
+            this.complete = true;
             Gnetum.FPS_COUNTER.tick();
         }
         this.clear();
@@ -103,5 +107,9 @@ public class FramebufferManager {
 
     public int id() {
         return backFramebuffer.frameBufferId;
+    }
+
+    public boolean isComplete() {
+        return this.complete;
     }
 }

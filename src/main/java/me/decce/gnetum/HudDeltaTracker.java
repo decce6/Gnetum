@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 
 public class HudDeltaTracker {
     private static float[] tickDelta;
+
     public static void update() {
         int len = Gnetum.config.numberOfPasses + 1;
         int curr = Gnetum.passManager.current;

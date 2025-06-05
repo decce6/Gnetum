@@ -80,15 +80,27 @@ public class ForgeGuiMixin {
 
         font = minecraft.font;
 
-        Minecraft.getInstance().getProfiler().push("uncached");
-        gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
-        gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
-        Minecraft.getInstance().getProfiler().pop();
+        FramebufferManager.getInstance().ensureSize();
+
+        // If we haven't finished rendering a complete HUD, the original method will be called
+        boolean framebufferComplete = FramebufferManager.getInstance().isComplete();
+
+        if (framebufferComplete) {
+            minecraft.getProfiler().push("uncached");
+            gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
+            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+            minecraft.getProfiler().pop();
+        }
+        else {
+            gnetum$lastLeftHeight = 39;
+            gnetum$lastRightHeight = 39;
+            gnetum$currentLeftHeight = 39;
+            gnetum$currentRightHeight = 39;
+        }
 
         Gnetum.passManager.begin();
         HudDeltaTracker.update();
         if (Gnetum.passManager.current > 0) {
-            FramebufferManager.getInstance().ensureSize();
             FramebufferManager.getInstance().bind();
             Gnetum.rendering = true;
 
@@ -130,11 +142,16 @@ public class ForgeGuiMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        FramebufferManager.getInstance().blit();
+        if (framebufferComplete) {
+            FramebufferManager.getInstance().blit();
 
-        Minecraft.getInstance().getProfiler().push("uncached");
-        gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
-        Minecraft.getInstance().getProfiler().pop();
+            minecraft.getProfiler().push("uncached");
+            gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+            minecraft.getProfiler().pop();
+        }
+        else {
+            return original.call(instance, event);
+        }
 
         return true;
     }

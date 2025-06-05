@@ -116,5 +116,6 @@ public final class Gnetum {
 
     public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         Gnetum.FPS_COUNTER.reset();
+        FramebufferManager.getInstance().reset();
     }
 }
