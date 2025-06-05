@@ -3,7 +3,10 @@ package me.decce.gnetum;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.client.ClientHooks;
+import org.joml.Matrix4f;
 
 public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -77,6 +80,10 @@ public class FramebufferManager {
         RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 
         frontFramebuffer.blitToScreen(width, height, false);
+
+        var window = mc.getWindow();
+        Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ClientHooks.getGuiFarPlane());
+        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
 
         RenderSystem.defaultBlendFunc();
 
