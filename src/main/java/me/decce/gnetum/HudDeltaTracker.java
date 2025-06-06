@@ -28,10 +28,23 @@ public class HudDeltaTracker {
             realtimeDeltaTicks = new float[len];
         }
         for (int i = 0; i < len; i++) {
-            gameTimeDeltaTicks[i] = 0F;
-            gameTimeDeltaPartialTick[i] = 0F;
-            realtimeDeltaTicks[i] = 0F;
+            reset(i);
         }
+    }
+
+    public static void reset(int i) {
+        gameTimeDeltaTicks[i] = 0F;
+        gameTimeDeltaPartialTick[i] = 0F;
+        realtimeDeltaTicks[i] = 0F;
+    }
+
+    public static void step() {
+        int len = Gnetum.config.numberOfPasses + 1;
+        if (gameTimeDeltaTicks == null || gameTimeDeltaTicks.length != len) {
+            reset();
+        }
+        int i = Gnetum.passManager.current;
+        reset(i);
     }
 
     public static float getGameTimeDeltaTicks() {
