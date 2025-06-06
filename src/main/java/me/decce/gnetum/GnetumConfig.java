@@ -93,11 +93,9 @@ public class GnetumConfig {
             mapModdedElementsPost.remove(s);
         });
         toRemove.clear();
-        mapVanillaElements.forEach((s, c) -> {
-            int semicolon = s.indexOf(':');
-            if (semicolon == -1) return;
-            String modid = s.substring(0, semicolon);
-            if (!ModList.get().isLoaded(modid)) toRemove.add(s);
+        var accessor = GuiHelper.getGuiLayerManagerAccessor();
+        mapVanillaElements.forEach((s, c) -> { // TODO: this might need a bit of optimization
+            if (accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) toRemove.add(s);
         });
         toRemove.forEach(s -> mapVanillaElements.remove(s));
     }
