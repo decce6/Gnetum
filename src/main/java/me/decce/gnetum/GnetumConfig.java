@@ -95,6 +95,7 @@ public class GnetumConfig {
         toRemove.clear();
         var accessor = GuiHelper.getGuiLayerManagerAccessor();
         mapVanillaElements.forEach((s, c) -> { // TODO: this might need a bit of optimization
+            if (Gnetum.HAND_ELEMENT.equals(s)) return;
             if (accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) toRemove.add(s);
         });
         toRemove.forEach(s -> mapVanillaElements.remove(s));
