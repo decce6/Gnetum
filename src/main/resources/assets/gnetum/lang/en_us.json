@@ -45,7 +45,7 @@
   "gnetum.config.element.minecraft.scoreboard_sidebar": "Scoreboard",
   "gnetum.config.element.minecraft.overlay_message": "Overlay Message",
   "gnetum.config.element.minecraft.title": "Title Text",
-  "gnetum.config.element.minecraft.chat": "Chat Panel",
+  "gnetum.config.element.minecraft.chat": "Chat",
   "gnetum.config.element.minecraft.tab_list": "Player List",
   "gnetum.config.element.minecraft.subtitle_overlay": "Subtitles",
   "gnetum.config.element.minecraft.saving_indicator": "Saving Indicator",

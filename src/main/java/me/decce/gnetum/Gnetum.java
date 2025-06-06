@@ -46,16 +46,20 @@ public final class Gnetum {
             "key.categories.misc"));
 
     public Gnetum(FMLModContainer container, IEventBus modBus, Dist dist) {
-        Gnetum.passManager = new PassManager();
-        Gnetum.uncachedVanillaElements = new UncachedVanillaElements();
-        GnetumConfig.reload();
-
         modBus.addListener(Gnetum::registerBindings);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
         NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, new GnetumConfigScreenFactory());
+    }
+
+    public static void ensureInitialized() {
+        if (Gnetum.passManager == null) {
+            Gnetum.passManager = new PassManager();
+            Gnetum.uncachedVanillaElements = new UncachedVanillaElements();
+        }
+        GnetumConfig.reload(); // We intentionally avoid loading config in the constructor, because at that point GUI layers are not registered yet
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
@@ -110,6 +114,7 @@ public final class Gnetum {
     }
 
     public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        Gnetum.ensureInitialized();
         Gnetum.FPS_COUNTER.reset();
         FramebufferManager.getInstance().reset();
     }

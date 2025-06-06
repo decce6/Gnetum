@@ -8,6 +8,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 public class GnetumConfigScreenFactory implements IConfigScreenFactory {
     @Override
     public Screen createScreen(ModContainer modContainer, Screen parent) {
+        Gnetum.ensureInitialized();
         return new ConfigScreen(parent);
     }
 }
