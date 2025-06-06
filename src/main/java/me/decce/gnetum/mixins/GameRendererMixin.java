@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.ElementType;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
@@ -90,6 +91,8 @@ public class GameRendererMixin {
         Gnetum.passManager.end();
 
         Gnetum.passManager.nextPass();
+
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
 
         FramebufferManager.getInstance().unbind();
 
