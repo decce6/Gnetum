@@ -9,8 +9,8 @@ public class PackedVanillaElements {
     private static final Map<String, Pack> map;
 
     // The position of these elements depend on each other and cannot be allowed to be configured individually
-    private static final Pack leftElements = Pack.of("gnetum.packedElement.left", VanillaGuiLayers.ARMOR_LEVEL.toString(), VanillaGuiLayers.PLAYER_HEALTH.toString(), "appleskin:health_offset", "appleskin:health_restored");
-    private static final Pack rightElements = Pack.of("gnetum.packedElement.right", VanillaGuiLayers.AIR_LEVEL.toString(), VanillaGuiLayers.FOOD_LEVEL.toString(), VanillaGuiLayers.VEHICLE_HEALTH.toString(), "appleskin:exhaustion_level", "appleskin:food_offset", "appleskin:hunger_restored", "appleskin:saturation_level");
+    private static final Pack leftElements = Pack.of("gnetum.packedElement.left", VanillaGuiLayers.ARMOR_LEVEL.toString(), VanillaGuiLayers.PLAYER_HEALTH.toString(), "appleskin:health_offset", "appleskin:health_restored", "farmersdelight:comfort", "farmersdelight:health_offset");
+    private static final Pack rightElements = Pack.of("gnetum.packedElement.right", VanillaGuiLayers.AIR_LEVEL.toString(), VanillaGuiLayers.FOOD_LEVEL.toString(), VanillaGuiLayers.VEHICLE_HEALTH.toString(), "appleskin:exhaustion_level", "appleskin:food_offset", "appleskin:hunger_restored", "appleskin:saturation_level", "farmersdelight:food_offset", "farmersdelight:nourishment");
 
     static {
         map = new HashMap<>(leftElements.getOverlays().length + rightElements.getOverlays().length);
