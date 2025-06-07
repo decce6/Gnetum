@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gl.FramebufferTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -23,7 +24,8 @@ public class ChatScreenMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void gnetum$preRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!Gnetum.config.isEnabled() || Gnetum.passManager.cachingDisabled(VanillaGuiLayers.CHAT.toString())) {
+        if (!Gnetum.config.isEnabled() || Gnetum.passManager.cachingDisabled(VanillaGuiLayers.CHAT.toString()) ||
+                (Minecraft.getInstance().screen != null && !(Minecraft.getInstance().screen instanceof ChatScreen))) {
             return;
         }
         if (Gnetum.passManager.shouldRender(VanillaGuiLayers.CHAT.toString())) {
