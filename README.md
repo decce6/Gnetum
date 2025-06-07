@@ -37,7 +37,7 @@ A configuration screen is available for advanced players and modpack makers to f
 
 ### Compatibility
 
-#### 1.20.1
+#### 1.20.1 & 1.21.1
 
 ✔️ ImmediatelyFast: fully compatible and recommended.
 
