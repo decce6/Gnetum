@@ -40,6 +40,7 @@ public class ChatScreenMixin {
     @Inject(method = "render", at = @At("RETURN"))
     private void gnetum$postRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (gnetum$renderingCachedChat) {
+            guiGraphics.bufferSource().endLastBatch();
             gnetum$renderingCachedChat = false;
             GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, gnetum$previouslyBoundFbo);
             Gnetum.passManager.end();
