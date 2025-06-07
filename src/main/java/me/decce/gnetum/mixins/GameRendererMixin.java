@@ -62,11 +62,12 @@ public class GameRendererMixin {
             original.call(instance, guiGraphics, deltaTracker);
             return;
         }
+
         FramebufferManager.getInstance().ensureSize();
 
-        boolean complete = FramebufferManager.getInstance().isComplete();
+        boolean fboCompleteBeforeRendering = FramebufferManager.getInstance().isComplete();
 
-        if (complete) {
+        if (fboCompleteBeforeRendering) {
             Minecraft.getInstance().getProfiler().push("uncached");
             ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
                 GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
@@ -96,7 +97,9 @@ public class GameRendererMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        if (complete) {
+        boolean fboCompleteAfterRendering = FramebufferManager.getInstance().isComplete();
+
+        if (fboCompleteBeforeRendering && fboCompleteAfterRendering) {
             FramebufferManager.getInstance().blit();
 
             Minecraft.getInstance().getProfiler().push("uncached");

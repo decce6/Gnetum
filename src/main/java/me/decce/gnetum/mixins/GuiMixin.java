@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.ElementType;
 import me.decce.gnetum.GuiHelper;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,6 +32,8 @@ public class GuiMixin {
     private int gnetum$currentLeftHeight;
     @Unique
     private int gnetum$currentRightHeight;
+    @Unique
+    private Matrix4f gnetum$lastGuiPose;
 
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/gui/GuiLayerManager;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     public boolean gnetum$render(GuiLayerManager instance, GuiGraphics guiGraphics, DeltaTracker partialTick)
@@ -37,6 +41,12 @@ public class GuiMixin {
         if (!Gnetum.rendering) {
             return true;
         }
+
+        var pose = guiGraphics.pose().last().pose();
+        if (!pose.equals(gnetum$lastGuiPose, 0.01F)) {
+            FramebufferManager.getInstance().markIncomplete();
+        }
+        gnetum$lastGuiPose = new Matrix4f(pose); // TODO: optimize this
 
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;

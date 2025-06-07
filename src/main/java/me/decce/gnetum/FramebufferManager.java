@@ -13,6 +13,7 @@ public class FramebufferManager {
     private static final FramebufferManager instance = new FramebufferManager();
     private boolean dropCurrentFrame;
     private boolean complete; // whether the frontFramebuffer contains a complete HUD texture
+    private boolean toBeComplete = true;
     private int width;
     private int height;
     private double guiScale;
@@ -60,7 +61,7 @@ public class FramebufferManager {
         frontFramebuffer.setClearColor(0, 0, 0, 0);
         frontFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(frontFramebuffer);
-        this.complete = false;
+        this.markIncomplete();
         Gnetum.passManager.current = 1;
     }
 
@@ -95,7 +96,12 @@ public class FramebufferManager {
             TextureTarget temp = backFramebuffer;
             this.backFramebuffer = this.frontFramebuffer;
             this.frontFramebuffer = temp;
-            this.complete = true;
+            if (this.toBeComplete) {
+                this.complete = true;
+            }
+            else {
+                this.toBeComplete = true;
+            }
             Gnetum.FPS_COUNTER.tick();
         }
         this.clear();
@@ -108,6 +114,15 @@ public class FramebufferManager {
 
     public int id() {
         return backFramebuffer.frameBufferId;
+    }
+
+    public void markIncomplete() {
+        if (this.complete) {
+            this.complete = false;
+        }
+        else {
+            this.toBeComplete = false;
+        }
     }
 
     public boolean isComplete() {
