@@ -21,8 +21,21 @@ public class HudDeltaTracker {
             tickDelta = new float[len];
         }
         for (int i = 0; i < len; i++) {
-            tickDelta[i] = 0F;
+            reset(i);
         }
+    }
+
+    public static void reset(int i ) {
+        tickDelta[i] = 0F;
+    }
+
+    public static void step() {
+        int len = Gnetum.config.numberOfPasses + 1;
+        if (tickDelta == null || tickDelta.length != len) {
+            reset();
+        }
+        int i = Gnetum.passManager.current;
+        reset(i);
     }
 
     public static float getTickDelta() {

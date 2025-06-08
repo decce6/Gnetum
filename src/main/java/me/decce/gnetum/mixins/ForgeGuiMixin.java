@@ -3,6 +3,7 @@ package me.decce.gnetum.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.ASMEventHandlerHelper;
 import me.decce.gnetum.EventBusHelper;
@@ -28,6 +29,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.IEventBusInvokeDispatcher;
 import net.minecraftforge.eventbus.api.IEventListener;
 import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,6 +60,8 @@ public class ForgeGuiMixin {
     private int gnetum$currentLeftHeight;
     @Unique
     private int gnetum$currentRightHeight;
+    @Unique
+    private Matrix4f gnetum$lastGuiPose;
 
     @Unique
     private GuiAccessor gnetum$getGuiAccessor() {
@@ -73,6 +77,12 @@ public class ForgeGuiMixin {
             return original.call(instance, event);
         }
 
+        var pose = guiGraphics.pose().last().pose();
+        if (!pose.equals(gnetum$lastGuiPose, 0.01F)) {
+            FramebufferManager.getInstance().markIncomplete();
+        }
+        gnetum$lastGuiPose = new Matrix4f(pose); // TODO: optimize this
+
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;
             gnetum$currentRightHeight = 39;
@@ -83,9 +93,9 @@ public class ForgeGuiMixin {
         FramebufferManager.getInstance().ensureSize();
 
         // If we haven't finished rendering a complete HUD, the original method will be called
-        boolean framebufferComplete = FramebufferManager.getInstance().isComplete();
+        boolean framebufferCompleteBeforeRendering = FramebufferManager.getInstance().isComplete();
 
-        if (framebufferComplete) {
+        if (framebufferCompleteBeforeRendering) {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
@@ -135,6 +145,8 @@ public class ForgeGuiMixin {
 
         Gnetum.passManager.nextPass();
 
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+
         if (Gnetum.passManager.current == Gnetum.config.numberOfPasses) {
             gnetum$lastLeftHeight = leftHeight;
             gnetum$lastRightHeight = rightHeight;
@@ -142,7 +154,9 @@ public class ForgeGuiMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        if (framebufferComplete) {
+        boolean framebufferCompleteAfterRendering = FramebufferManager.getInstance().isComplete();
+
+        if (framebufferCompleteAfterRendering) {
             FramebufferManager.getInstance().blit();
 
             minecraft.getProfiler().push("uncached");
