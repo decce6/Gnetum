@@ -78,15 +78,13 @@ public class FramebufferManager {
 
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
-        RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 
         frontFramebuffer.blitToScreen(width, height, false);
 
         var window = mc.getWindow();
         Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ClientHooks.getGuiFarPlane());
         RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
-
-        RenderSystem.defaultBlendFunc();
 
         mc.getProfiler().pop();
     }
