@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.2
+
+- Fixed HUD flickering when resizing framebuffer
+- Fixed some depth issues
+- Fixed delta tracker for HUDs
+- Improved mod compatibility
+
 ## 2.1.1
 
 - Improved compatibility with mods that directly inject into ```ForgeGui.render```
