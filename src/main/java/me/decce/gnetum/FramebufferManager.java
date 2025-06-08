@@ -78,7 +78,7 @@ public class FramebufferManager {
 
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
-        RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ZERO);
+        RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 
         frontFramebuffer.blitToScreen(width, height, false);
 
