@@ -56,7 +56,7 @@ public class GlStateManagerMixin {
     @Unique
     private static boolean gnetum$isBlendFuncDangerous(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
         if (gnetum$isUsingDestColor(srcFactor) || gnetum$isUsingDestColor(dstFactor)) return true;
-        if (dstFactor == GlConst.GL_SRC_COLOR || dstFactor == GlConst.GL_ONE_MINUS_SRC_COLOR || dstFactor == GlConst.GL_ONE) return true;
+        if (dstFactor == GlConst.GL_SRC_COLOR || dstFactor == GlConst.GL_ONE_MINUS_SRC_COLOR) return true;
         return false;
     }
 
