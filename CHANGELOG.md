@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.2
+
+- Fixed the issue where, when the hotbar contains enchanted items, caching for the hotbar gets disabled automatically. This fix means better performance when such items exist in the hotbar.
+- Fixed entity icons breakage on Xaero's Minimap
+- Fixed the issue where some settings cannot be saved
+- Improved compatibility with mods that use special blending functions
+
 ## 3.0.1
 
 - Implemented caching for chat screen
