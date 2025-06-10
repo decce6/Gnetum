@@ -6,8 +6,6 @@ import me.decce.gnetum.ElementType;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gl.FramebufferTracker;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,21 +14,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GlStateManager.class)
 public class GlStateManagerMixin {
-    @Inject(method = "_glBindFramebuffer", at = @At("HEAD"), cancellable = true)
-    private static void gnetum$bindFramebuffer(int p_84487_, int p_84488_, CallbackInfo ci) {
-        if (p_84487_ == GlConst.GL_FRAMEBUFFER) {
-            FramebufferTracker.setCurrentlyBoundFbo(p_84488_);
-        }
-        if (Gnetum.rendering && p_84488_ == Minecraft.getInstance().getMainRenderTarget().frameBufferId) {
-            ci.cancel();
-            FramebufferManager.getInstance().bind();
+    @Inject(method = "_glBindFramebuffer", at = @At("TAIL"))
+    private static void gnetum$bindFramebuffer(int target, int framebuffer, CallbackInfo ci) {
+        if (target == GlConst.GL_FRAMEBUFFER) {
+            FramebufferTracker.setCurrentlyBoundFbo(framebuffer);
         }
     }
 
     @Inject(method = "_blendFunc(II)V", at = @At("HEAD"), cancellable = true)
     private static void gnetum$blendFunc(int srcFactor, int dstFactor, CallbackInfo ci) {
         if (Gnetum.rendering) {
-            GlStateManager._blendFuncSeparate(srcFactor, dstFactor, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager._blendFuncSeparate(srcFactor, dstFactor, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
             ci.cancel();
         }
     }
@@ -38,25 +32,26 @@ public class GlStateManagerMixin {
     @Inject(method = "_blendFuncSeparate(IIII)V", at = @At("HEAD"), cancellable = true)
     private static void gnetum$tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha, CallbackInfo ci) {
         if (!Gnetum.rendering) return;
+        if (srcFactorAlpha != GlConst.GL_ONE || dstFactorAlpha != GlConst.GL_ONE_MINUS_SRC_ALPHA) {
+            GlStateManager._blendFuncSeparate(srcFactor, dstFactor, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
+            ci.cancel();
+            return;
+        }
         if (FramebufferTracker.getCurrentlyBoundFbo() == FramebufferManager.getInstance().id() && gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
             // TODO: the problem with this detection mechanism is that, if the destination (i.e. our backFramebuffer) is
             //  already filled with pixels then the DST_COLOR factors WILL work properly, and there is no need to
             //  disable caching.
             //  I'll just special-case Xaero's Minimap until I come up with a better solution.
-            if (Gnetum.currentElementType == ElementType.VANILLA && !"xaerominimap:xaero".equals(Gnetum.currentElement)) {
+            if (Gnetum.currentElementType != ElementType.VANILLA || !"xaerominimap:xaero".equals(Gnetum.currentElement)) {
                 Gnetum.disableCachingForCurrentElement();
             }
-        }
-        if (srcFactorAlpha != GlConst.GL_ONE || dstFactorAlpha != GlConst.GL_ONE_MINUS_SRC_ALPHA) {
-            GlStateManager._blendFuncSeparate(srcFactor, dstFactor, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
-            ci.cancel();
         }
     }
 
     @Unique
     private static boolean gnetum$isBlendFuncDangerous(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
         if (gnetum$isUsingDestColor(srcFactor) || gnetum$isUsingDestColor(dstFactor)) return true;
-        if (dstFactor == GlConst.GL_SRC_COLOR || dstFactor == GlConst.GL_ONE_MINUS_SRC_COLOR || dstFactor == GlConst.GL_ONE) return true;
+        if (dstFactor == GlConst.GL_SRC_COLOR || dstFactor == GlConst.GL_ONE_MINUS_SRC_COLOR) return true;
         return false;
     }
 

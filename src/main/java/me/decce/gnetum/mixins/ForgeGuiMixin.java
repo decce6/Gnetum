@@ -61,7 +61,7 @@ public class ForgeGuiMixin {
     @Unique
     private int gnetum$currentRightHeight;
     @Unique
-    private Matrix4f gnetum$lastGuiPose;
+    private Matrix4f gnetum$defaultGuiPose = new Matrix4f();
 
     @Unique
     private GuiAccessor gnetum$getGuiAccessor() {
@@ -77,11 +77,13 @@ public class ForgeGuiMixin {
             return original.call(instance, event);
         }
 
+        // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
+        // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
+        //  to them otherwise, creating inconsistencies
         var pose = guiGraphics.pose().last().pose();
-        if (!pose.equals(gnetum$lastGuiPose, 0.01F)) {
+        if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
             FramebufferManager.getInstance().markIncomplete();
         }
-        gnetum$lastGuiPose = new Matrix4f(pose); // TODO: optimize this
 
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;

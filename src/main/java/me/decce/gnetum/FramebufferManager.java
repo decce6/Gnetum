@@ -66,7 +66,11 @@ public class FramebufferManager {
     }
 
     public void bind() {
-        backFramebuffer.bindWrite(true);
+        this.bind(true);
+    }
+
+    public void bind(boolean setViewport) {
+        backFramebuffer.bindWrite(setViewport);
     }
 
     public void unbind() {
