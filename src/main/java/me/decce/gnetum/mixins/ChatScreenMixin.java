@@ -24,7 +24,7 @@ public class ChatScreenMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void gnetum$preRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!Gnetum.config.isEnabled() || Gnetum.passManager.cachingDisabled(VanillaGuiLayers.CHAT.toString()) ||
+        if (!Gnetum.config.isEnabled() || Minecraft.getInstance().options.hideGui || Gnetum.passManager.cachingDisabled(VanillaGuiLayers.CHAT.toString()) ||
                 (Minecraft.getInstance().screen != null && !(Minecraft.getInstance().screen instanceof ChatScreen))) {
             return;
         }
