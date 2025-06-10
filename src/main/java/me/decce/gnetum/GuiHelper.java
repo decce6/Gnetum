@@ -75,11 +75,8 @@ public class GuiHelper {
                 for (; index < listeners.length; index++) {
                     EventListener listener = listeners[index];
                     String modid = null;
-                    if (listener instanceof SubscribeEventListener sub) {
-                        modid = EventListenerHelper.tryGetModId(sub);
-                    }
-                    else if (listener instanceof ConsumerEventHandler con) {
-                        modid = EventListenerHelper.tryGetModId(con);
+                    if (listener instanceof SubscribeEventListener || listener instanceof ConsumerEventHandler) {
+                        modid = EventListenerHelper.tryGetModId(listener);
                     }
                     if (modid != null) {
                         if (event instanceof RenderGuiEvent.Pre) {

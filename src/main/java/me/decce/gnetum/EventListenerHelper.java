@@ -17,21 +17,21 @@ public class EventListenerHelper {
     private static final ReferenceSet<EventListener> invalid = new ReferenceOpenHashSet<>(0);
     private static final Reference2ObjectMap<EventListener, String> mapModId = new Reference2ObjectOpenHashMap<>();
 
-    public static String tryGetModId(EventListener sub) {
-        if (mapModId.containsKey(sub)) {
-            return mapModId.get(sub);
+    public static String tryGetModId(EventListener listener) {
+        if (mapModId.containsKey(listener)) {
+            return mapModId.get(listener);
         }
-        if (invalid.contains(sub)) {
+        if (invalid.contains(listener)) {
             return null;
         }
-        Class<?> clazz = tryGetClass(sub);
+        Class<?> clazz = tryGetClass(listener);
         if (clazz == null) {
-            invalid.add(sub);
+            invalid.add(listener);
             return null;
         }
         CodeSource codeSource = clazz.getProtectionDomain().getCodeSource();
         if (codeSource == null) {
-            invalid.add(sub);
+            invalid.add(listener);
             return null;
         }
         URL url = codeSource.getLocation();
@@ -40,11 +40,11 @@ public class EventListenerHelper {
             IModFile file = files.get(i).getFile();
             if (url.getPath().contains(file.getFileName())) { // this check is not accurate, but shouldn't be dangerous
                 String modid = file.getModInfos().get(0).getModId();
-                mapModId.put(sub, modid);
+                mapModId.put(listener, modid);
                 return modid;
             }
         }
-        invalid.add(sub);
+        invalid.add(listener);
         return null;
     }
 
