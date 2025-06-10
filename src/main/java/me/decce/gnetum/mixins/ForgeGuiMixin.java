@@ -95,9 +95,9 @@ public class ForgeGuiMixin {
         FramebufferManager.getInstance().ensureSize();
 
         // If we haven't finished rendering a complete HUD, the original method will be called
-        boolean framebufferCompleteBeforeRendering = FramebufferManager.getInstance().isComplete();
+        boolean framebufferComplete = FramebufferManager.getInstance().isComplete();
 
-        if (framebufferCompleteBeforeRendering) {
+        if (framebufferComplete) {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
@@ -156,9 +156,7 @@ public class ForgeGuiMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        boolean framebufferCompleteAfterRendering = FramebufferManager.getInstance().isComplete();
-
-        if (framebufferCompleteAfterRendering) {
+        if (framebufferComplete) {
             FramebufferManager.getInstance().blit();
 
             minecraft.getProfiler().push("uncached");
