@@ -65,8 +65,12 @@ public class FramebufferManager {
         Gnetum.passManager.current = 1;
     }
 
+    public void bind(boolean setViewport) {
+        backFramebuffer.bindWrite(setViewport);
+    }
+
     public void bind() {
-        backFramebuffer.bindWrite(true);
+        this.bind(true);
     }
 
     public void unbind() {

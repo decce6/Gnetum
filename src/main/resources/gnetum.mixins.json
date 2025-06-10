@@ -12,7 +12,8 @@
     "GuiAccessor",
     "GuiLayerManagerAccessor",
     "GuiMixin",
-    "MinecraftAccessor"
+    "MinecraftAccessor",
+    "RenderTargetMixin"
   ],
   "mixins": [],
   "injectors": {
