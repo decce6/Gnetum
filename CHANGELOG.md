@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.3
+
+- Fixed the issue where, when the hotbar contains enchanted items, caching for the hotbar gets disabled automatically. This fix means better performance when such items exist in the hotbar.
+- Fixed entity icons breakage on Xaero's Minimap
+- Improved compatibility with mods that use special blending functions
+
 ## 2.1.2
 
 - Fixed HUD flickering when resizing framebuffer
