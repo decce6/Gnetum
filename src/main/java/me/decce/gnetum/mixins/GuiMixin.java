@@ -33,7 +33,7 @@ public class GuiMixin {
     @Unique
     private int gnetum$currentRightHeight;
     @Unique
-    private Matrix4f gnetum$lastGuiPose;
+    private Matrix4f gnetum$defaultGuiPose = new Matrix4f();
 
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/gui/GuiLayerManager;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     public boolean gnetum$render(GuiLayerManager instance, GuiGraphics guiGraphics, DeltaTracker partialTick)
@@ -42,11 +42,13 @@ public class GuiMixin {
             return true;
         }
 
+        // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
+        // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
+        //  to them otherwise, creating inconsistencies
         var pose = guiGraphics.pose().last().pose();
-        if (!pose.equals(gnetum$lastGuiPose, 0.01F)) {
+        if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
             FramebufferManager.getInstance().markIncomplete();
         }
-        gnetum$lastGuiPose = new Matrix4f(pose); // TODO: optimize this
 
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;
