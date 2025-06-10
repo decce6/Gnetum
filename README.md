@@ -22,7 +22,7 @@ The idea behind Gnetum is to reduce the framerate of the HUD, which is not cheap
 - After all passes finish rendering, the back framebuffer is "swapped" with the front framebuffer
 - Each frame also renders the front framebuffer, which contains a texture of the full HUD
 
-An additional HUD FPS limiter is implemented, mainly to save power on scenarios where the game framerate is very high.
+An additional HUD FPS limiter is implemented, mainly to save power in scenarios where the game framerate is very high.
 
 </details>
 
