@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3
+
+- Fixed sky glitches in certain daytimes
+
 ## 3.0.2
 
 - Fixed the issue where, when the hotbar contains enchanted items, caching for the hotbar gets disabled automatically. This fix means better performance when such items exist in the hotbar.
