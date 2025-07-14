@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.6
+
+- Fixed Fast Framebuffer Blits option 
+- Fixed GL state breakage caused by some mods
+
 ## 1.2.5
 
 - Fixed warnings in the log (Thanks [WaitingIdly](https://github.com/WaitingIdly))
