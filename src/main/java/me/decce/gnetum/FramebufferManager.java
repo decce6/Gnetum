@@ -82,7 +82,11 @@ public class FramebufferManager {
     }
 
     public void bind() {
-        backFramebuffer.bindFramebuffer(false);
+        this.bind(false);
+    }
+
+    public void bind(boolean setViewport) {
+        backFramebuffer.bindFramebuffer(setViewport);
         if (shouldClear) {
             this.clear();
             shouldClear = false;

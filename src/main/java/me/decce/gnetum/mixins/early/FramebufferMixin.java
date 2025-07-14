@@ -16,12 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Framebuffer.class)
 public class FramebufferMixin {
     @Inject(method = "bindFramebuffer", at = @At("HEAD"), cancellable = true)
-    public void gnetum$redirectBindFramebuffer(boolean p_147610_1_, CallbackInfo ci)
+    public void gnetum$bindFramebuffer(boolean setViewport, CallbackInfo ci)
     {
         Framebuffer framebuffer = (Framebuffer) (Object) this;
         if (Gnetum.rendering && framebuffer == Minecraft.getMinecraft().getFramebuffer()){
             ci.cancel();
-            FramebufferManager.getInstance().bind();
+            FramebufferManager.getInstance().bind(setViewport);
         }
     }
 }
