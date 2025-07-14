@@ -306,6 +306,8 @@ public class GuiIngameForgeMixin {
         FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
         GlStateManager.enableDepth();
+        GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
 
         gnetum$renderUncachedPost(partialTicks); // Needs to be called after framebuffer blitting to make sure FluxLoading works properly
     }
