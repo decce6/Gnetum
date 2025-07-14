@@ -1,5 +1,6 @@
 package me.decce.gnetum;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.mixins.GuiAccessor;
 import me.decce.gnetum.mixins.GuiLayerManagerAccessor;
 import net.minecraft.client.DeltaTracker;
@@ -44,6 +45,7 @@ public class GuiHelper {
                     post(layer, guiGraphics, partialTick);
                 }
                 guiGraphics.pose().translate(0.0F, 0.0F, GuiLayerManager.Z_SEPARATION);
+                RenderSystem.enableDepthTest(); // Some mods break the GL state here - let's fix it up to prevent flickering
             }
         }
 
