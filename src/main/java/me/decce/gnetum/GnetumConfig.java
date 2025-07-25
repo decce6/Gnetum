@@ -26,9 +26,9 @@ public class GnetumConfig {
     public int numberOfPasses = 4;
     public int maxFps = 60;
 
-    public Map<String, CacheSetting> mapVanillaElements = new HashMap<>();
-    public Map<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
-    public Map<String, CacheSetting> mapModdedElementsPost = new HashMap<>();
+    public HashMap<String, CacheSetting> mapVanillaElements = new HashMap<>();
+    public HashMap<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
+    public HashMap<String, CacheSetting> mapModdedElementsPost = new HashMap<>();
 
     public boolean isEnabled() {
         return enabled.get();
