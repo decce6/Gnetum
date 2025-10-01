@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "me.decce.gnetum.compat.journeymap.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "HudOverlayHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

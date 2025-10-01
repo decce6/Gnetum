@@ -11,6 +11,7 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GuiHelper;
 import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.compat.immediatelyfast.ImmediatelyFastCompat;
+import me.decce.gnetum.compat.journeymap.JourneyMapCompat;
 import me.decce.gnetum.gl.FramebufferTracker;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -70,6 +71,7 @@ public class GameRendererMixin {
         if (fboCompleteBeforeRendering) {
             Minecraft.getInstance().getProfiler().push("uncached");
             ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+                JourneyMapCompat.invokeRenderWaypointDecos(guiGraphics);
                 GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
                 GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay));
             });

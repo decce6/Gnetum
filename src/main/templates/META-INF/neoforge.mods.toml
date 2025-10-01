@@ -11,6 +11,8 @@ license="${mod_license}"
 issueTrackerURL="https://github.com/decce6/Gnetum/issues" #optional
 [[mixins]]
 config="gnetum.mixins.json"
+[[mixins]]
+config="gnetum.mixins.journeymap.json"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
