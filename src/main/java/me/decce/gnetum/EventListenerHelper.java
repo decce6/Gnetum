@@ -7,11 +7,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.neoforged.bus.ConsumerEventHandler;
 import net.neoforged.bus.SubscribeEventListener;
 import net.neoforged.bus.api.EventListener;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.locating.IModFile;
-
-import java.net.URL;
-import java.security.CodeSource;
 
 public class EventListenerHelper {
     private static final ReferenceSet<EventListener> invalid = new ReferenceOpenHashSet<>(0);
@@ -29,23 +24,16 @@ public class EventListenerHelper {
             invalid.add(listener);
             return null;
         }
-        CodeSource codeSource = clazz.getProtectionDomain().getCodeSource();
-        if (codeSource == null) {
+        var module = clazz.getModule();
+        if (module.isNamed()) {
+            var modid = module.getName();
+            mapModId.put(listener, modid);
+            return modid;
+        }
+        else {
             invalid.add(listener);
             return null;
         }
-        URL url = codeSource.getLocation();
-        var files = ModList.get().getModFiles();
-        for (int i = 0; i < files.size(); i++) {
-            IModFile file = files.get(i).getFile();
-            if (url.getPath().contains(file.getFileName())) { // this check is not accurate, but shouldn't be dangerous
-                String modid = file.getModInfos().get(0).getModId();
-                mapModId.put(listener, modid);
-                return modid;
-            }
-        }
-        invalid.add(listener);
-        return null;
     }
 
     // Find out which class the given event handler will call
