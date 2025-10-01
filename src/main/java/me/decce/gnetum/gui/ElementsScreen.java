@@ -1,5 +1,6 @@
 package me.decce.gnetum.gui;
 
+import com.google.common.collect.Maps;
 import me.decce.gnetum.CacheSetting;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gui.widgets.IntSlider;
@@ -25,7 +26,7 @@ public class ElementsScreen extends BaseScreen {
 
     public ElementsScreen(Map<String, CacheSetting> map, boolean vanilla) {
         super();
-        this.map = map;
+        this.map = Maps.filterValues(map, c -> !c.hidden);
         this.vanilla = vanilla;
         this.pageCount = map.size() % 10 == 0 ? map.size() / 10 : map.size() / 10 + 1;
     }

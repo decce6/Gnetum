@@ -15,7 +15,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GnetumConfig {
     public static final int UNLIMITED_FPS = 125; // when maxFps is set to this value it means unlimited
@@ -64,7 +63,7 @@ public class GnetumConfig {
             this.mapVanillaElements.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
             this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
             this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
-            this.removeElementsFromUninstalledMods();
+            this.hideElementsFromUninstalledMods();
             this.removeObsoleteVanillaElements();
         }
         this.mapModdedElementsPre.forEach((s, c) -> {
@@ -80,25 +79,20 @@ public class GnetumConfig {
         });
     }
 
-    private void removeElementsFromUninstalledMods() {
-        var toRemove = new ArrayList<String>();
-        mapModdedElementsPre.forEach((s, c) -> {
-            if (!ModList.get().isLoaded(s)) toRemove.add(s);
-        });
-        mapModdedElementsPost.forEach((s, c) -> {
-            if (!ModList.get().isLoaded(s)) toRemove.add(s);
-        });
-        toRemove.forEach(s -> {
-            mapModdedElementsPre.remove(s);
-            mapModdedElementsPost.remove(s);
-        });
-        toRemove.clear();
+    private void hideElementsFromUninstalledMods() {
+        mapModdedElementsPre.entrySet().stream()
+                .filter(entry -> !ModList.get().isLoaded(entry.getKey()))
+                .forEach(entry -> entry.getValue().hidden = true);
+        mapModdedElementsPost.entrySet().stream()
+                .filter(entry -> !ModList.get().isLoaded(entry.getKey()))
+                .forEach(entry -> entry.getValue().hidden = true);
         var accessor = GuiHelper.getGuiLayerManagerAccessor();
         mapVanillaElements.forEach((s, c) -> { // TODO: this might need a bit of optimization
             if (s.startsWith("gnetum")) return;
-            if (accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) toRemove.add(s);
+            if (accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) {
+                c.hidden = true;
+            }
         });
-        toRemove.forEach(s -> mapVanillaElements.remove(s));
     }
 
     private void removeObsoleteVanillaElements() {
