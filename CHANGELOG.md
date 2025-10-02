@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+- Fixed HUD flickering in certain scenarios
+
 ## 3.1.0
 
 - Slightly improved HUD testing performance
