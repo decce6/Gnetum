@@ -5,6 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
+    "compat.jade.BossHealthOverlayMixin",
+    "compat.jade.ClientProxyMixin",
+    "compat.journeymap.HudOverlayHandlerMixin",
     "ChatScreenMixin",
     "DeltaTrackerMixin",
     "GameRendererMixin",

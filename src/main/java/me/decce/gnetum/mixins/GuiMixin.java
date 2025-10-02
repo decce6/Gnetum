@@ -86,7 +86,7 @@ public class GuiMixin {
     // Some mods inject at the tail of Gui.render to render their elements (example Sodium Extra)
     // This causes issues, because the framebuffer is still bound to ours at this time
     // We only allow these injections to run in a specific pass to solve this issue
-    // TODO: We might want to improve the performance analyze to not produce warnings when it thinks the last pass does
+    // TODO: We might want to improve the performance analyzer to not produce warnings when it thinks the last pass does
     //  not render elements, because some may be rendered here
     @Inject(method = "render", at = @At("TAIL"), cancellable = true, order = 100)
     private void gnetum$postRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
