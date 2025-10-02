@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0
+
+- Slightly improved HUD testing performance
+- Fixed modid lookup
+- Improved mod compatibility
+- Changed the default number of passes to 3 (was 4)
+
 ## 3.0.3
 
 - Fixed sky glitches in certain daytimes
