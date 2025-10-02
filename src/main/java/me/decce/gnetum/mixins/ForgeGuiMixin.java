@@ -189,6 +189,7 @@ public class ForgeGuiMixin {
                     overlay.render(forgeGui, guiGraphics, partialTick, gnetum$getGuiAccessor().getScreenWidth(), gnetum$getGuiAccessor().getScreenHeight());
                     gnetum$post(entry, guiGraphics);
                 }
+                RenderSystem.enableDepthTest();
             } catch (Exception e)
             {
                 LOGGER.error("Error rendering overlay '{}'", entry.id(), e);

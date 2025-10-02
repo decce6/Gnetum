@@ -80,6 +80,7 @@ public class FramebufferManager {
     public void blit() {
         mc.getProfiler().push("blit");
 
+        RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 

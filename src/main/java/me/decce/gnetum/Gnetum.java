@@ -30,7 +30,7 @@ public final class Gnetum {
     public static final FpsCounter FPS_COUNTER = new FpsCounter();
     public static GnetumConfig config;
     public static PassManager passManager;
-    public static UncachedVanillaElements uncachedVanillaElements;
+    public static UncachedElements uncachedElements;
     public static String currentElement;
     public static ElementType currentElementType;
 
@@ -47,7 +47,7 @@ public final class Gnetum {
 
     public Gnetum() {
         Gnetum.passManager = new PassManager();
-        Gnetum.uncachedVanillaElements = new UncachedVanillaElements();
+        Gnetum.uncachedElements = new UncachedElements();
         GnetumConfig.reload();
 
         //noinspection removal // we want the mod to be loadable on an older version of forge
@@ -75,7 +75,6 @@ public final class Gnetum {
         var map = type == ElementType.PRE ? config.mapModdedElementsPre : config.mapModdedElementsPost;
         if (!map.containsKey(moddedOverlay)) {
             map.put(moddedOverlay, new CacheSetting(type == ElementType.PRE ? 1 : config.numberOfPasses));
-            config.validate(false); // sets the correct default value
         }
         return map.get(moddedOverlay);
     }

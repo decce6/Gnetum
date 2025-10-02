@@ -5,11 +5,6 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraftforge.eventbus.ASMEventHandler;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.locating.IModFile;
-
-import java.net.URL;
-import java.security.CodeSource;
 
 public class ASMEventHandlerHelper {
     private static final ReferenceSet<ASMEventHandler> invalid = new ReferenceOpenHashSet<>(0);
@@ -27,23 +22,16 @@ public class ASMEventHandlerHelper {
             invalid.add(asm);
             return null;
         }
-        CodeSource codeSource = clazz.getProtectionDomain().getCodeSource();
-        if (codeSource == null) {
+        var module = clazz.getModule();
+        if (module.isNamed()) {
+            var modid = module.getName();
+            mapModId.put(asm, modid);
+            return modid;
+        }
+        else {
             invalid.add(asm);
             return null;
         }
-        URL url = codeSource.getLocation();
-        var files = ModList.get().getModFiles();
-        for (int i = 0; i < files.size(); i++) {
-            IModFile file = files.get(i).getFile();
-            if (url.getPath().contains(file.getFileName())) { // this check is not accurate, but shouldn't be dangerous
-                String modid = file.getModInfos().get(0).getModId();
-                mapModId.put(asm, modid);
-                return modid;
-            }
-        }
-        invalid.add(asm);
-        return null;
     }
 
     // Find out which class the given event handler will call
