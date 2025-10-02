@@ -89,6 +89,8 @@ public class GameRendererMixin {
 
         original.call(instance, guiGraphics, deltaTracker);
 
+        guiGraphics.flush();
+
         Gnetum.rendering = false;
         Gnetum.currentElement = null;
         Gnetum.passManager.end();
