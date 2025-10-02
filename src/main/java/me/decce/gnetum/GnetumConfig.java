@@ -62,21 +62,21 @@ public class GnetumConfig {
         this.mapModdedElementsPre.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
-        this.hideElementsFromUninstalledMods();
+        this.hideElementsOrphanOrUncached();
         this.removeObsoleteVanillaElements();
     }
 
-    private void hideElementsFromUninstalledMods() {
+    private void hideElementsOrphanOrUncached() {
         mapModdedElementsPre.entrySet().stream()
-                .filter(entry -> !ModList.get().isLoaded(entry.getKey()))
+                .filter(entry -> !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.PRE))
                 .forEach(entry -> entry.getValue().hidden = true);
         mapModdedElementsPost.entrySet().stream()
-                .filter(entry -> !ModList.get().isLoaded(entry.getKey()))
+                .filter(entry -> !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.POST))
                 .forEach(entry -> entry.getValue().hidden = true);
         var accessor = GuiHelper.getGuiLayerManagerAccessor();
         mapVanillaElements.forEach((s, c) -> { // TODO: this might need a bit of optimization
             if (s.startsWith("gnetum")) return;
-            if (accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) {
+            if (Gnetum.uncachedElements.has(s) || accessor.getLayers().stream().noneMatch(layer -> layer.name().toString().equals(s))) {
                 c.hidden = true;
             }
         });
