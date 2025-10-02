@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 public class SuggestedPass {
     public static int get(String name) {
         int pass = switch (name) {
+            // TODO: stop using string literals
             // note: camera_overlays, crosshair, etc. are uncached but are still included in here to make sure mods that insert layers beside them have a correct default pass
             case "minecraft:camera_overlays", "minecraft:crosshair", "minecraft:hotbar" -> 1;
             case "minecraft:jump_meter", "minecraft:experience_bar", "gnetum.packedElement.left", "gnetum.packedElement.right" -> 2;

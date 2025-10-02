@@ -97,7 +97,7 @@ public class PassManager {
         if (Gnetum.renderingCanceled) { // TODO: respect NeoForge receiveCancelled field
             return false;
         }
-        if (Gnetum.uncachedVanillaElements.set.contains(vanillaOverlay)) {
+        if (Gnetum.uncachedElements.has(vanillaOverlay)) {
             return false;
         }
         CacheSetting cacheSetting = Gnetum.getCacheSetting(vanillaOverlay);
@@ -105,18 +105,24 @@ public class PassManager {
     }
 
     public boolean cachingDisabled(String vanillaOverlay) {
-        if (Gnetum.uncachedVanillaElements.set.contains(vanillaOverlay)) {
+        if (Gnetum.uncachedElements.has(vanillaOverlay)) {
             return true;
         }
         return !Gnetum.getCacheSetting(vanillaOverlay).enabled.get();
     }
 
     public boolean shouldRender(String moddedOverlay, ElementType type) {
+        if (Gnetum.uncachedElements.has(moddedOverlay, type)) {
+            return false;
+        }
         CacheSetting cacheSetting = Gnetum.getCacheSetting(moddedOverlay, type);
         return cacheSetting.enabled.get() && current == cacheSetting.pass;
     }
 
     public boolean cachingDisabled(String moddedOverlay, ElementType type) {
+        if (Gnetum.uncachedElements.has(moddedOverlay, type)) {
+            return true;
+        }
         return !Gnetum.getCacheSetting(moddedOverlay, type).enabled.get();
     }
 }

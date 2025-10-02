@@ -49,7 +49,7 @@ public class GnetumConfig {
                 config.mapVanillaElements.put(Gnetum.HAND_ELEMENT, new CacheSetting(1, new TriStateBoolean(AnyBooleanValue.AUTO, false)));
             }
             config.mapVanillaElements.get(Gnetum.HAND_ELEMENT).enabled.defaultValue = false;
-            config.validate(true);
+            config.validate();
             return config;
         } catch (IOException e) {
             Gnetum.LOGGER.error("Failed to read configuration!", e);
@@ -57,26 +57,14 @@ public class GnetumConfig {
         return createDefault();
     }
 
-    public void validate(boolean full) {
-        if (full) {
-            this.numberOfPasses = clamp(this.numberOfPasses, 2, 10);
-            this.mapVanillaElements.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
-            this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
-            this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
-            this.hideElementsFromUninstalledMods();
-            this.removeObsoleteVanillaElements();
-        }
-        this.mapModdedElementsPre.forEach((s, c) -> {
-            c.pass = clamp(c.pass, 1, this.numberOfPasses);
-            c.enabled.defaultValue = switch (s) {
-                // this makes sure that the in-game waypoints from xaero's minimap are not cached by default, as those
-                // do not belong to the HUD. If anyone does want them to be cached they can do so by changing the
-                // setting from AUTO to ON.
-                // This does not affect the minimap caching, only the in-game waypoints.
-                case "xaerominimap" -> false;
-                default -> true;
-            };
-        });
+    public void validate() {
+        this.numberOfPasses = clamp(this.numberOfPasses, 2, 10);
+        this.mapVanillaElements.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
+        this.mapModdedElementsPre.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
+        this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
+        this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
+        this.hideElementsFromUninstalledMods();
+        this.removeObsoleteVanillaElements();
     }
 
     private void hideElementsFromUninstalledMods() {
@@ -114,7 +102,7 @@ public class GnetumConfig {
     }
 
     public void save() {
-        this.validate(true);
+        this.validate();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(this);
         try {
