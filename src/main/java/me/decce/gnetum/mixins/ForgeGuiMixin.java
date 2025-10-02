@@ -101,6 +101,7 @@ public class ForgeGuiMixin {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+            guiGraphics.flush();
             minecraft.getProfiler().pop();
         }
         else {
@@ -131,6 +132,8 @@ public class ForgeGuiMixin {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
+
+            guiGraphics.flush();
 
             gnetum$currentLeftHeight = leftHeight;
             gnetum$currentRightHeight = rightHeight;
