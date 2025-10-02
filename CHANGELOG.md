@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.0
+
+- Fixed HUD flickering by flushing buffers before switching framebuffers
+- Slightly improved HUD testing performance
+- Fixed modid lookup
+- Improved mod compatibility
+- Changed the default number of passes to 3 (was 4)
+
 ## 2.1.3
 
 - Fixed the issue where, when the hotbar contains enchanted items, caching for the hotbar gets disabled automatically. This fix means better performance when such items exist in the hotbar.
