@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -22,7 +21,7 @@ public class GnetumConfig {
 
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
-    public int numberOfPasses = 4;
+    public int numberOfPasses = 3;
     public int maxFps = 60;
 
     public HashMap<String, CacheSetting> mapVanillaElements = new HashMap<>();

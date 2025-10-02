@@ -10,15 +10,14 @@ public class SuggestedPass {
             // TODO: stop using string literals
             // note: camera_overlays, crosshair, etc. are uncached but are still included in here to make sure mods that insert layers beside them have a correct default pass
             case "minecraft:camera_overlays", "minecraft:crosshair", "minecraft:hotbar" -> 1;
-            case "minecraft:jump_meter", "minecraft:experience_bar", "gnetum.packedElement.left", "gnetum.packedElement.right" -> 2;
-            case "minecraft:selected_item_name", "minecraft:spectator_tooltip", "minecraft:experience_level", "minecraft:effects", "minecraft:boss_overlay", "minecraft:sleep_overlay", "minecraft:demo_overlay", "minecraft:debug_overlay", "minecraft:scoreboard_sidebar", "minecraft:overlay_message", "minecraft:title" -> 3;
-            case "minecraft:chat", "minecraft:tab_list", "minecraft:subtitle_overlay", "minecraft:saving_indicator" -> 4;
+            case "minecraft:jump_meter", "minecraft:experience_bar", "gnetum.packedElement.left", "gnetum.packedElement.right", "minecraft:selected_item_name", "minecraft:spectator_tooltip", "minecraft:experience_level" -> 2;
+            case "minecraft:effects", "minecraft:boss_overlay", "minecraft:sleep_overlay", "minecraft:demo_overlay", "minecraft:debug_overlay", "minecraft:scoreboard_sidebar", "minecraft:overlay_message", "minecraft:title", "minecraft:chat", "minecraft:tab_list", "minecraft:subtitle_overlay", "minecraft:saving_indicator" -> 3;
             default -> {
                 if (name.startsWith("minecraft:")) {
                     if (PackedVanillaElements.isPacked(name)) {
                         yield get(PackedVanillaElements.getPacked(name).getKey());
                     }
-                    yield 4;
+                    yield 3;
                 }
                 var layers = ((GuiLayerManagerAccessor)((GuiAccessor)Minecraft.getInstance().gui).getLayerManager()).getLayers();
                 for (int i = 0; i < layers.size(); i++) {
@@ -27,7 +26,7 @@ public class SuggestedPass {
                         yield get(layers.get(i - 1).name().toString());
                     }
                 }
-                yield 4;
+                yield 3;
             }
         };
         if (pass > Gnetum.config.numberOfPasses) pass = Gnetum.config.numberOfPasses;
