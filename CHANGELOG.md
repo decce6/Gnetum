@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2
+
+- Fixed PoseStack crashes
+
 ## 3.1.1
 
 - Fixed HUD flickering in certain scenarios
