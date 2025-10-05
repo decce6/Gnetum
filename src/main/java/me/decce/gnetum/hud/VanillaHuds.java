@@ -247,8 +247,6 @@ public class VanillaHuds {
     }
 
     public static void renderHelmetOverlay(ScaledResolution res) {
-        Gnetum.LOGGER.info("helmet, rendering={}, pass={}, is={}, current={}", Gnetum.rendering, Gnetum.passManager.current, Gnetum.isRenderingHelmet, Gnetum.currentElement);
-        Thread.dumpStack();
         Gnetum.isRenderingHelmet = true;
         getAccessor().callRenderHelmet(res, partialTicks);
         Gnetum.isRenderingHelmet = false;
