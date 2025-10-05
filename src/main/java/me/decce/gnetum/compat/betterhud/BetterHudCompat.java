@@ -19,7 +19,6 @@ public class BetterHudCompat {
     public static final boolean modInstalled;
     public static final Hud OTHER_HUD = Hud.builder()
             .id(MODID, "other_huds")
-            .defaultBlendFunc()
             .build();
     public static Reference2ReferenceMap<HudElement, Hud> mapTranslation = new Reference2ReferenceOpenHashMap<>();
 
