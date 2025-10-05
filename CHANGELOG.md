@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.3.0
+
+### The Backport
+
+All features from modern branches of Gnetum (2.x and 3.x) have been backported to 1.12.2! This includes:
+
+- A brand-new config system (old config are automatically imported)
+- Ability to control the refresh rate of HUDs
+- Ability to disable caching for individual HUD element
+- A performance analyzer to help you fine-tune Gnetum for optimal performance
+
+### Bug Fixes
+
+- Fixed crash on macOS
+- Fixed perspective issue when player is on the rowboat from The Betweenlands mod
+- Fixed Dynamic Surroundings compatibility
+
+### Improvements
+
+- Reworked compatibility with ScalingGUIs to be more efficient
+- Reworked BetterHud compatibility
+- Improved overall mod compatibility
+
+Given the huge size of this release, some bugs and glitches are to be expected - don't hesitate to report issues!
+
 ## 1.2.6
 
 - Fixed Fast Framebuffer Blits option 
