@@ -77,6 +77,8 @@ public class ForgeGuiMixin {
             return original.call(instance, event);
         }
 
+        guiGraphics.pose().pushPose();
+
         // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
         // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
         //  to them otherwise, creating inconsistencies
@@ -167,9 +169,10 @@ public class ForgeGuiMixin {
             minecraft.getProfiler().pop();
         }
         else {
+            guiGraphics.pose().popPose();
             return original.call(instance, event);
         }
-
+        guiGraphics.pose().popPose();
         return true;
     }
 
