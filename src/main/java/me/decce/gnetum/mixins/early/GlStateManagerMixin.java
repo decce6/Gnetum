@@ -4,9 +4,11 @@
 
 package me.decce.gnetum.mixins.early;
 
+import me.decce.gnetum.ElementType;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gl.FramebufferTracker;
+import me.decce.gnetum.hud.VanillaHuds;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +36,10 @@ public class GlStateManagerMixin {
             return;
         }
         if (FramebufferTracker.getCurrentlyBoundFbo() == FramebufferManager.getInstance().id() && gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
-            Gnetum.disableCachingForCurrentElement();
+            // Do not disable caching for Xaero's Minimap
+            if (Gnetum.currentElementType != ElementType.VANILLA || !VanillaHuds.HELMET.id().toString().equals(Gnetum.currentElement)) {
+                Gnetum.disableCachingForCurrentElement();
+            }
         }
     }
 
