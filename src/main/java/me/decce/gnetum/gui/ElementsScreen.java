@@ -33,7 +33,7 @@ public class ElementsScreen extends BaseScreen {
         super();
         this.map = Maps.filterValues(map, c -> !c.hidden);
         this.vanilla = vanilla;
-        this.pageCount = map.size() % 10 == 0 ? map.size() / 10 : map.size() / 10 + 1;
+        this.pageCount = this.map.size() % 10 == 0 ? this.map.size() / 10 : this.map.size() / 10 + 1;
     }
 
     @Override
