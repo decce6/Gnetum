@@ -5,16 +5,15 @@ import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.io.FileUtils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Properties;
 
 public class GnetumConfig {
     public static final int UNLIMITED_FPS = 125; // when maxFps is set to this value it means unlimited
@@ -37,12 +36,9 @@ public class GnetumConfig {
     private static void importOld(GnetumConfig config) {
         if (Files.exists(pathOld)) {
             try {
-                Properties prop = new Properties();
-                try (FileInputStream fis = new FileInputStream(pathOld.toFile())) {
-                    prop.load(fis);
-                    config.enabled.value = "true".equals(prop.getProperty("enabled")) ? AnyBooleanValue.ON : AnyBooleanValue.OFF;
-                    config.mapVanillaElements.get(Gnetum.HAND_ELEMENT).enabled.value = "true".equals(prop.getProperty("bufferHand")) ? AnyBooleanValue.ON : AnyBooleanValue.AUTO;
-                }
+                Configuration configuration = new Configuration(pathOld.toFile());
+                config.enabled.value = configuration.get("general", "enabled", true).getBoolean() ? AnyBooleanValue.ON : AnyBooleanValue.AUTO;
+                config.mapVanillaElements.get(Gnetum.HAND_ELEMENT).enabled.value = configuration.get("general", "bufferHand", false).getBoolean() ? AnyBooleanValue.ON : AnyBooleanValue.AUTO;
                 Files.delete(pathOld);
                 config.save();
                 Gnetum.LOGGER.info("Successfully imported configuration from file \"Gnetum.cfg\"!");
