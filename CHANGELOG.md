@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2
+
+- Fixed PoseStack crashes
+
 ## 2.2.1
 
 - Hotfix for crash when using Gnetum alone (bundle MixinExtras via JiJ correctly)
