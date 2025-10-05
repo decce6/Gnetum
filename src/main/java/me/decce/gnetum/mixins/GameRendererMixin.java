@@ -64,6 +64,8 @@ public class GameRendererMixin {
             return;
         }
 
+        guiGraphics.pose().pushPose();
+
         FramebufferManager.getInstance().ensureSize();
 
         boolean fboCompleteBeforeRendering = FramebufferManager.getInstance().isComplete();
@@ -115,5 +117,7 @@ public class GameRendererMixin {
         else {// render the HUD to screen if framebuffer does not contain the HUD
             original.call(instance, guiGraphics, deltaTracker);
         }
+
+        guiGraphics.pose().popPose();
     }
 }
