@@ -17,11 +17,5 @@ public class HudElementMixin {
     private static void gnetum$renderAll(Event event, CallbackInfo ci) {
         if (!Gnetum.config.isEnabled()) return;
         ci.cancel();
-        for (HudElement element : HudElement.SORTER.getSortedData(HudElement.SortType.PRIORITY)) {
-            if (BetterHudCompat.mapTranslation.containsKey(element)) {
-                if (BetterHudCompat.passOf(BetterHudCompat.mapTranslation.get(element)) != Gnetum.passManager.current) continue;
-            }
-            element.tryRender(event);
-        }
     }
 }
