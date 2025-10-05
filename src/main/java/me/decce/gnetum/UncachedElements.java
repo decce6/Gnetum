@@ -22,12 +22,15 @@ public class UncachedElements {
                 "thaumcraft",
                 "timeisup",
                 "scalingguis", // we already suppressed the whole listener - hide it from config screen
-                "betterhud" // caching is implemented manually
+                "betterhud", // caching is implemented manually
+                "thebetweenlands"
         );
         moddedPost = ImmutableSet.of(
                 "fluxloading",
-                "ingameinfo" // InGame Info Reborn has its own framebuffers and refresh rate limit
+                "ingameinfo", // InGame Info Reborn has its own framebuffers and refresh rate limit
+                "thebetweenlands"
         );
+        // Note: thebetweenlands - see https://github.com/decce6/Gnetum/issues/42 (the mod changes perspective when in row boat, which should run every frame)
     }
 
     public boolean has(String vanillaOverlay) {
