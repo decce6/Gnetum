@@ -14,9 +14,13 @@ public interface GuiIngameAccessor {
     @Accessor
     Random getRand();
     @Invoker
+    void callRenderHotbar(ScaledResolution res, float partialTicks);
+    @Invoker
     void callRenderScoreboard(ScoreObjective objective, ScaledResolution scaledRes);
     @Invoker
     void callRenderPumpkinOverlay(ScaledResolution scaledRes);
+    @Invoker
+    void callRenderVignette(float lightLevel, ScaledResolution scaledRes);
     @Accessor
     int getUpdateCounter();
 }

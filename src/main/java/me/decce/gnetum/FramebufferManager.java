@@ -4,26 +4,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GLContext;
 
 import java.nio.FloatBuffer;
 
 public class FramebufferManager {
+    public static final boolean GL30SUPPORT = GLContext.getCapabilities().OpenGL30;
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static final FramebufferManager instance = new FramebufferManager();
     private int width;
     private int height;
     private int guiScale;
     private boolean fullscreen;
+    private boolean dropCurrentFrame;
+    private boolean complete; // whether the frontFramebuffer contains a complete HUD texture
     private final FloatBuffer clearColor;
     private Framebuffer backFramebuffer;
     private Framebuffer frontFramebuffer;
-
-    private boolean shouldClear;
 
     private FramebufferManager() {
         width = mc.displayWidth;
@@ -41,10 +44,10 @@ public class FramebufferManager {
     }
 
     public void reset() {
-        if (backFramebuffer != null && backFramebuffer.framebufferObject > 0) {
+        if (backFramebuffer != null) {
             backFramebuffer.deleteFramebuffer();
         }
-        if (frontFramebuffer != null && frontFramebuffer.framebufferObject > 0) {
+        if (frontFramebuffer != null) {
             frontFramebuffer.deleteFramebuffer();
         }
         backFramebuffer = new Framebuffer(width, height, true);
@@ -59,7 +62,8 @@ public class FramebufferManager {
         frontFramebuffer.bindFramebuffer(false);
         this.clear();
         this.unbind();
-        Passes.current = 0;
+        this.complete = false;
+        Gnetum.passManager.current = 1;
     }
 
     public void ensureSize() {
@@ -76,9 +80,21 @@ public class FramebufferManager {
     }
 
     private void clear() {
-        GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+        this.clear(backFramebuffer.framebufferObject);
+    }
+
+    private void clear(int fbo) {
+        OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fbo);
         GlStateManager.clearDepth(1.0D);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+        if (GL30SUPPORT) {
+            // Fixes https://github.com/decce6/Gnetum/issues/8
+            GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
+            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+        }
+        else {
+            // macOS does not have GL30 in compatibility context
+            GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        }
     }
 
     public void bind() {
@@ -87,10 +103,6 @@ public class FramebufferManager {
 
     public void bind(boolean setViewport) {
         backFramebuffer.bindFramebuffer(setViewport);
-        if (shouldClear) {
-            this.clear();
-            shouldClear = false;
-        }
     }
 
     public void unbind() {
@@ -98,10 +110,15 @@ public class FramebufferManager {
     }
 
     public void blit(double width, double height) {
+        mc.profiler.startSection("blit");
+
         frontFramebuffer.bindFramebufferTexture();
 
         GlStateManager.enableTexture2D();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.disableDepth();
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
@@ -115,14 +132,35 @@ public class FramebufferManager {
         builder.pos(0, 0, 0).tex(0, 1).endVertex();
         tessellator.draw();
 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+
+        mc.profiler.endSection();
     }
 
     public void swapFramebuffers() {
-        Framebuffer temp = backFramebuffer;
-        backFramebuffer = frontFramebuffer;
-        frontFramebuffer = temp;
-        this.shouldClear = true;
+        if (!this.dropCurrentFrame) {
+            Framebuffer temp = backFramebuffer;
+            this.backFramebuffer = this.frontFramebuffer;
+            this.frontFramebuffer = temp;
+            this.complete = true;
+            Gnetum.FPS_COUNTER.tick();
+        }
+        this.clear();
+        this.dropCurrentFrame = false;
+    }
+
+
+    public void dropCurrentFrame() {
+        this.dropCurrentFrame = true;
+    }
+
+    public int id() {
+        return backFramebuffer.framebufferObject;
+    }
+
+    public boolean isComplete() {
+        return this.complete;
     }
 }

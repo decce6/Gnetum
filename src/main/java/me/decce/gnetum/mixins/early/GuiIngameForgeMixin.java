@@ -1,42 +1,35 @@
 package me.decce.gnetum.mixins.early;
 
 import com.google.common.base.Throwables;
-import me.decce.gnetum.GuiHelper;
-import me.decce.gnetum.compat.CompatHelper;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import me.decce.gnetum.ASMEventHandlerHelper;
+import me.decce.gnetum.ElementType;
+import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
-import me.decce.gnetum.GnetumConfig;
-import me.decce.gnetum.Passes;
-import me.decce.gnetum.compat.UncachedEventListeners;
+import me.decce.gnetum.MutableScaledResolution;
 import me.decce.gnetum.compat.betterhud.BetterHudCompat;
 import me.decce.gnetum.compat.scalingguis.ScalingGuisCompat;
-import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+import me.decce.gnetum.hud.HudManager;
+import me.decce.gnetum.hud.SharedValues;
 import me.decce.gnetum.mixins.early.compat.EventBusAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.ASMEventHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.IEventListener;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.Predicate;
 
 import static net.minecraftforge.client.GuiIngameForge.*;
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.ALL;
@@ -45,8 +38,6 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class GuiIngameForgeMixin {
     @Unique
     private final Minecraft gnetum$mc = Minecraft.getMinecraft();
-    @Unique
-    private boolean gnetum$overlayRenderingCanceled;
     @Shadow
     private ScaledResolution res;
     @Shadow
@@ -54,102 +45,16 @@ public class GuiIngameForgeMixin {
     @Shadow
     private RenderGameOverlayEvent eventParent;
 
-    @Shadow
-    protected void renderCrosshairs(float partialTicks) {
-    }
-
-    @Shadow
-    protected void renderHelmet(ScaledResolution res, float partialTicks) {
-    }
-
-    @Shadow
-    protected void renderVignette(float lightLevel, ScaledResolution scaledRes) {
-    }
-
-    @Shadow
-    protected void renderPortal(ScaledResolution res, float partialTicks) {
-    }
-
-    @Shadow
-    protected void renderHotbar(ScaledResolution res, float partialTicks) {
-    }
-
-    @Shadow
-    protected void renderSleepFade(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderSubtitles(ScaledResolution resolution) {
-    }
-
-    @Shadow
-    protected void renderBossHealth() {
-    }
-
-    @Shadow
-    protected void renderArmor(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderHUDText(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderExperience(int width, int height) {
-    }
-
-    @Shadow
-    public void renderHealth(int width, int height) {
-    }
-
-
-    @Shadow
-    protected void renderToolHighlight(ScaledResolution res) {
-    }
-
-    @Shadow
-    protected void renderJumpBar(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderFPSGraph() {
-    }
-
-    @Shadow
-    protected void renderRecordOverlay(int width, int height, float partialTicks) {
-    }
-
-    @Shadow
-    protected void renderPotionIcons(ScaledResolution resolution) {
-    }
-
-    @Shadow
-    protected void renderChat(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderTitle(int width, int height, float partialTicks) {
-    }
-
-    @Shadow
-    public void renderFood(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderHealthMount(int width, int height) {
-    }
-
-    @Shadow
-    protected void renderAir(int width, int height) {
-    }
-
-
-    @Shadow
-    protected void renderPlayerList(int width, int height) {
-    }
-
     @Unique
-    private boolean gnetum$callCachedEventListeners(RenderGameOverlayEvent event, UncachedEventListeners uncachedEventListeners) {
+    private int gnetum$lastLeftHeight = 39;
+    @Unique
+    private int gnetum$lastRightHeight = 39;
+    @Unique
+    private int gnetum$currentLeftHeight;
+    @Unique
+    private int gnetum$currentRightHeight;
+    @Unique
+    private boolean gnetum$postEvent(RenderGameOverlayEvent event, Predicate<String> test) {
         EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
 
         if (eventBusAccessor.isShutdown()) return false;
@@ -161,10 +66,26 @@ public class GuiIngameForgeMixin {
             for (; index < listeners.length; index++)
             {
                 IEventListener listener = listeners[index];
-                if (uncachedEventListeners.matchEventListener(listener)) {
-                    continue;
+                if (listener instanceof ASMEventHandler asm) {
+                    String modid = ASMEventHandlerHelper.tryGetModId(asm);
+                    Gnetum.currentElement = modid;
+                    if (event instanceof RenderGameOverlayEvent.Pre) {
+                        Gnetum.currentElementType = ElementType.PRE;
+                        if (modid == null || test == null || test.test(modid)) {
+                            listener.invoke(event);
+                        }
+                    }
+                    else if (event instanceof RenderGameOverlayEvent.Post) {
+                        Gnetum.currentElementType = ElementType.POST;
+                        if (modid == null || test == null || test.test(modid)) {
+                            listener.invoke(event);
+                        }
+                    }
+                    else listener.invoke(event);
                 }
-                listener.invoke(event);
+                else if (!Gnetum.rendering || listener instanceof EventPriority || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
+                    listener.invoke(event);
+                }
             }
         }
         catch (Throwable throwable)
@@ -176,308 +97,132 @@ public class GuiIngameForgeMixin {
         return event.isCancelable() && event.isCanceled();
     }
 
-    @Unique
-    private void gnetum$callUncachedEventListeners(RenderGameOverlayEvent event, UncachedEventListeners uncachedEventListeners) {
-        EventBusAccessor eventBusAccessor = (EventBusAccessor)MinecraftForge.EVENT_BUS;
-
-        if (eventBusAccessor.isShutdown()) return;
-
-        int index = 0;
-
-        try
-        {
-            for (; index < uncachedEventListeners.list.length; index++)
-            {
-                uncachedEventListeners.list[index].invoke(event);
-            }
+    @WrapOperation(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/client/GuiIngameForge;pre(Lnet/minecraftforge/client/event/RenderGameOverlayEvent$ElementType;)Z", remap = false, ordinal = 0))
+    public boolean gnetum$renderGameOverlay(GuiIngameForge instance, RenderGameOverlayEvent.ElementType type, Operation<Boolean> original, @Local(argsOnly = true) float partialTicks) {
+        if (!Gnetum.config.isEnabled() || Gnetum.rendering) {
+            return original.call(instance, type);
         }
-        catch (Throwable throwable)
-        {
-            eventBusAccessor.getExceptionHandler().handleException(MinecraftForge.EVENT_BUS, event, uncachedEventListeners.list, index, throwable);
-            Throwables.throwIfUnchecked(throwable);
-            throw new RuntimeException(throwable);
-        }
-    }
 
-    @Unique
-    private boolean gnetum$pre(RenderGameOverlayEvent.ElementType type) {
-        return gnetum$callCachedEventListeners(new RenderGameOverlayEvent.Pre(eventParent, type), Gnetum.uncachedPreEventListeners);
-    }
+        Gnetum.getScaledResolution().update();
+        eventParent = new RenderGameOverlayEvent(partialTicks, Gnetum.getScaledResolution());
 
-    @Unique
-    private void gnetum$post(RenderGameOverlayEvent.ElementType type) {
-        gnetum$callCachedEventListeners(new RenderGameOverlayEvent.Post(eventParent, type), Gnetum.uncachedPostEventListeners);
-    }
-
-    @Unique
-    private void gnetum$renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
-        gnetum$getGuiIngameAccessor().callRenderScoreboard(objective, scaledRes);
-    }
-
-    @Unique
-    private GuiIngameAccessor gnetum$getGuiIngameAccessor() {
-        GuiIngameForge gui = (GuiIngameForge) (Object) this;
-        return (GuiIngameAccessor) (GuiIngame) gui;
-    }
-
-    @Inject(method = "renderCrosshairs", at = @At("HEAD"), cancellable = true, remap = false)
-    private void gnetum$preRenderCrosshairs(float partialTicks, CallbackInfo ci) {
-        if (Gnetum.rendering) ci.cancel(); // fixes compatibility with ScalingGUIs mod
-    }
-
-    @Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
-    private void gnetum$preRenderVignette(float lightLevel, ScaledResolution scaledRes, CallbackInfo ci) {
-        if (Gnetum.rendering) ci.cancel(); // fixes compatibility with ScalingGUIs mod
-    }
-
-    @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
-    public void gnetum$renderGameOverlay(float partialTicks, CallbackInfo ci) {
-        if (!GnetumConfig.isEnabled()) {
-            return;
-        }
-        if (Gnetum.rendering) { // fixes compatibility with ScalingGUIs mod
-            return;
-        }
-        ci.cancel();
-        res = new ScaledResolution(gnetum$mc);
-        eventParent = new RenderGameOverlayEvent(partialTicks, res);
-        int width = res.getScaledWidth();
-        int height = res.getScaledHeight();
-        renderHealthMount = gnetum$mc.player.getRidingEntity() instanceof EntityLivingBase;
-        renderFood = gnetum$mc.player.getRidingEntity() == null;
-        renderJumpBar = gnetum$mc.player.isRidingHorse();
-
+        SharedValues.partialTicks = partialTicks;
         fontrenderer = gnetum$mc.fontRenderer;
+
+        if (Gnetum.passManager.current == 1) {
+            gnetum$currentLeftHeight = 39;
+            gnetum$currentRightHeight = 39;
+        }
 
         right_height = 39;
         left_height = 39;
 
-        gnetum$renderUncachedPre(partialTicks);
-
-        FramebufferManager.getInstance().ensureSize();
-
-        FramebufferManager.getInstance().bind();
-
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.disableBlend();
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-
-        GlStateManager.color(1, 1, 1, 1);
-
-        Gnetum.rendering = true;
-        gnetum$mc.entityRenderer.setupOverlayRendering();
-
-        switch (Passes.current) {
-            //Having separate methods makes it easier to see which pass took the longest, during profiling
-            case Passes.FORGE_PRE:
-                gnetum$renderPass0();
-                if (!Gnetum.forceFullRebuild) {
-                    break;
-                }
-            case Passes.HOTBAR: //Items in the hotbar can be quite slow to render, so let's give them a pass
-                gnetum$renderPass1(partialTicks);
-                if (!Gnetum.forceFullRebuild) {
-                    break;
-                }
-            case Passes.HUD_TEXT: //F3, The One Probe, etc.
-                gnetum$renderPass2(width, height);
-                if (!Gnetum.forceFullRebuild) {
-                    break;
-                }
-            case Passes.MISC:
-                gnetum$renderPass3(width, height, partialTicks);
-                break;
+        if (ScalingGuisCompat.modInstalled) {
+            ScalingGuisCompat.switchToHudScale(Gnetum.getScaledResolution());
         }
 
-        Gnetum.rendering = false;
-        if (Gnetum.forceFullRebuild) {
-            Gnetum.forceFullRebuild = false;
-            Passes.current = 3; // We have finished rendering the passes so we correctly set this for framebuffers to be swapped
+        FramebufferManager.getInstance().ensureSize();
+        boolean framebufferComplete = FramebufferManager.getInstance().isComplete();
+        if (framebufferComplete) {
+            gnetum$mc.profiler.startSection("uncached");
+            Gnetum.renderingCanceled = gnetum$postEvent(new RenderGameOverlayEvent.Pre(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
+            gnetum$renderVanillaHuds(id -> Gnetum.passManager.cachingDisabled(id));
+            gnetum$mc.profiler.endSection();
+        }
+        else {
+            gnetum$lastLeftHeight = 39;
+            gnetum$lastRightHeight = 39;
+            gnetum$currentLeftHeight = 39;
+            gnetum$currentRightHeight = 39;
+        }
+
+        Gnetum.passManager.begin();
+        HudDeltaTracker.update(partialTicks);
+        SharedValues.partialTicks = HudDeltaTracker.getPartialTick();
+
+        if (Gnetum.passManager.current > 0) {
+            FramebufferManager.getInstance().bind();
+            Gnetum.rendering = true;
+
+            Gnetum.renderingCanceled = gnetum$postEvent(new RenderGameOverlayEvent.Pre(eventParent, ALL), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE));
+
+            if (Gnetum.passManager.current != 1) {
+                left_height = gnetum$currentLeftHeight;
+                right_height = gnetum$currentRightHeight;
+            }
+
+            gnetum$renderVanillaHuds(id -> Gnetum.passManager.shouldRender(id));
+            gnetum$postEvent(new RenderGameOverlayEvent.Post(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
+
+            if (BetterHudCompat.isEnabled()) {
+                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
+            }
+
+            gnetum$currentLeftHeight = left_height;
+            gnetum$currentRightHeight = right_height;
+
+            Gnetum.rendering = false;
+            Gnetum.currentElement = null;
+        }
+        Gnetum.passManager.end();
+        SharedValues.partialTicks = partialTicks;
+
+        if (Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
+            left_height = gnetum$lastLeftHeight;
+            right_height = gnetum$lastRightHeight;
+        }
+
+        Gnetum.passManager.nextPass();
+
+        if (Gnetum.passManager.current == Gnetum.config.numberOfPasses) {
+            gnetum$lastLeftHeight = left_height;
+            gnetum$lastRightHeight = right_height;
         }
 
         FramebufferManager.getInstance().unbind();
 
-        Passes.step();
+        if (ScalingGuisCompat.modInstalled) {
+            ScalingGuisCompat.restoreGameScale(Gnetum.getScaledResolution());
+        }
 
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-        GlStateManager.enableDepth();
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlpha();
+        if (framebufferComplete) {
+            FramebufferManager.getInstance().blit(res.getScaledWidth_double(), res.getScaledHeight_double());
 
-        gnetum$renderUncachedPost(partialTicks); // Needs to be called after framebuffer blitting to make sure FluxLoading works properly
+            if (ScalingGuisCompat.modInstalled) {
+                ScalingGuisCompat.switchToHudScale(Gnetum.getScaledResolution());
+            }
+
+            gnetum$mc.profiler.startSection("uncached");
+            gnetum$postEvent(new RenderGameOverlayEvent.Post(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+//            if (BetterHudCompat.isEnabled()) {
+//                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Post(eventParent, ALL));
+//            }
+
+            if (ScalingGuisCompat.modInstalled) {
+                ScalingGuisCompat.restoreGameScale(Gnetum.getScaledResolution());
+            }
+
+            gnetum$mc.profiler.endSection();
+        }
+        else {
+            return original.call(instance, type);
+        }
+
+        return true;
     }
 
     @Unique
-    private void gnetum$renderUncachedPre(float partialTicks) {
-        gnetum$mc.profiler.startSection("uncached");
-
-        GlStateManager.enableBlend();
-        GlStateManager.enableDepth();
-        if (XaeroMinimapCompat.modInstalled && !ScalingGuisCompat.modInstalled) {
-            XaeroMinimapCompat.callBeforeIngameGuiRender(partialTicks);
-        }
-
-        gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Pre(eventParent, ALL), Gnetum.uncachedPreEventListeners);
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-        if (renderVignette && CompatHelper.isVignetteEnabled()) {
-            renderVignette(gnetum$mc.player.getBrightness(), res);
-        }
-
-        ItemStack itemstack = gnetum$mc.player.inventory.armorItemInSlot(3);
-        if (gnetum$mc.gameSettings.thirdPersonView == 0 && !itemstack.isEmpty())
-        {
-            Item item = itemstack.getItem();
-            if (item == Item.getItemFromBlock(Blocks.PUMPKIN))
-            {
-                gnetum$getGuiIngameAccessor().callRenderPumpkinOverlay(res);
+    private void gnetum$renderVanillaHuds(Predicate<String> check) {
+        for (int i = 0; i < HudManager.huds.size(); i++) {
+            var hud = HudManager.huds.get(i);
+            String id = hud.id().toString();
+            if (hud.isDummy() || check.test(id)) {
+                if (Gnetum.rendering) {
+                    Gnetum.currentElement = id;
+                    Gnetum.currentElementType = ElementType.VANILLA;
+                }
+                hud.render();
             }
         }
-
-        if (renderCrosshairs) {
-            renderCrosshairs(partialTicks);
-            GlStateManager.enableBlend(); // Fix Tinker's Construct causing blackscreen when holding a crossbow
-        }
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderUncachedPost(float partialTicks) {
-        if (gnetum$overlayRenderingCanceled) return;
-
-        gnetum$mc.profiler.startSection("uncached");
-
-        if (BetterHudCompat.modInstalled) {
-            BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
-        }
-        gnetum$callUncachedEventListeners(new RenderGameOverlayEvent.Post(eventParent, ALL), Gnetum.uncachedPostEventListeners);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass0() {
-        gnetum$mc.profiler.startSection("pass0");
-
-        gnetum$overlayRenderingCanceled = gnetum$pre(ALL);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass1(float partialTicks) {
-        if (gnetum$overlayRenderingCanceled) return;
-
-        gnetum$mc.profiler.startSection("pass1");
-
-        if (BetterHudCompat.modInstalled) BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
-
-        GlStateManager.enableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        if (renderHotbar) renderHotbar(res, partialTicks);
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass2(int width, int height) {
-        if (gnetum$overlayRenderingCanceled) return;
-
-        gnetum$mc.profiler.startSection("pass2");
-
-        renderHUDText(width, height);
-
-        gnetum$mc.profiler.endSection();
-    }
-
-    @Unique
-    private void gnetum$renderPass3(int width, int height, float partialTicks) {
-        if (gnetum$overlayRenderingCanceled) return;
-
-        gnetum$mc.profiler.startSection("pass3");
-
-        if (BetterHudCompat.modInstalled) BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
-
-        GlStateManager.enableBlend();
-
-        GlStateManager.enableDepth();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-
-        if (renderHelmet) renderHelmet(res, partialTicks);
-
-        if (renderPortal && !gnetum$mc.player.isPotionActive(MobEffects.NAUSEA)) {
-            renderPortal(res, partialTicks);
-        }
-
-        //if (renderHotbar) renderHotbar(res, partialTicks);
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GuiHelper.setZLevel(-90.0F);
-        gnetum$getGuiIngameAccessor().getRand().setSeed((long) (gnetum$getGuiIngameAccessor().getUpdateCounter() * 312871));
-
-        if (renderBossHealth) renderBossHealth();
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        if (this.gnetum$mc.playerController.shouldDrawHUD() && this.gnetum$mc.getRenderViewEntity() instanceof EntityPlayer) {
-            if (renderHealth) renderHealth(width, height);
-            if (renderArmor) renderArmor(width, height);
-            if (renderFood) renderFood(width, height);
-            if (renderHealthMount) renderHealthMount(width, height);
-            if (renderAir) renderAir(width, height);
-        }
-
-        renderSleepFade(width, height);
-
-        if (renderJumpBar) {
-            renderJumpBar(width, height);
-        } else if (renderExperiance) {
-            renderExperience(width, height);
-        }
-
-        renderToolHighlight(res);
-        //renderHUDText(width, height);
-        renderFPSGraph();
-        renderPotionIcons(res);
-        renderRecordOverlay(width, height, partialTicks);
-        renderSubtitles(res);
-        renderTitle(width, height, partialTicks);
-
-
-        Scoreboard scoreboard = this.gnetum$mc.world.getScoreboard();
-        ScoreObjective objective = null;
-        ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(gnetum$mc.player.getName());
-        if (scoreplayerteam != null) {
-            int slot = scoreplayerteam.getColor().getColorIndex();
-            if (slot >= 0) objective = scoreboard.getObjectiveInDisplaySlot(3 + slot);
-        }
-        ScoreObjective scoreobjective1 = objective != null ? objective : scoreboard.getObjectiveInDisplaySlot(1);
-        if (renderObjective && scoreobjective1 != null) {
-            this.gnetum$renderScoreboard(scoreobjective1, res);
-        }
-
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        GlStateManager.disableAlpha();
-
-        renderChat(width, height);
-
-        renderPlayerList(width, height);
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlpha();
-
-        gnetum$post(ALL);
-
-        gnetum$mc.profiler.endSection();
     }
 }

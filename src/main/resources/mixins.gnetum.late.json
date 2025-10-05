@@ -5,10 +5,10 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
-  "server": [],
   "client": [
     "compat.betterhud.HudElementMixin",
-    "compat.voxelmap.MapMixin"
+    "compat.scalingguis.ClientEventHandlerMixin",
+    "compat.voxelmap.MapMixin",
+    "compat.xaerosminimap.ImprovedFramebufferMixin"
   ]
 }

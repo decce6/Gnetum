@@ -10,12 +10,12 @@ import java.lang.reflect.Field;
 
 public class GuiHelper {
     private static final Gui gui;
-    private static final MethodHandle methodHandle;
+    private static final MethodHandle Z_LEVEL_SETTER;
     private static boolean suppressErrorLog;
 
     public static void setZLevel(float zLevel) {
         try {
-            methodHandle.invokeExact(gui, zLevel);
+            Z_LEVEL_SETTER.invokeExact(gui, zLevel);
         } catch (Throwable e) {
             if (!suppressErrorLog) {
                 suppressErrorLog = true;
@@ -32,7 +32,7 @@ public class GuiHelper {
             Field field = clazzGui.getDeclaredField(deobfuscated ? "zLevel" : "field_73735_i");
             field.setAccessible(true);
             MethodHandles.Lookup lookup = MethodHandles.lookup();
-            methodHandle = lookup.unreflectSetter(field);
+            Z_LEVEL_SETTER = lookup.unreflectSetter(field);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize GuiHelper!", e);
         }

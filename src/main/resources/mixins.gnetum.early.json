@@ -5,18 +5,18 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
-  "server": [],
   "client": [
     "FramebufferMixin",
     "GlStateManagerMixin",
     "GuiIngameAccessor",
+    "GuiIngameForgeAccessor",
     "GuiIngameForgeMixin",
     "GuiIngameMixin",
     "ItemRendererMixin",
-    "MinecraftMixin",
+    "MinecraftAccessor",
+    "OpenGlHelperMixin",
+    "RenderGameOverlayEventMixin",
     "compat.EventBusAccessor",
-    "compat.EventBusMixin",
     "compat.optifine.ConfigAccessor"
   ]
 }
