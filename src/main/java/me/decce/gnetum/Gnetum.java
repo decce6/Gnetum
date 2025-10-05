@@ -132,7 +132,7 @@ public class Gnetum {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH) // HIGH to run after VintageFix's listener
-    public void onRenderF3(RenderGameOverlayEvent.Text event) {
+    public static void onRenderF3(RenderGameOverlayEvent.Text event) {
         if (!Gnetum.config.isEnabled() || !Gnetum.config.showHudFps.get()) {
             return;
         }
