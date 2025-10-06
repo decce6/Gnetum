@@ -111,11 +111,6 @@ public class Gnetum {
         ClientRegistry.registerKeyBinding(KEYBIND);
     }
 
-    @Mod.EventHandler
-    public void loadComplete(FMLLoadCompleteEvent event) {
-
-    }
-
     @SubscribeEvent
     public static void onJoinWorld(WorldEvent.Load event) {
         if (config.isEnabled() && event.getWorld().isRemote){
@@ -136,8 +131,8 @@ public class Gnetum {
         if (!Gnetum.config.isEnabled() || !Gnetum.config.showHudFps.get()) {
             return;
         }
-        String str = String.format("HUD: %d fps (nr=%d, cap=%s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
         if(Minecraft.getMinecraft().gameSettings.showDebugInfo) {
+            String str = String.format("HUD: %d fps (nr=%d, cap=%s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
             if (event.getLeft().size() > 2) {
                 event.getLeft().add(2, str);
             }
