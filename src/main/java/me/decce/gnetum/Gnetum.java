@@ -47,7 +47,7 @@ public class Gnetum {
     public static boolean isRenderingHelmet;
     public static long lastSwapNanos;
 
-    public static final KeyBinding KEYBIND = new KeyBinding("gnetum.key.open_config", KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_END, "key.categories.misc");
+    public static final KeyBinding KEYBIND = new KeyBinding("gnetum.config.keyMapping", KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_END, "key.categories.misc");
 
     public static Logger LOGGER;
 
