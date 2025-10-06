@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.io.FileUtils;
@@ -30,7 +31,7 @@ public class GnetumConfig {
     public HashMap<String, CacheSetting> mapModdedElementsPost = new HashMap<>();
 
     public boolean isEnabled() {
-        return enabled.get();
+        return enabled.get() && OpenGlHelper.isFramebufferEnabled();
     }
 
     private static void importOld(GnetumConfig config) {
