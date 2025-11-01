@@ -29,6 +29,6 @@ public class HudDeltaTracker {
                 ret += partialTicks[i];
             }
         }
-        return ret;
+        return Math.min(ret, 1F);
     }
 }
