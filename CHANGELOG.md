@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2
+
+- Fixed rendering issue with some mods that modify the health bar
+- Fixed framebuffer clearing on macOS
+- Fixed incorrect block display in The One Probe mod
+
 ## 1.3.1
 
 Fixed configuration import.
