@@ -53,3 +53,4 @@ gnetum.config.element.minecraft.hud_text=HUD Text
 gnetum.config.element.minecraft.fps_graph=FPS Graph
 gnetum.config.element.minecraft.record_overlay=Record Overlay
 gnetum.config.element.gnetum.minecraft_hand=Hand (Experimental)
+gnetum.config.element.gnetum_unknown=Other Mods

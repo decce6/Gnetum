@@ -38,6 +38,7 @@ public class Gnetum {
     public static final FpsCounter FPS_COUNTER = new FpsCounter();
     public static GnetumConfig config;
     public static final String HAND_ELEMENT = "gnetum:minecraft_hand";
+    public static final String OTHER_MODS = "gnetum_unknown";
     public static PassManager passManager;
     public static UncachedElements uncachedElements;
     public static String currentElement;

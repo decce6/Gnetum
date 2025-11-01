@@ -71,13 +71,13 @@ public class GuiIngameForgeMixin {
                     Gnetum.currentElement = modid;
                     if (event instanceof RenderGameOverlayEvent.Pre) {
                         Gnetum.currentElementType = ElementType.PRE;
-                        if (modid == null || test == null || test.test(modid)) {
+                        if (test == null || test.test(modid)) {
                             listener.invoke(event);
                         }
                     }
                     else if (event instanceof RenderGameOverlayEvent.Post) {
                         Gnetum.currentElementType = ElementType.POST;
-                        if (modid == null || test == null || test.test(modid)) {
+                        if (test == null || test.test(modid)) {
                             listener.invoke(event);
                         }
                     }
