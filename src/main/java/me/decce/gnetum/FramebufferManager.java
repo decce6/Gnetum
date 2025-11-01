@@ -93,6 +93,7 @@ public class FramebufferManager {
         }
         else {
             // macOS does not have GL30 in compatibility context
+            GlStateManager.clearColor(0, 0, 0, 0);
             GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         }
     }
