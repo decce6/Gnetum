@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0
+
+**This version now allows all modded HUDs to be cached, greatly improving performance. If this is not desired, go to "Modded Elements" in the config and set "Other Mods" to "OFF".**
+
+- Caching of unknown modded HUDs is now allowed (shows up as "Other Mods" in "Modded Elements")
+- Fixed partial ticks
+
 ## 2.2.2
 
 - Fixed PoseStack crashes
