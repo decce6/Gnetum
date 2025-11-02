@@ -241,15 +241,17 @@ public class ForgeGuiMixin {
                         if (listener instanceof ASMEventHandler asm) {
                             String modid = ASMEventHandlerHelper.tryGetModId(asm);
                             if (event instanceof RenderGuiEvent.Pre) {
+                                if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.PRE;
-                                if (modid == null || check.test(modid)) {
+                                if (check.test(modid)) {
                                     wrapper.invoke(listener, event);
                                 }
                             } else if (event instanceof RenderGuiEvent.Post) {
+                                if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.POST;
-                                if (modid == null || check.test(modid)) {
+                                if (check.test(modid)) {
                                     wrapper.invoke(listener, event);
                                 }
                             }

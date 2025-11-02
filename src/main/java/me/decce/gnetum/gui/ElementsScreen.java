@@ -135,6 +135,7 @@ public class ElementsScreen extends BaseScreen {
             return left + " " + right;
         }
         else {
+            if (Gnetum.OTHER_MODS.equals(string)) return I18n.get("gnetum.config.element.gnetum_unknown");
             var file = ModList.get().getModFileById(string);
             return file == null ? string : file.getMods().get(0).getDisplayName();
         }
