@@ -80,6 +80,9 @@ public class GuiHelper {
                     if (listener instanceof SubscribeEventListener || listener instanceof ConsumerEventHandler) {
                         modid = EventListenerHelper.tryGetModId(listener);
                     }
+                    if (modid == null && event instanceof RenderGuiEvent) {
+                        modid = Gnetum.OTHER_MODS;
+                    }
                     if (modid != null) {
                         if (event instanceof RenderGuiEvent.Pre) {
                             Gnetum.currentElement = modid;
@@ -99,7 +102,6 @@ public class GuiHelper {
                         }
                     }
                     else {
-                        // do not cache listeners that are not SubscribeEventListener
                         // Listeners that listen to RenderGuiEvent may trigger this path 2 times each frame (one in uncached, one in cached), and we only actually render them once
                         // Listeners that listen to RenderGuiLayerEvent only trigger this path 1 time
                         if (!Gnetum.rendering /*|| listener instanceof EventPriority*/|| event instanceof RenderGuiLayerEvent) {

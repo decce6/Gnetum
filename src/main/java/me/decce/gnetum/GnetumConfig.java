@@ -68,10 +68,10 @@ public class GnetumConfig {
 
     private void hideElementsOrphanOrUncached() {
         mapModdedElementsPre.entrySet().stream()
-                .filter(entry -> !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.PRE))
+                .filter(entry -> !Gnetum.OTHER_MODS.equals(entry.getKey()) && !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.PRE))
                 .forEach(entry -> entry.getValue().hidden = true);
         mapModdedElementsPost.entrySet().stream()
-                .filter(entry -> !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.POST))
+                .filter(entry -> !Gnetum.OTHER_MODS.equals(entry.getKey()) && !ModList.get().isLoaded(entry.getKey()) || Gnetum.uncachedElements.has(entry.getKey(), ElementType.POST))
                 .forEach(entry -> entry.getValue().hidden = true);
         var accessor = GuiHelper.getGuiLayerManagerAccessor();
         mapVanillaElements.forEach((s, c) -> { // TODO: this might need a bit of optimization

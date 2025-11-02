@@ -49,5 +49,6 @@
   "gnetum.config.element.minecraft.tab_list": "Player List",
   "gnetum.config.element.minecraft.subtitle_overlay": "Subtitles",
   "gnetum.config.element.minecraft.saving_indicator": "Saving Indicator",
-  "gnetum.config.element.gnetum.minecraft_hand": "Hand (Experimental)"
+  "gnetum.config.element.gnetum.minecraft_hand": "Hand (Experimental)",
+  "gnetum.config.element.gnetum_unknown": "Other Mods"
 }
