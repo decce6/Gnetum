@@ -18,7 +18,7 @@ public class UncachedElements {
                 "apoli:above_overlay" // Origins mod when origin is Phantom
         );
         moddedPre = ImmutableSet.of(
-                "xaerominimap"
+                "xaerominimap" // in-game waypoint, does not disable minimap
         );
         moddedPost = ImmutableSet.of();
     }
