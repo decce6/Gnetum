@@ -84,6 +84,9 @@ public class GameRendererMixin {
         if (deltaTracker instanceof DeltaTracker.Timer timer) {
             HudDeltaTracker.update(timer);
         }
+        else {
+            HudDeltaTracker.disable();
+        }
         if (Gnetum.passManager.current > 0) {
             FramebufferManager.getInstance().bind();
         }

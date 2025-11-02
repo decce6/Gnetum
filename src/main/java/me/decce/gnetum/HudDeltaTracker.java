@@ -2,78 +2,56 @@ package me.decce.gnetum;
 
 import net.minecraft.client.DeltaTracker;
 
+import java.util.Arrays;
+
 public class HudDeltaTracker {
-    private static float[] gameTimeDeltaTicks;
-    private static float[] gameTimeDeltaPartialTick;
+    private static float lastRealtimeDeltaTicks = Float.NaN;
     private static float[] realtimeDeltaTicks;
+    private static boolean logOnce;
 
     public static void update(DeltaTracker.Timer timer) {
         int len = Gnetum.config.numberOfPasses + 1;
         int curr = Gnetum.passManager.current;
-        if (gameTimeDeltaTicks == null || gameTimeDeltaTicks.length != len) {
-            gameTimeDeltaTicks = new float[len];
-            gameTimeDeltaPartialTick = new float[len];
-            realtimeDeltaTicks = new float[len];
+        if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
+            reset();
         }
-        gameTimeDeltaTicks[curr] += timer.getGameTimeDeltaTicks();
-        gameTimeDeltaPartialTick[curr] += timer.getGameTimeDeltaPartialTick(true);
         realtimeDeltaTicks[curr] += timer.getRealtimeDeltaTicks();
     }
 
     public static void reset() {
         int len = Gnetum.config.numberOfPasses + 1;
-        if (gameTimeDeltaTicks == null || gameTimeDeltaTicks.length != len) {
-            gameTimeDeltaTicks = new float[len];
-            gameTimeDeltaPartialTick = new float[len];
+        if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
             realtimeDeltaTicks = new float[len];
         }
-        for (int i = 0; i < len; i++) {
-            reset(i);
+        else {
+            store();
         }
+        Arrays.fill(realtimeDeltaTicks, 0f);
     }
 
-    public static void reset(int i) {
-        gameTimeDeltaTicks[i] = 0F;
-        gameTimeDeltaPartialTick[i] = 0F;
-        realtimeDeltaTicks[i] = 0F;
-    }
-
-    public static void step() {
-        int len = Gnetum.config.numberOfPasses + 1;
-        if (gameTimeDeltaTicks == null || gameTimeDeltaTicks.length != len) {
-            reset();
-        }
-        int i = Gnetum.passManager.current;
-        reset(i);
-    }
-
-    public static float getGameTimeDeltaTicks() {
-        float ret = 0F;
+    private static void store() {
+        lastRealtimeDeltaTicks = 0f;
         for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
-            if (i < gameTimeDeltaTicks.length) {
-                ret += gameTimeDeltaTicks[i];
+            if (i < realtimeDeltaTicks.length) {
+                lastRealtimeDeltaTicks += realtimeDeltaTicks[i];
             }
         }
-        return ret;
     }
 
-    public static float getGameTimeDeltaPartialTick() {
-        float ret = 0F;
-        for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
-            if (i < gameTimeDeltaPartialTick.length) {
-                ret += gameTimeDeltaPartialTick[i];
-            }
+    public static void disable() {
+        if (!logOnce) {
+            logOnce = true;
+            Gnetum.LOGGER.warn("Incompatible mod detected, disabling HUD delta tracker.");
+            Gnetum.LOGGER.warn("Consider reporting to Gnetum developer.");
         }
-        return ret;
+        lastRealtimeDeltaTicks = Float.NaN;
+    }
+
+    public static boolean isReady() {
+        return !Float.isNaN(lastRealtimeDeltaTicks);
     }
 
     public static float getRealtimeDeltaTicks() {
-        float ret = 0F;
-        for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
-            if (i < realtimeDeltaTicks.length) {
-                ret += realtimeDeltaTicks[i];
-            }
-        }
-        return ret;
+        return lastRealtimeDeltaTicks;
     }
 }

@@ -48,6 +48,7 @@ public class PassManager {
         if (current == 0) {
             if (Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS || nanos <= Gnetum.lastSwapNanos || nanos - Gnetum.lastSwapNanos >= NANOS_IN_A_SECOND / Gnetum.config.maxFps) {
                 current = 1;
+                HudDeltaTracker.reset();
                 FramebufferManager.getInstance().swapFramebuffers();
                 Gnetum.lastSwapNanos = nanos;
             }
@@ -64,17 +65,14 @@ public class PassManager {
             if (current++ == Gnetum.config.numberOfPasses) {
                 if (Gnetum.config.maxFps != GnetumConfig.UNLIMITED_FPS && nanos > Gnetum.lastSwapNanos && nanos - Gnetum.lastSwapNanos < NANOS_IN_A_SECOND / Gnetum.config.maxFps) {
                     current = 0;
-                    HudDeltaTracker.step();
                 }
                 else {
                     current = 1;
-                    HudDeltaTracker.step();
-                    HudDeltaTracker.reset(0);
+                    HudDeltaTracker.reset();
                     FramebufferManager.getInstance().swapFramebuffers();
                     Gnetum.lastSwapNanos = nanos;
                 }
             }
-            else HudDeltaTracker.step();
         }
     }
 
