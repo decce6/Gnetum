@@ -6,10 +6,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.decce.gnetum.ASMEventHandlerHelper;
 import me.decce.gnetum.ElementType;
-import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
-import me.decce.gnetum.MutableScaledResolution;
 import me.decce.gnetum.compat.betterhud.BetterHudCompat;
 import me.decce.gnetum.compat.scalingguis.ScalingGuisCompat;
 import me.decce.gnetum.hud.HudManager;
@@ -31,7 +29,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Predicate;
 
-import static net.minecraftforge.client.GuiIngameForge.*;
+import static net.minecraftforge.client.GuiIngameForge.left_height;
+import static net.minecraftforge.client.GuiIngameForge.right_height;
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.ALL;
 
 @Mixin(value = GuiIngameForge.class)
@@ -137,8 +136,6 @@ public class GuiIngameForgeMixin {
         }
 
         Gnetum.passManager.begin();
-        HudDeltaTracker.update(partialTicks);
-        SharedValues.partialTicks = HudDeltaTracker.getPartialTick();
 
         if (Gnetum.passManager.current > 0) {
             FramebufferManager.getInstance().bind();
@@ -165,7 +162,6 @@ public class GuiIngameForgeMixin {
             Gnetum.currentElement = null;
         }
         Gnetum.passManager.end();
-        SharedValues.partialTicks = partialTicks;
 
         if (Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
             left_height = gnetum$lastLeftHeight;
