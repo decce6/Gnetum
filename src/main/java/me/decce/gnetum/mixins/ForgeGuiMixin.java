@@ -114,7 +114,7 @@ public class ForgeGuiMixin {
         }
 
         Gnetum.passManager.begin();
-        HudDeltaTracker.update();
+        HudDeltaTracker.update(minecraft);
         if (Gnetum.passManager.current > 0) {
             FramebufferManager.getInstance().bind();
             Gnetum.rendering = true;

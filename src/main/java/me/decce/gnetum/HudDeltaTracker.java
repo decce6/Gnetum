@@ -1,50 +1,47 @@
 package me.decce.gnetum;
 
-import me.decce.gnetum.mixins.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
 
-public class HudDeltaTracker {
-    private static float[] tickDelta;
+import java.util.Arrays;
 
-    public static void update() {
+public class HudDeltaTracker {
+    private static float lastTickDelta = Float.NaN;
+    private static float[] tickDeltas;
+
+    public static void update(Minecraft minecraft) {
         int len = Gnetum.config.numberOfPasses + 1;
         int curr = Gnetum.passManager.current;
-        if (tickDelta == null || tickDelta.length != len) {
-            tickDelta = new float[len];
+        if (tickDeltas == null || tickDeltas.length != len) {
+            reset();
         }
-        tickDelta[curr] += ((MinecraftAccessor)Minecraft.getInstance()).getTimer().tickDelta;
+        tickDeltas[curr] += minecraft.getDeltaFrameTime();
     }
 
     public static void reset() {
         int len = Gnetum.config.numberOfPasses + 1;
-        if (tickDelta == null || tickDelta.length != len) {
-            tickDelta = new float[len];
+        if (tickDeltas == null || tickDeltas.length != len) {
+            tickDeltas = new float[len];
         }
-        for (int i = 0; i < len; i++) {
-            reset(i);
+        else {
+            store();
+        }
+        Arrays.fill(tickDeltas, 0f);
+    }
+
+    private static void store() {
+        lastTickDelta = 0f;
+        for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
+            if (i < tickDeltas.length) {
+                lastTickDelta += tickDeltas[i];
+            }
         }
     }
 
-    public static void reset(int i ) {
-        tickDelta[i] = 0F;
-    }
-
-    public static void step() {
-        int len = Gnetum.config.numberOfPasses + 1;
-        if (tickDelta == null || tickDelta.length != len) {
-            reset();
-        }
-        int i = Gnetum.passManager.current;
-        reset(i);
+    public static boolean isReady() {
+        return !Float.isNaN(lastTickDelta);
     }
 
     public static float getTickDelta() {
-        float ret = 0F;
-        for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
-            if (i < tickDelta.length) {
-                ret += tickDelta[i];
-            }
-        }
-        return ret;
+        return lastTickDelta;
     }
 }
