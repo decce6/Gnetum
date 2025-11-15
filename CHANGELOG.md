@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2.1
+
+- Added compatibility with Ping Wheel mod
+- Fixed depth buffer
+
 ## 3.2.0
 
 **This version now allows all modded HUDs to be cached, greatly improving performance. If this is not desired, go to "Modded Elements" in the config and set "Other Mods" to "OFF".**
