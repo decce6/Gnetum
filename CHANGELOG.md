@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1
+
+- Fixed depth buffer
+
 ## 2.3.0
 
 **This version now allows all modded HUDs to be cached, greatly improving performance. If this is not desired, go to "Modded Elements" in the config and set "Other Mods" to "OFF".**
