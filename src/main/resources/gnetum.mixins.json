@@ -8,6 +8,7 @@
     "compat.jade.BossHealthOverlayMixin",
     "compat.jade.ClientProxyMixin",
     "compat.journeymap.HudOverlayHandlerMixin",
+    "compat.pingwheel.CommonClientMixin",
     "ChatScreenMixin",
     "DeltaTrackerMixin",
     "GameRendererMixin",
