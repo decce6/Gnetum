@@ -9,6 +9,7 @@
     "compat.jade.ClientProxyMixin",
     "compat.journeymap.HudOverlayHandlerMixin",
     "compat.pingwheel.CommonClientMixin",
+    "compat.sodium.SodiumOptionsGUIMixin",
     "ChatScreenMixin",
     "DeltaTrackerMixin",
     "GameRendererMixin",

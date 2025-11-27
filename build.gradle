@@ -128,6 +128,7 @@ dependencies {
     implementation("maven.modrinth:journeymap:1.21.1-6.0.0-beta.52+neoforge")
     implementation("maven.modrinth:jade:15.10.3+neoforge")
     implementation("maven.modrinth:ping-wheel:1.12.0-1.21.1,neoforge")
+    implementation("maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -55,6 +55,13 @@ public final class Gnetum {
         container.registerExtensionPoint(IConfigScreenFactory.class, new GnetumConfigScreenFactory());
     }
 
+    public static GnetumConfig getConfig() {
+        if (config == null) {
+            ensureInitialized();
+        }
+        return config;
+    }
+
     public static void ensureInitialized() {
         if (Gnetum.passManager == null) {
             Gnetum.passManager = new PassManager();
