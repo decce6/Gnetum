@@ -1,6 +1,7 @@
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.mixins.GuiAccessor;
 import me.decce.gnetum.mixins.GuiLayerManagerAccessor;
 import net.minecraft.client.DeltaTracker;
@@ -40,10 +41,12 @@ public class GuiHelper {
                     Gnetum.currentElement = id;
                     Gnetum.currentElementType = ElementType.VANILLA;
                 }
-                if (!pre(layer, guiGraphics, partialTick)) {
-                    layer.layer().render(guiGraphics, partialTick);
-                    post(layer, guiGraphics, partialTick);
-                }
+                PoseStackHelper.checked(guiGraphics.pose(), () -> {
+                    if (!pre(layer, guiGraphics, partialTick)) {
+                        layer.layer().render(guiGraphics, partialTick);
+                        post(layer, guiGraphics, partialTick);
+                    }
+                });
                 guiGraphics.pose().translate(0.0F, 0.0F, GuiLayerManager.Z_SEPARATION);
                 RenderSystem.enableDepthTest(); // Some mods break the GL state here - let's fix it up to prevent flickering
             }
@@ -53,18 +56,18 @@ public class GuiHelper {
     }
 
     public static boolean pre(GuiLayerManager.NamedLayer layer, GuiGraphics guiGraphics, DeltaTracker partialTick) {
-        return ((RenderGuiLayerEvent.Pre) postEvent(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer()))).isCanceled();
+        return ((RenderGuiLayerEvent.Pre) postEvent(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer()), guiGraphics.pose())).isCanceled();
     }
 
     public static void post(GuiLayerManager.NamedLayer layer, GuiGraphics guiGraphics, DeltaTracker partialTick) {
-        postEvent(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
+        postEvent(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()), guiGraphics.pose());
     }
 
-    public static <T extends Event> T postEvent(Event event) {
-        return (T) postEvent(event, null);
+    public static <T extends Event> T postEvent(Event event, PoseStack poseStack) {
+        return (T) postEvent(event, poseStack, null);
     }
 
-    public static <T extends Event> T postEvent(T event, Predicate<String> check) {
+    public static <T extends Event> T postEvent(T event, PoseStack poseStack, Predicate<String> check) {
         if (EventBusHelper.isShutdown()) {
             return event;
         } else {
@@ -88,13 +91,13 @@ public class GuiHelper {
                             Gnetum.currentElement = modid;
                             Gnetum.currentElementType = ElementType.PRE;
                             if (check == null || check.test(modid)) {
-                                listener.invoke(event);
+                                invokeListenerSafe(listener, event, poseStack);
                             }
                         } else if (event instanceof RenderGuiEvent.Post) {
                             Gnetum.currentElement = modid;
                             Gnetum.currentElementType = ElementType.POST;
                             if (check == null || check.test(modid)) {
-                                listener.invoke(event);
+                                invokeListenerSafe(listener, event, poseStack);
                             }
                         }
                         else {
@@ -115,5 +118,9 @@ public class GuiHelper {
                 throw throwable;
             }
         }
+    }
+
+    private static void invokeListenerSafe(EventListener listener, Event event, PoseStack stack) {
+        PoseStackHelper.checked(stack, () -> listener.invoke(event));
     }
 }

@@ -33,7 +33,7 @@ public class GuiMixin {
     @Unique
     private int gnetum$currentRightHeight;
     @Unique
-    private Matrix4f gnetum$defaultGuiPose = new Matrix4f();
+    private final Matrix4f gnetum$defaultGuiPose = new Matrix4f();
 
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/gui/GuiLayerManager;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     public boolean gnetum$render(GuiLayerManager instance, GuiGraphics guiGraphics, DeltaTracker partialTick)
@@ -56,7 +56,7 @@ public class GuiMixin {
         }
 
         if (Gnetum.passManager.current > 0) {
-            Gnetum.renderingCanceled = ((RenderGuiEvent.Pre)GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, partialTick), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE))).isCanceled();
+            Gnetum.renderingCanceled = ((RenderGuiEvent.Pre)GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE))).isCanceled();
 
             if (Gnetum.passManager.current != 1) {
                 leftHeight = gnetum$currentLeftHeight;
@@ -65,7 +65,7 @@ public class GuiMixin {
 
             GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, partialTick, rl -> Gnetum.passManager.shouldRender(rl));
 
-            GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, partialTick), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
+            GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
 
             gnetum$currentLeftHeight = leftHeight;
             gnetum$currentRightHeight = rightHeight;
