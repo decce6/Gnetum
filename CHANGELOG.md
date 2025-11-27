@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.3
+
+- Fixed crash when Embeddium is not installed
+
 ## 2.3.2
 
 - Fixed depth issues like chat screen ocurring behind hotbar
