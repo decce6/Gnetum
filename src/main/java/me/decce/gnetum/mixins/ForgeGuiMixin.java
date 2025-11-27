@@ -152,6 +152,8 @@ public class ForgeGuiMixin {
 
         Gnetum.passManager.nextPass();
 
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+
         if (Gnetum.passManager.current == Gnetum.config.numberOfPasses) {
             gnetum$lastLeftHeight = leftHeight;
             gnetum$lastRightHeight = rightHeight;
