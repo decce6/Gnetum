@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2.2
+
+- Fixed depth issues like chat screen appearing behind hotbar
+- Added basic integration with Sodium config screen
+
 ## 3.2.1
 
 - Added compatibility with Ping Wheel mod
