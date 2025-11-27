@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.2
+
+- Fixed depth issues like chat screen ocurring behind hotbar
+- Added basic integration with Embeddium config screen
+
 ## 2.3.1
 
 - Fixed depth buffer
