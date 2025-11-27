@@ -1,56 +1,44 @@
 package me.decce.gnetum;
 
+import me.decce.gnetum.mixins.GuiAccessor;
+import me.decce.gnetum.mixins.GuiLayerManagerAccessor;
+import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 public class PackedVanillaElements {
-    private static final Map<String, Pack> map;
+    public static final String PACKED_STATUS_BAR = "gnetum:status_bar";
+    public static HashSet<String> set;
 
-    // The position of these elements depend on each other and cannot be allowed to be configured individually
-    private static final Pack leftElements = Pack.of("gnetum.packedElement.left", VanillaGuiLayers.ARMOR_LEVEL.toString(), VanillaGuiLayers.PLAYER_HEALTH.toString(), "appleskin:health_offset", "appleskin:health_restored", "farmersdelight:comfort", "farmersdelight:health_offset");
-    private static final Pack rightElements = Pack.of("gnetum.packedElement.right", VanillaGuiLayers.AIR_LEVEL.toString(), VanillaGuiLayers.FOOD_LEVEL.toString(), VanillaGuiLayers.VEHICLE_HEALTH.toString(), "appleskin:exhaustion_level", "appleskin:food_offset", "appleskin:hunger_restored", "appleskin:saturation_level", "farmersdelight:food_offset", "farmersdelight:nourishment");
-
-    static {
-        map = new HashMap<>(leftElements.getOverlays().length + rightElements.getOverlays().length);
-        for (String overlay : leftElements.getOverlays()) {
-            map.put(overlay, leftElements);
-        }
-        for (String overlay : rightElements.getOverlays()) {
-            map.put(overlay, rightElements);
+    public static void init() {
+        set = new HashSet<>();
+        var layerManager = ((GuiAccessor)Minecraft.getInstance().gui).getLayerManager();
+        var layers = ((GuiLayerManagerAccessor)layerManager).getLayers();
+        // Pack all elements on the status bar (see VanillaGuiOverlays)
+        boolean pack = false;
+        for (var layer : layers) {
+            if (VanillaGuiLayers.EXPERIENCE_BAR.equals(layer.name())) {
+                pack = true;
+                continue; // Start packing from the next element
+            }
+            if (VanillaGuiLayers.SELECTED_ITEM_NAME.equals(layer.name())) {
+                break;
+            }
+            if (pack) {
+                set.add(layer.name().toString());
+            }
         }
     }
 
-    public static boolean isPacked(String element) {
-        return map.containsKey(element);
+    public static String consider(String element) {
+        if (set == null) {
+            init();
+        }
+        return set.contains(element) ? PACKED_STATUS_BAR : element;
     }
 
-    public static Pack getPacked(String element) {
-        return map.get(element);
-    }
-
-    public static Map<String, Pack> getMap() {
-        return map;
-    }
-
-    public static class Pack {
-        private String[] overlays;
-        private String key;
-
-        public static Pack of(String key, String... overlays) {
-            Pack pack = new Pack();
-            pack.key = key;
-            pack.overlays = overlays;
-            return pack;
-        }
-
-        public String[] getOverlays() {
-            return overlays;
-        }
-
-        public String getKey() {
-            return key;
-        }
+    public static void reset() {
+        set = null;
     }
 }

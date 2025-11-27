@@ -83,8 +83,11 @@ public class GnetumConfig {
     }
 
     private void removeObsoleteVanillaElements() {
-        PackedVanillaElements.getMap().forEach((key, value)
-                -> Arrays.stream(value.getOverlays()).forEach(key1 -> mapVanillaElements.remove(key1)));
+        if (PackedVanillaElements.set != null) {
+            PackedVanillaElements.set.forEach(key -> mapVanillaElements.remove(key));
+        }
+        mapVanillaElements.remove("gnetum.packedElement.left");
+        mapVanillaElements.remove("gnetum.packedElement.right");
     }
 
     private static int clamp(int value, int min, int max) { // min & max: inclusive
