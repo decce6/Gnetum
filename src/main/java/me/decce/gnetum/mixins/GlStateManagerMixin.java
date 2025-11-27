@@ -43,7 +43,7 @@ public class GlStateManagerMixin {
             //  disable caching.
             //  I'll just special-case Xaero's Minimap until I come up with a better solution.
             if (Gnetum.currentElementType != ElementType.VANILLA || !"xaerominimap:xaero".equals(Gnetum.currentElement)) {
-                Gnetum.disableCachingForCurrentElement();
+                Gnetum.disableCachingForCurrentElement(String.format("Blending Function (%d, %d, %d, %d)", srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha));
             }
         }
     }

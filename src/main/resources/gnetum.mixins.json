@@ -5,15 +5,16 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "compat.jade.BossHealthOverlayMixin",
-    "compat.jade.OverlayRendererMixin",
     "ForgeGuiMixin",
     "GameRendererMixin",
     "GlStateManagerMixin",
     "GuiAccessor",
     "MinecraftAccessor",
     "MinecraftMixin",
-    "RenderTargetMixin"
+    "PoseStackAccessor",
+    "RenderTargetMixin",
+    "compat.jade.BossHealthOverlayMixin",
+    "compat.jade.OverlayRendererMixin"
   ],
   "mixins": [],
   "injectors": {
