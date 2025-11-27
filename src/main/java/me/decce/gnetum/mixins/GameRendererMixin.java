@@ -104,6 +104,8 @@ public class GameRendererMixin {
 
         Gnetum.passManager.nextPass();
 
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+
         FramebufferManager.getInstance().unbind();
 
         boolean fboCompleteAfterRendering = FramebufferManager.getInstance().isComplete();
