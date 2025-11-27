@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GnetumConfig {
     public static final int UNLIMITED_FPS = 125; // when maxFps is set to this value it means unlimited
@@ -84,8 +81,11 @@ public class GnetumConfig {
     }
 
     private void removeObsoleteVanillaElements() {
-        PackedVanillaElements.getMap().forEach((key, value)
-                -> Arrays.stream(value.getOverlays()).forEach(key1 -> mapVanillaElements.remove(key1)));
+        if (PackedVanillaElements.set != null) {
+            PackedVanillaElements.set.forEach(key -> mapVanillaElements.remove(key));
+        }
+        mapVanillaElements.remove("gnetum.packedElement.left");
+        mapVanillaElements.remove("gnetum.packedElement.right");
     }
 
     private static int clamp(int value, int min, int max) { // min & max: inclusive

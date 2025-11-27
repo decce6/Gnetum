@@ -30,8 +30,7 @@
   "gnetum.config.analysis.failedDuration": "Could not load pass duration data. Please try again later.",
   "gnetum.config.analysis.detailDuration": "[Rendering times]",
 
-  "gnetum.packedElement.left": "Health & Armor",
-  "gnetum.packedElement.right": "Food & Air",
+  "gnetum.statusBar": "Status Bar",
 
   "gnetum.config.element.minecraft.spyglass": "Spyglass",
   "gnetum.config.element.minecraft.helmet": "Helmet",

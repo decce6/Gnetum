@@ -6,12 +6,9 @@ public class SuggestedPass {
     public static int get(String name) {
         int pass = switch (name) {
             case "minecraft:spyglass", "minecraft:helmet", "minecraft:frostbite", "minecraft:portal", "minecraft:hotbar" -> 1;
-            case "minecraft:boss_event_progress", "gnetum.packedElement.left", "gnetum.packedElement.right", "minecraft:jump_bar", "minecraft:experience_bar" -> 2;
+            case "minecraft:boss_event_progress", "gnetum.statusBar", "minecraft:jump_bar", "minecraft:experience_bar" -> 2;
             default -> {
                 if (name.startsWith("minecraft:")) {
-                    if (PackedVanillaElements.isPacked(name)) {
-                        yield get(PackedVanillaElements.getPacked(name).getKey());
-                    }
                     yield 3;
                 }
                 var overlays = GuiOverlayManager.getOverlays();

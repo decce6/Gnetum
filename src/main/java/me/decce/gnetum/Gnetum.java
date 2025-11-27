@@ -69,9 +69,7 @@ public final class Gnetum {
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
-        if (PackedVanillaElements.isPacked(vanillaOverlay)) {
-            vanillaOverlay = PackedVanillaElements.getPacked(vanillaOverlay).getKey();
-        }
+        vanillaOverlay = PackedVanillaElements.consider(vanillaOverlay);
         if (!config.mapVanillaElements.containsKey(vanillaOverlay)) {
             config.mapVanillaElements.put(vanillaOverlay, new CacheSetting(SuggestedPass.get(vanillaOverlay)));
         }
@@ -124,5 +122,6 @@ public final class Gnetum {
     public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         Gnetum.FPS_COUNTER.reset();
         FramebufferManager.getInstance().reset();
+        PackedVanillaElements.reset();
     }
 }
