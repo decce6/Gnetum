@@ -1,6 +1,7 @@
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import me.decce.gnetum.compat.embeddium.GnetumEmbeddiumCompat;
 import me.decce.gnetum.gui.ConfigScreen;
 import me.decce.gnetum.util.AnyBooleanValue;
 import net.minecraft.client.KeyMapping;
@@ -14,11 +15,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.embeddedt.embeddium.api.OptionGUIConstructionEvent;
 import org.lwjgl.glfw.GLFW;
 
 @Mod(value = Gnetum.MOD_ID)
@@ -56,6 +59,10 @@ public final class Gnetum {
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
+
+        if (ModList.get().isLoaded("embeddium")) {
+            OptionGUIConstructionEvent.BUS.addListener(GnetumEmbeddiumCompat::onSodiumPagesRegister);
+        }
 
         //noinspection removal
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen(parent)));
