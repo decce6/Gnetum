@@ -24,6 +24,8 @@ public class MoreOptionsScreen extends BaseScreen {
         int y = height / 2 - h / 2 - margin - h - margin - h - 15;
 
         ToggleButton btnShowFps = new ToggleButton(xl, y, w, h, Gnetum.config.showHudFps, () -> I18n.get("gnetum.config.showFps") + ": %s");
+        btnShowFps.setTooltip(Tooltip.create(Component.translatable("gnetum.config.showFps.tooltip")));
+        btnShowFps.setTooltipDelay(0);
         IntSlider sliderNumberOfPasses = new IntSlider(xr, y, w, h, () -> I18n.get("gnetum.config.numberOfPasses") + ": %s", 2, 10, Gnetum.config.numberOfPasses, true, i -> Gnetum.config.numberOfPasses = i);
         sliderNumberOfPasses.setTooltip(Tooltip.create(Component.translatable("gnetum.config.numberOfPasses.tooltip")));
         sliderNumberOfPasses.setTooltipDelay(0);

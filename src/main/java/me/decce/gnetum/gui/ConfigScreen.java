@@ -51,6 +51,8 @@ public class ConfigScreen extends BaseScreen {
     protected void rebuild() {
         super.rebuild();
         var btnEnabled = new ToggleButton(width / 2 - 130, height / 2 - 90, 120, 20, Gnetum.config.enabled, () -> I18n.get("gnetum.config.enabled") + ": %s");
+        btnEnabled.setTooltip(Tooltip.create(Component.translatable("gnetum.config.enabled.tooltip")));
+        btnEnabled.setTooltipDelay(0);
         int w1 = analysis == null ? 120 : 120 - 20;
         btnMoreOptions = Button
                 .builder(Component.translatable("gnetum.config.moreOptions"), b -> { Minecraft.getInstance().setScreen(new MoreOptionsScreen()); })
