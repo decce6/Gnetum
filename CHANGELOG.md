@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.4
+
+- Improved PoseStack compatibility
+- Improved compatibility with mods that modify the status bar (health, food, etc.)
+- Improved configuration screen for HUD elements
+- Correctly handled depth buffer
+
 ## 2.3.3
 
 - Fixed crash when Embeddium is not installed
