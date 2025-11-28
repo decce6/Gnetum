@@ -30,7 +30,7 @@
   "gnetum.config.analysis.failedDuration": "Could not load pass duration data. Please try again later.",
   "gnetum.config.analysis.detailDuration": "[Rendering times]",
 
-  "gnetum.statusBar": "Status Bar",
+  "gnetum.config.element.minecraft.status_bar": "Status Bar",
 
   "gnetum.config.element.minecraft.spyglass": "Spyglass",
   "gnetum.config.element.minecraft.helmet": "Helmet",

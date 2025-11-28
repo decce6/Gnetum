@@ -6,7 +6,7 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import java.util.HashSet;
 
 public class PackedVanillaElements {
-    public static final String PACKED_STATUS_BAR = "gnetum.statusBar";
+    public static final String PACKED_STATUS_BAR = "gnetum:status_bar";
     public static HashSet<String> set;
 
     public static void init() {

@@ -6,7 +6,7 @@ public class SuggestedPass {
     public static int get(String name) {
         int pass = switch (name) {
             case "minecraft:spyglass", "minecraft:helmet", "minecraft:frostbite", "minecraft:portal", "minecraft:hotbar" -> 1;
-            case "minecraft:boss_event_progress", "gnetum.statusBar", "minecraft:jump_bar", "minecraft:experience_bar" -> 2;
+            case "minecraft:boss_event_progress", "gnetum:status_bar", "minecraft:jump_bar", "minecraft:experience_bar" -> 2;
             default -> {
                 if (name.startsWith("minecraft:")) {
                     yield 3;
