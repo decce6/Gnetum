@@ -80,7 +80,7 @@ public class ForgeGuiMixin {
         //  to them otherwise, creating inconsistencies
         var pose = guiGraphics.pose().last().pose();
         if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
-            FramebufferManager.getInstance().markIncomplete();
+            FramebufferManager.getInstance().markForCatchUp();
         }
 
         if (Gnetum.passManager.current == 1) {
@@ -93,9 +93,9 @@ public class ForgeGuiMixin {
         FramebufferManager.getInstance().ensureSize();
 
         // If we haven't finished rendering a complete HUD, the original method will be called
-        boolean framebufferComplete = FramebufferManager.getInstance().isComplete();
+        boolean needsCatchUp = FramebufferManager.getInstance().needsCatchUp();
 
-        if (framebufferComplete) {
+        if (!needsCatchUp) {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
@@ -155,7 +155,7 @@ public class ForgeGuiMixin {
 
         FramebufferManager.getInstance().unbind();
 
-        if (framebufferComplete) {
+        if (!needsCatchUp) {
             FramebufferManager.getInstance().blit();
 
             minecraft.getProfiler().push("uncached");
