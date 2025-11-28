@@ -12,8 +12,10 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ElementsScreen extends BaseScreen {
     private Map<String, CacheSetting> map;
@@ -26,8 +28,12 @@ public class ElementsScreen extends BaseScreen {
 
     public ElementsScreen(Map<String, CacheSetting> map, boolean vanilla) {
         super();
-        this.map = Maps.filterValues(map, c -> !c.hidden);
         this.vanilla = vanilla;
+        var sorted = map.entrySet().stream()
+                .sorted((o1, o2) -> beautifyString(o1.getKey()).compareTo(beautifyString(o2.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new));
+        this.map = Maps.filterValues(sorted, c -> !c.hidden);
         this.pageCount = this.map.size() % 10 == 0 ? this.map.size() / 10 : this.map.size() / 10 + 1;
     }
 
@@ -111,10 +117,7 @@ public class ElementsScreen extends BaseScreen {
 
     private String beautifyString(String string) {
         if (this.vanilla) {
-            String key1 = string;
-            if (!string.startsWith("gnetum.packedElement")) {
-                key1 = "gnetum.config.element." + string.replace(':', '.');
-            }
+            String key1 = "gnetum.config.element." + string.replace(':', '.');
             if (I18n.exists(key1)) {
                 return I18n.get(key1);
             }

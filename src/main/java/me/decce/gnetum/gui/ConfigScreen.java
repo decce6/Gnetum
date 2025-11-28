@@ -82,21 +82,21 @@ public class ConfigScreen extends BaseScreen {
         int y = height / 2 - h / 2 - margin - h;
         btnModdedPre = Button
                 .builder(Component.translatable("gnetum.config.moddedPre"),
-                        b -> { Minecraft.getInstance().setScreen(new ElementsScreen(sorted(Gnetum.config.mapModdedElementsPre), false)); })
+                        b -> { Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPre, false)); })
                 .pos(x, y)
                 .size(w, h)
                 .build();
         y += margin + h;
         btnVanilla = Button
                 .builder(Component.translatable("gnetum.config.vanilla"),
-                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(sorted(Gnetum.config.mapVanillaElements), true)))
+                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapVanillaElements, true)))
                 .pos(x, y)
                 .size(w, h)
                 .build();
         y += margin + h;
         btnModdedPost = Button
                 .builder(Component.translatable("gnetum.config.moddedPost"),
-                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(sorted(Gnetum.config.mapModdedElementsPost), false)))
+                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPost, false)))
                 .pos(x, y)
                 .size(w, h)
                 .build();
@@ -105,14 +105,6 @@ public class ConfigScreen extends BaseScreen {
         this.addRenderableWidget(btnModdedPre);
         this.addRenderableWidget(btnVanilla);
         this.addRenderableWidget(btnModdedPost);
-    }
-
-    private Map<String, CacheSetting> sorted(Map<String, CacheSetting> original) {
-        return original.entrySet().stream().
-                //TODO: should compare display string instead of key
-                sorted(Map.Entry.comparingByKey()).
-                collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     @Override
