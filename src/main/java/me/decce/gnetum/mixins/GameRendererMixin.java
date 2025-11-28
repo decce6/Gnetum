@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.ElementType;
 import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
@@ -19,6 +18,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.Matrix4f;
@@ -34,6 +34,8 @@ public class GameRendererMixin {
     private int gnetum$previouslyBoundFbo;
     @Unique
     private boolean gnetum$renderingCachedHand;
+    @Unique
+    private boolean gnetum$wasChatScreenOpen;
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
     private void gnetum$preRenderItemInHand(Camera camera, float partialTick, Matrix4f projectionMatrix, CallbackInfo ci) {
@@ -69,9 +71,16 @@ public class GameRendererMixin {
 
         FramebufferManager.getInstance().ensureSize();
 
-        boolean fboCompleteBeforeRendering = FramebufferManager.getInstance().isComplete();
+        // Do not use cached HUD when opening or closing chat - otherwise the chat HUD and chat screen may either appear together or both disappear for a length of time
+        boolean chatScreenOpen = Minecraft.getInstance().screen instanceof ChatScreen;
+        if (chatScreenOpen != gnetum$wasChatScreenOpen) {
+            gnetum$wasChatScreenOpen = chatScreenOpen;
+            FramebufferManager.getInstance().markForCatchUp();
+        }
 
-        if (fboCompleteBeforeRendering) {
+        boolean needsCatchUp = FramebufferManager.getInstance().needsCatchUp();
+
+        if (!needsCatchUp) {
             Minecraft.getInstance().getProfiler().push("uncached");
             ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
                 JourneyMapCompat.invokeRenderWaypointDecos(guiGraphics);
@@ -104,13 +113,11 @@ public class GameRendererMixin {
 
         Gnetum.passManager.nextPass();
 
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-
         FramebufferManager.getInstance().unbind();
 
-        boolean fboCompleteAfterRendering = FramebufferManager.getInstance().isComplete();
+        boolean needsCatchUpAfterRendering = FramebufferManager.getInstance().needsCatchUp();
 
-        if (fboCompleteBeforeRendering && fboCompleteAfterRendering) {
+        if (!needsCatchUp && !needsCatchUpAfterRendering) {
             FramebufferManager.getInstance().blit();
 
             Minecraft.getInstance().getProfiler().push("uncached");
@@ -119,7 +126,7 @@ public class GameRendererMixin {
             });
             Minecraft.getInstance().getProfiler().pop();
         }
-        else {// render the HUD to screen if framebuffer does not contain the HUD
+        else { // render the HUD to screen if framebuffer does not contain the HUD
             original.call(instance, guiGraphics, deltaTracker);
         }
 

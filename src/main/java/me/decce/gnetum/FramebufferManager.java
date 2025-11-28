@@ -12,8 +12,8 @@ public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getInstance();
     private static final FramebufferManager instance = new FramebufferManager();
     private boolean dropCurrentFrame;
-    private boolean complete; // whether the frontFramebuffer contains a complete HUD texture
-    private boolean toBeComplete = true;
+    private int catchUpSerialNumber;
+    private int serialNumber;
     private int width;
     private int height;
     private double guiScale;
@@ -61,7 +61,8 @@ public class FramebufferManager {
         frontFramebuffer.setClearColor(0, 0, 0, 0);
         frontFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(frontFramebuffer);
-        this.markIncomplete();
+        this.serialNumber = 0;
+        this.catchUpSerialNumber = 0;
         Gnetum.passManager.current = 1;
     }
 
@@ -101,12 +102,7 @@ public class FramebufferManager {
             TextureTarget temp = backFramebuffer;
             this.backFramebuffer = this.frontFramebuffer;
             this.frontFramebuffer = temp;
-            if (this.toBeComplete) {
-                this.complete = true;
-            }
-            else {
-                this.toBeComplete = true;
-            }
+            this.serialNumber++;
             Gnetum.FPS_COUNTER.tick();
         }
         this.clear();
@@ -121,16 +117,11 @@ public class FramebufferManager {
         return backFramebuffer.frameBufferId;
     }
 
-    public void markIncomplete() {
-        if (this.complete) {
-            this.complete = false;
-        }
-        else {
-            this.toBeComplete = false;
-        }
+    public void markForCatchUp() {
+        this.catchUpSerialNumber = this.serialNumber;
     }
 
-    public boolean isComplete() {
-        return this.complete;
+    public boolean needsCatchUp() {
+        return this.serialNumber - this.catchUpSerialNumber <= 1;
     }
 }

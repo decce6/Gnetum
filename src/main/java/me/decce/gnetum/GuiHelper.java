@@ -47,9 +47,9 @@ public class GuiHelper {
                         post(layer, guiGraphics, partialTick);
                     }
                 });
-                guiGraphics.pose().translate(0.0F, 0.0F, GuiLayerManager.Z_SEPARATION);
                 RenderSystem.enableDepthTest(); // Some mods break the GL state here - let's fix it up to prevent flickering
             }
+            guiGraphics.pose().translate(0.0F, 0.0F, GuiLayerManager.Z_SEPARATION);
         }
 
         guiGraphics.pose().popPose();

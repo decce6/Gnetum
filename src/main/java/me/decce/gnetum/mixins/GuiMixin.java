@@ -47,7 +47,7 @@ public class GuiMixin {
         //  to them otherwise, creating inconsistencies
         var pose = guiGraphics.pose().last().pose();
         if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
-            FramebufferManager.getInstance().markIncomplete();
+            FramebufferManager.getInstance().markForCatchUp();
         }
 
         if (Gnetum.passManager.current == 1) {
