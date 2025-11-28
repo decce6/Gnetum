@@ -14,6 +14,15 @@ public class PoseStackHelper {
         }
     }
 
+    public static void checkIf(boolean bl, PoseStack poseStack, Runnable runnable) {
+        if (bl) {
+            checked(poseStack, runnable);
+        }
+        else {
+            runnable.run();
+        }
+    }
+
     private static boolean checkedImpl(PoseStack poseStack, Runnable runnable) {
         var accessor = (PoseStackAccessor) poseStack;
         var internalStack = accessor.getPoseStack();

@@ -41,7 +41,7 @@ public class GuiHelper {
                     Gnetum.currentElement = id;
                     Gnetum.currentElementType = ElementType.VANILLA;
                 }
-                PoseStackHelper.checked(guiGraphics.pose(), () -> {
+                PoseStackHelper.checkIf(Gnetum.rendering, guiGraphics.pose(), () -> {
                     if (!pre(layer, guiGraphics, partialTick)) {
                         layer.layer().render(guiGraphics, partialTick);
                         post(layer, guiGraphics, partialTick);
@@ -121,6 +121,6 @@ public class GuiHelper {
     }
 
     private static void invokeListenerSafe(EventListener listener, Event event, PoseStack stack) {
-        PoseStackHelper.checked(stack, () -> listener.invoke(event));
+        PoseStackHelper.checkIf(Gnetum.rendering, stack, () -> listener.invoke(event));
     }
 }
