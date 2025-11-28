@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.2.3
+
+- Improved PoseStack compatibility
+- Improved compatibility with mods that modify the status bar (health, food, etc.)
+- Improved configuration screen for HUD elements
+- Correctly handled depth buffer
+
 ## 3.2.2
 
 - Fixed depth issues like chat screen appearing behind hotbar
