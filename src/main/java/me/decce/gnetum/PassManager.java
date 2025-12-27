@@ -107,7 +107,6 @@ public class PassManager {
     }
 
     public boolean shouldRender(String moddedOverlay, ElementType type) {
-        if (moddedOverlay == null) return shouldRender(Gnetum.OTHER_MODS, type);
         if (Gnetum.uncachedElements.has(moddedOverlay, type)) {
             return false;
         }
@@ -116,7 +115,6 @@ public class PassManager {
     }
 
     public boolean cachingDisabled(String moddedOverlay, ElementType type) {
-        if (moddedOverlay == null) return cachingDisabled(Gnetum.OTHER_MODS, type);
         if (Gnetum.uncachedElements.has(moddedOverlay, type)) {
             return true;
         }

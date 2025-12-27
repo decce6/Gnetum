@@ -65,24 +65,23 @@ public class GuiIngameForgeMixin {
             for (; index < listeners.length; index++)
             {
                 IEventListener listener = listeners[index];
-                if (listener instanceof ASMEventHandler asm) {
-                    String modid = ASMEventHandlerHelper.tryGetModId(asm);
-                    Gnetum.currentElement = modid;
-                    if (event instanceof RenderGameOverlayEvent.Pre) {
-                        Gnetum.currentElementType = ElementType.PRE;
-                        if (test == null || test.test(modid)) {
-                            listener.invoke(event);
-                        }
-                    }
-                    else if (event instanceof RenderGameOverlayEvent.Post) {
-                        Gnetum.currentElementType = ElementType.POST;
-                        if (test == null || test.test(modid)) {
-                            listener.invoke(event);
-                        }
-                    }
-                    else listener.invoke(event);
+                if (listener instanceof EventPriority) {
+                    listener.invoke(event);
+                    continue;
                 }
-                else if (!Gnetum.rendering || listener instanceof EventPriority || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
+                String modid = null;
+                if (listener instanceof ASMEventHandler asm) {
+                    modid = ASMEventHandlerHelper.tryGetModId(asm);
+                }
+                if (modid == null) modid = Gnetum.OTHER_MODS;
+                Gnetum.currentElement = modid;
+                if (event instanceof RenderGameOverlayEvent.Pre) {
+                    Gnetum.currentElementType = ElementType.PRE;
+                }
+                else if (event instanceof RenderGameOverlayEvent.Post) {
+                    Gnetum.currentElementType = ElementType.POST;
+                }
+                if (test.test(modid)) {
                     listener.invoke(event);
                 }
             }
