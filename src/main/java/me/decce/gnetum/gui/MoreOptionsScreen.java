@@ -40,5 +40,7 @@ public class MoreOptionsScreen extends BaseScreen {
         this.addRenderableWidget(sliderNumberOfPasses);
         this.addRenderableWidget(sliderMaxFps);
         this.addRenderableWidget(btnReset);
+
+        super.addDoneButton();
     }
 }

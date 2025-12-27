@@ -105,6 +105,8 @@ public class ConfigScreen extends BaseScreen {
         this.addRenderableWidget(btnModdedPre);
         this.addRenderableWidget(btnVanilla);
         this.addRenderableWidget(btnModdedPost);
+
+        super.addDoneButton();
     }
 
     @Override

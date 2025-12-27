@@ -41,6 +41,9 @@ public class BaseScreen extends Screen {
 
     protected void rebuild() {
         this.clearWidgets();
+    }
+
+    protected void addDoneButton() {
         Button btnClose = Button
                 .builder(Component.translatable("gui.done"), btn -> this.close())
                 .pos(width / 2 - 60, height / 2 + 90)
@@ -55,6 +58,10 @@ public class BaseScreen extends Screen {
 
         super.render(graphics, mouseX, mouseY, partialTick);
 
+        this.renderTitle(graphics);
+    }
+
+    protected void renderTitle(GuiGraphics graphics) {
         graphics.drawCenteredString(Minecraft.getInstance().font, "Gnetum", width / 2, 10, 0xFFFFFF);
     }
 }

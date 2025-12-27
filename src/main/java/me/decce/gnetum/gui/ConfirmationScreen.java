@@ -23,9 +23,7 @@ public class ConfirmationScreen extends BaseScreen {
 
     @Override
     protected void rebuild() {
-        // No need for a Done button here, don't call super
-
-        this.clearWidgets();
+        super.rebuild();
 
         int w = 100;
         int h = 20;

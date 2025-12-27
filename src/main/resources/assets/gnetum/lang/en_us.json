@@ -19,6 +19,7 @@
   "gnetum.config.tooltip.on": "Caching for this element is forcibly enabled.",
   "gnetum.config.tooltip.off": "Caching for this element is forcibly disabled.",
   "gnetum.config.auto": "AUTO",
+  "gnetum.config.searchHint": "Search...",
 
   "gnetum.config.analysis.title.good": "Performance: Good",
   "gnetum.config.analysis.title.suboptimal": "Performance: Suboptimal",
