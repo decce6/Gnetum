@@ -6,11 +6,14 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gui.widgets.IntSlider;
 import me.decce.gnetum.gui.widgets.ToggleButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.ModList;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -18,10 +21,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ElementsScreen extends BaseScreen {
+    private final Map<String, CacheSetting> rawMap;
     private Map<String, CacheSetting> map;
     private boolean vanilla;
     private int page;
     private int pageCount;
+    private String searchText = "";
+    private EditBox searchBox;
 
     private Button btnPrevPage;
     private Button btnNextPage;
@@ -29,12 +35,8 @@ public class ElementsScreen extends BaseScreen {
     public ElementsScreen(Map<String, CacheSetting> map, boolean vanilla) {
         super();
         this.vanilla = vanilla;
-        var sorted = map.entrySet().stream()
-                .sorted((o1, o2) -> beautifyString(o1.getKey()).compareTo(beautifyString(o2.getKey())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));
-        this.map = Maps.filterValues(sorted, c -> !c.hidden);
-        this.pageCount = this.map.size() % 10 == 0 ? this.map.size() / 10 : this.map.size() / 10 + 1;
+        this.rawMap = map;
+        this.updateFilter();
     }
 
     @Override
@@ -61,6 +63,23 @@ public class ElementsScreen extends BaseScreen {
         int xrs = width / 2 + 2 + wb;
         int y = height / 2 - h / 2 - margin - h - margin - h - 15;
         int i = 0;
+
+        if (this.searchBox == null) {
+            this.searchBox = new EditBox(Minecraft.getInstance().font, 0, 0, 0, 0, Component.literal(searchText));
+            this.searchBox.setHint(Component.translatable("gnetum.config.searchHint"));
+            this.searchBox.setResponder(s -> {
+                if (!this.searchText.equals(s)) {
+                    this.searchText = s;
+                    this.updateFilter();
+                }
+            });
+        }
+        this.searchBox.setX(xlb + 2);
+        this.searchBox.setY(y - h - margin);
+        this.searchBox.setWidth(2 * wb + 2 * ws);
+        this.searchBox.setHeight(h);
+        this.addRenderableWidget(searchBox);
+
         boolean left = true;
         for (var entry : map.entrySet()) {
             if (i >= 10 * page && i < max) {
@@ -103,6 +122,28 @@ public class ElementsScreen extends BaseScreen {
         this.addRenderableWidget(page);
         this.addRenderableWidget(btnPrevPage);
         this.addRenderableWidget(btnNextPage);
+        super.addDoneButton();
+
+        this.setFocused(searchBox);
+    }
+
+    @Override
+    protected void renderTitle(GuiGraphics graphics) {
+
+    }
+
+    private void updateFilter() {
+        var sorted = this.rawMap.entrySet().stream()
+                .sorted((o1, o2) -> beautifyString(o1.getKey()).compareTo(beautifyString(o2.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new));
+        this.map = Maps.filterEntries(sorted, entry -> !entry.getValue().hidden && shouldDisplay(entry.getKey()));
+        this.pageCount = this.map.size() % 10 == 0 ? this.map.size() / 10 : this.map.size() / 10 + 1;
+        this.setPage(0);
+    }
+
+    private boolean shouldDisplay(String entry) {
+        return StringUtils.containsIgnoreCase(entry, this.searchText) || StringUtils.containsIgnoreCase(beautifyString(entry), this.searchText);
     }
 
     private void setPage(int newPage) {

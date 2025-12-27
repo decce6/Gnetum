@@ -1,6 +1,5 @@
 package me.decce.gnetum.gui;
 
-import me.decce.gnetum.CacheSetting;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.PerformanceAnalyzer;
 import me.decce.gnetum.gui.widgets.ToggleButton;
@@ -11,10 +10,6 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ConfigScreen extends BaseScreen {
     private Button btnMoreOptions;
@@ -111,6 +106,8 @@ public class ConfigScreen extends BaseScreen {
         this.addRenderableWidget(btnModdedPre);
         this.addRenderableWidget(btnVanilla);
         this.addRenderableWidget(btnModdedPost);
+
+        super.addDoneButton();
     }
 
     @Override

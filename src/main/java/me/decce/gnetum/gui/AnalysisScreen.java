@@ -53,6 +53,8 @@ public class AnalysisScreen extends BaseScreen {
         txt = new MultiLineTextWidget(width / 2 - w / 2, height / 2 - h / 2, Component.literal(str), font);
         txt.setMaxWidth(w);
         this.addRenderableWidget(txt);
+
+        super.addDoneButton();
     }
 
     @Override
