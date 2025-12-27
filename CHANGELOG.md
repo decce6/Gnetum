@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.2.4
+
+- Added a search bar to element screen
+- Improved compatibility with some special blending functions
+- Added Embeddium config screen integration
+
+
 ## 3.2.3
 
 - Improved PoseStack compatibility
