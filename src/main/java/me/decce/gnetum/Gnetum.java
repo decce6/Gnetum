@@ -88,11 +88,11 @@ public class Gnetum {
         return map.get(moddedOverlay);
     }
 
-    public static void disableCachingForCurrentElement() {
+    public static void disableCachingForCurrentElement(String reason) {
         if (currentElement == null || currentElementType == null) return;
         CacheSetting cacheSetting = getCacheSetting(currentElement, currentElementType);
         if (cacheSetting.enabled.get() && cacheSetting.enabled.value == AnyBooleanValue.AUTO) {
-            LOGGER.info("Disabling caching for element {}. If the cache setting for this element is set to \"ON\" instead of \"AUTO\" you can ignore this message.", currentElement);
+            LOGGER.info("Disabling caching for element {}. Reason: {}", currentElement, reason);
             cacheSetting.enabled.defaultValue = false;
             FramebufferManager.getInstance().dropCurrentFrame();
         }
