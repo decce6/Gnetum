@@ -1,12 +1,14 @@
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import me.decce.gnetum.compat.embeddium.GnetumEmbeddiumCompat;
 import me.decce.gnetum.gui.ConfigScreen;
 import me.decce.gnetum.util.AnyBooleanValue;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -19,6 +21,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.embeddedt.embeddium.api.OptionGUIConstructionEvent;
 import org.lwjgl.glfw.GLFW;
 
 @Mod(value = Gnetum.MOD_ID, dist = Dist.CLIENT)
@@ -51,6 +54,10 @@ public final class Gnetum {
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
         NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
+
+        if (ModList.get().isLoaded("embeddium")) {
+            OptionGUIConstructionEvent.BUS.addListener(GnetumEmbeddiumCompat::onSodiumPagesRegister);
+        }
 
         container.registerExtensionPoint(IConfigScreenFactory.class, new GnetumConfigScreenFactory());
     }
