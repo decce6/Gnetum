@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.5
+
+- Added a search bar to element screen
+- Fixed blackscreen with dash overlay from Estrogen mod
+
 ## 2.3.4
 
 - Improved PoseStack compatibility
