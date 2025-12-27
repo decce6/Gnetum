@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.3
+
+- Fixed potion icon not rendering
+- Fixed hotbar not rendering when player has nausea effect
+- Improved blend function detection for better mod compatibility
+
 ## 1.3.2
 
 - Fixed rendering issue with some mods that modify the health bar
