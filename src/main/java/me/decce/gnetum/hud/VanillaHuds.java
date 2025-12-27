@@ -53,7 +53,7 @@ public class VanillaHuds {
             .id("hotbar")
             .defaultBlendFunc()
             .depth(true)
-            .condition(() -> GuiIngameForge.renderHotbar && !mc.player.isPotionActive(MobEffects.NAUSEA))
+            .condition(() -> GuiIngameForge.renderHotbar)
             .onRender(() -> renderHotbar(getScaledResolution(), partialTicks))
             .build();
     public static final Hud DUMMY0 = Hud.builder()
