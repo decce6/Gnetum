@@ -54,6 +54,7 @@ public class GnetumEmbeddiumPage extends OptionPage {
         general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
                 .setName(Component.translatable("gnetum.config.showFps"))
                 .setTooltip(Component.translatable("gnetum.config.showFps.tooltip"))
+                .setEnabledPredicate(enabledOption::getValue)
                 .setControl(TickBoxControl::new)
                 .setBinding((opts, value) -> {
                     if (Gnetum.config.showHudFps.get() != value) {
@@ -64,6 +65,7 @@ public class GnetumEmbeddiumPage extends OptionPage {
         general.add(OptionImpl.createBuilder(int.class, STORAGE)
                 .setName(Component.translatable("gnetum.config.numberOfPasses"))
                 .setTooltip(Component.translatable("gnetum.config.numberOfPasses.tooltip"))
+                .setEnabledPredicate(enabledOption::getValue)
                 .setImpact(OptionImpact.MEDIUM)
                 .setControl(option -> new SliderControl(option, 2, 10, 1, ControlValueFormatter.number()))
                 .setBinding((opts, value) -> Gnetum.config.numberOfPasses = value, opts -> Gnetum.config.numberOfPasses)
@@ -71,6 +73,7 @@ public class GnetumEmbeddiumPage extends OptionPage {
         general.add(OptionImpl.createBuilder(int.class, STORAGE)
                 .setName(Component.translatable("gnetum.config.maxFps"))
                 .setTooltip(Component.translatable("gnetum.config.maxFps.tooltip"))
+                .setEnabledPredicate(enabledOption::getValue)
                 .setImpact(OptionImpact.MEDIUM)
                 .setControl(option -> new SliderControl(option, 5, GnetumConfig.UNLIMITED_FPS, 5, i -> i == GnetumConfig.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
                 .setBinding((opts, value) -> Gnetum.config.maxFps = value, opts -> Gnetum.config.maxFps)
