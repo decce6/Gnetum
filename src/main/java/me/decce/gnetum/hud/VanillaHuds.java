@@ -147,7 +147,7 @@ public class VanillaHuds {
             .id("potion_icons")
             .defaultBlendFunc()
             .depth(true)
-            .onRender(() -> getAccessor().callRenderFPSGraph())
+            .onRender(() -> getAccessor().callRenderPotionIcons(getScaledResolution()))
             .build();
     public static final Hud RECORD_OVERLAY = Hud.builder()
             .id("record_overlay")
