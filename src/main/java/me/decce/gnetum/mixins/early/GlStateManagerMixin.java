@@ -21,4 +21,11 @@ public class GlStateManagerMixin {
             ci.cancel();
         }
     }
+
+    @Inject(method = "clear", at = @At("HEAD"), cancellable = true)
+    private static void gnetum$clear(int mask, CallbackInfo ci) {
+        if (Gnetum.rendering) {
+            ci.cancel();
+        }
+    }
 }
