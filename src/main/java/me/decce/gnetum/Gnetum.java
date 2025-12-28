@@ -133,7 +133,7 @@ public class Gnetum {
             return;
         }
         if(Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-            String str = String.format("HUD: %d fps (nr=%d, cap=%s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
+            String str = String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
             if (event.getLeft().size() > 2) {
                 event.getLeft().add(2, str);
             }
