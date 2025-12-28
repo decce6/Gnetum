@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 public class Hud {
     private final ResourceLocation id;
+    private final boolean alpha;
     private final boolean blend;
     private final boolean defaultBlendFunc;
     private final boolean depth;
@@ -16,8 +17,9 @@ public class Hud {
     private final Supplier<Boolean> condition;
     private final Runnable runnable;
 
-    private Hud(ResourceLocation id, boolean blend, boolean defaultBlendFunc, boolean depth, boolean dummy, Supplier<Boolean> condition, Runnable runnable) {
+    private Hud(ResourceLocation id, boolean alpha, boolean blend, boolean defaultBlendFunc, boolean depth, boolean dummy, Supplier<Boolean> condition, Runnable runnable) {
         this.id = id;
+        this.alpha = alpha;
         this.blend = blend;
         this.defaultBlendFunc = defaultBlendFunc;
         this.depth = depth;
@@ -34,6 +36,8 @@ public class Hud {
     public void render() {
         if (!condition.get()) return;
         if (!dummy) {
+            if (alpha) GlStateManager.enableAlpha();
+            else GlStateManager.disableAlpha();
             if (blend) GlStateManager.enableBlend();
             else GlStateManager.disableBlend();
             if (defaultBlendFunc) SharedValues.defaultBlendFunc();
@@ -54,6 +58,7 @@ public class Hud {
 
     public static class Builder {
         private ResourceLocation id;
+        private boolean alpha = true;
         private boolean blend;
         private boolean defaultBlendFunc;
         private boolean depth;
@@ -73,6 +78,11 @@ public class Hud {
 
         public Builder id(ResourceLocation id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder alpha(boolean alpha) {
+            this.alpha = alpha;
             return this;
         }
 
@@ -110,7 +120,7 @@ public class Hud {
         public Hud build() {
             if (condition == null) condition = () -> true;
             if (runnable == null) runnable = () -> {};
-            return new Hud(id, blend, defaultBlendFunc, depth, dummy, condition, runnable);
+            return new Hud(id, alpha, blend, defaultBlendFunc, depth, dummy, condition, runnable);
         }
     }
 }

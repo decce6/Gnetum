@@ -132,10 +132,7 @@ public class VanillaHuds {
             .id("hud_text")
             .defaultBlendFunc()
             .depth(true)
-            .onRender(() -> {
-                GlStateManager.disableAlpha();
-                getAccessor().callRenderHUDText(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
-            })
+            .onRender(() -> getAccessor().callRenderHUDText(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
             .build();
     public static final Hud FPS_GRAPH = Hud.builder()
             .id("fps_graph")
@@ -189,15 +186,14 @@ public class VanillaHuds {
             .build();
     public static final Hud CHAT_PANEL = Hud.builder()
             .id("chat_panel")
+            .alpha(false)
             .defaultBlendFunc()
             .depth(true)
-            .onRender(() -> {
-                GlStateManager.disableAlpha();
-                getAccessor().callRenderChat(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
-            })
+            .onRender(() -> getAccessor().callRenderChat(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
             .build();
     public static final Hud PLAYER_LIST = Hud.builder()
             .id("player_list")
+            .alpha(false)
             .defaultBlendFunc()
             .depth(true)
             .onRender(() -> getAccessor().callRenderPlayerList(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
