@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+Fixed alpha test & depth buffer and backported some minor change from modern branches.
+
 ## 1.3.3
 
 - Fixed potion icon not rendering
