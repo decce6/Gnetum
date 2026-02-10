@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.5
+
+- Improved F3 information when framebuffer is not available
+- Fixed various rendering issues with Thaumcraft
+
 ## 1.3.4
 
 Fixed alpha test & depth buffer and backported some minor change from modern branches.
