@@ -29,10 +29,6 @@ public class FramebufferManager {
     private Framebuffer frontFramebuffer;
 
     private FramebufferManager() {
-        width = mc.displayWidth;
-        height = mc.displayHeight;
-        guiScale = mc.gameSettings.guiScale;
-        fullscreen = mc.gameSettings.fullScreen;
         clearColor = GLAllocation.createDirectFloatBuffer(4);
         clearColor.put(0).put(0).put(0).put(0);
         clearColor.flip();
@@ -44,6 +40,10 @@ public class FramebufferManager {
     }
 
     public void reset() {
+        width = mc.displayWidth;
+        height = mc.displayHeight;
+        guiScale = mc.gameSettings.guiScale;
+        fullscreen = mc.gameSettings.fullScreen;
         if (backFramebuffer != null) {
             backFramebuffer.deleteFramebuffer();
         }
@@ -71,10 +71,6 @@ public class FramebufferManager {
                 mc.displayHeight != height ||
                 mc.gameSettings.guiScale != guiScale ||
                 mc.gameSettings.fullScreen != fullscreen) {
-            width = mc.displayWidth;
-            height = mc.displayHeight;
-            guiScale = mc.gameSettings.guiScale;
-            fullscreen = mc.gameSettings.fullScreen;
             this.reset();
         }
     }
