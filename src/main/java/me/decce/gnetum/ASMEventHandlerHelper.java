@@ -37,7 +37,7 @@ public class ASMEventHandlerHelper {
         for (int i = 0; i < mods.size(); i++) {
             var mod = mods.get(i);
             File file = mod.getSource();
-            if (url.getPath().contains(file.getAbsolutePath()) || url.getPath().contains(file.getPath())) {
+            if (url.getFile().contains(file.getAbsolutePath())) {
                 String modid = mod.getModId();
                 mapModId.put(asm, modid);
                 return modid;
