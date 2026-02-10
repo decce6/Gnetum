@@ -129,11 +129,19 @@ public class Gnetum {
 
     @SubscribeEvent(priority = EventPriority.HIGH) // HIGH to run after VintageFix's listener
     public static void onRenderF3(RenderGameOverlayEvent.Text event) {
-        if (!Gnetum.config.isEnabled() || !Gnetum.config.showHudFps.get()) {
+        boolean shouldEnable = Gnetum.config.enabled.get();
+        boolean enabled = Gnetum.config.isEnabled();
+        if (!shouldEnable || !Gnetum.config.showHudFps.get()) {
             return;
         }
-        if(Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-            String str = String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
+        if (Minecraft.getMinecraft().gameSettings.showDebugInfo) {
+            String str;
+            if (enabled) {
+                str = String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps);
+            }
+            else {
+                str = "HUD: not cached because framebuffer is not enabled (try disabling Fast Render)";
+            }
             if (event.getLeft().size() > 2) {
                 event.getLeft().add(2, str);
             }
