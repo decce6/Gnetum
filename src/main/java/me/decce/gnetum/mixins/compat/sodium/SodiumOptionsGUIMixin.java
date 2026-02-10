@@ -1,5 +1,6 @@
 package me.decce.gnetum.mixins.compat.sodium;
 
+import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.compat.sodium.GnetumSodiumPage;
 import net.caffeinemc.mods.sodium.client.gui.SodiumOptionsGUI;
 import net.caffeinemc.mods.sodium.client.gui.options.OptionPage;
@@ -23,6 +24,8 @@ public class SodiumOptionsGUIMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void gnetum$init(Screen prevScreen, CallbackInfo ci) {
+        Gnetum.ensureInitialized();
+
         this.pages.add(new GnetumSodiumPage());
     }
 }
