@@ -3,9 +3,11 @@ package me.decce.gnetum.hud;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GuiHelper;
 import me.decce.gnetum.compat.CompatHelper;
+import me.decce.gnetum.compat.thaumcraft.ThaumcraftCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
@@ -142,6 +144,21 @@ public class VanillaHuds {
             .defaultBlendFunc()
             .depth(true)
             .onRender(() -> getAccessor().callRenderHUDText(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
+            .build();
+    public static final Hud DUMMY_FIX_GL_STATE_2 = Hud.builder()
+            .dummy()
+            .onRender(() -> {
+                if (ThaumcraftCompat.modInstalled) {
+                    // Thaumcraft already broke GlStateManager with raw GL calls,
+                    // We need to call both the state manager methods and the GL methods to correct this.
+                    GlStateManager.enableBlend();
+                    GL11.glEnable(GL11.GL_BLEND);
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    RenderHelper.disableStandardItemLighting();
+                    GuiHelper.setZLevel(-90.0F);
+                }
+            })
             .build();
     public static final Hud FPS_GRAPH = Hud.builder()
             .id("fps_graph")
