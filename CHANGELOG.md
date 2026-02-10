@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.5
+
+Fixed a crash when opening video settings screen from the main menu.
+
 ## 3.2.4
 
 - Added a search bar to element screen
