@@ -28,6 +28,7 @@ public class UncachedElements {
         moddedPost = ImmutableSet.of(
                 "fluxloading",
                 "ingameinfo", // InGame Info Reborn has its own framebuffers and refresh rate limit
+                "thaumcraft",
                 "thebetweenlands"
         );
         // Note: thebetweenlands - see https://github.com/decce6/Gnetum/issues/42 (the mod changes perspective when in row boat, which should run every frame)

@@ -16,12 +16,21 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import org.lwjgl.opengl.GL11;
 
 import static me.decce.gnetum.Gnetum.getScaledResolution;
 import static me.decce.gnetum.hud.SharedValues.*;
 
 @SuppressWarnings("unused")
 public class VanillaHuds {
+    public static final Hud DUMMY_FIX_GL_STATE = Hud.builder()
+            .dummy()
+            .onRender(() -> {
+                // Thaumcraft changes the matrix mode to GL_TEXTURE but does not change it back: https://github.com/decce6/Gnetum/issues/59
+                // See thaumcraft.client.lib.events.RenderEventHandler#renderShaders
+                GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+            })
+            .build();
     public static final Hud VIGNETTE = Hud.builder()
             .id("vignette")
             .blend(true)
