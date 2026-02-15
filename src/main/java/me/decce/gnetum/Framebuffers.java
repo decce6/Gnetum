@@ -3,6 +3,7 @@ package me.decce.gnetum;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.decce.gnetum.mixins.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
 //? <1.21.10 {
 /*import com.mojang.blaze3d.vertex.VertexSorting;
@@ -14,6 +15,7 @@ public class Framebuffers {
 	private final Minecraft mc = Minecraft.getInstance();
 	private RenderTarget back;
 	private RenderTarget front;
+	private RenderTarget backupMainRenderTarget;
 	private boolean dropCurrentFrame;
 	private int catchUpSerialNumber;
 	private int serialNumber;
@@ -92,13 +94,19 @@ public class Framebuffers {
 	}
 
 	public void bind() {
-		//? <1.21.10 {
+		//? >=1.21.10 {
+		var accessor = (MinecraftAccessor) mc;
+		backupMainRenderTarget = accessor.gnetum$getMainRenderTarget();
+		accessor.gnetum$setMainRenderTarget(Gnetum.framebuffers().back());
+		//? } else {
 		/*back.bindWrite(true);
 		*///?}
 	}
 
 	public void unbind() {
-		//? <1.21.10 {
+		//? >=1.21.10 {
+		((MinecraftAccessor) mc).gnetum$setMainRenderTarget(backupMainRenderTarget);
+		//? } else {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 		*///?}
 	}

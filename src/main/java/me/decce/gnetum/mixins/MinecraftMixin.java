@@ -11,13 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-	@Inject(method = "getMainRenderTarget", at = @At("HEAD"), cancellable = true)
-	public void gnetum$getMainRenderTarget(CallbackInfoReturnable<RenderTarget> ci) {
-		if (Gnetum.rendering) {
-			ci.setReturnValue(Gnetum.framebuffers().back());
-		}
-	}
-
 	@Inject(method = "buildInitialScreens", at = @At("TAIL"))
 	private void gnetum$finishInitialization(CallbackInfoReturnable<Runnable> cir) {
 		Gnetum.platform().elementGatherer().gather();
