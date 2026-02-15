@@ -125,9 +125,6 @@ publishMods {
     changelog = fetchLatestChangelog()
     displayName = "${prop("mod_name")} ${fullModVersion()}"
     modLoaders.add(prop("deps.platform"))
-    if (prop("deps.platform") == "fabric") {
-        modLoaders.add("quilt")
-    }
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         clientRequired = true

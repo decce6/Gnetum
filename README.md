@@ -2,13 +2,11 @@
 
 A Minecraft mod that improves performance by distributing HUD updates over multiple frames.
 
-![Comparison](assets/comparision.png)
-
 ### Overview
 
 Gnetum divides a full HUD update into multiple "passes." Only one pass is rendered each frame, reducing the time taken on HUD updates and improving FPS.
 
-It is the minimum FPS that decides how smooth the game feels. With this in mind Gnetum tries to evenly distribute HUD updates over multiple frames, meaning that it improves not only the average FPS, but also the minimum.
+Based on the rendering time of each element, Gnetum automatically distributes their updates over multiple frames, improving both the average FPS and the minimum.
 
 <details>
 
@@ -22,18 +20,17 @@ The idea behind Gnetum is to reduce the framerate of the HUD, which is not cheap
 - After all passes finish rendering, the back framebuffer is "swapped" with the front framebuffer
 - Each frame also renders the front framebuffer, which contains a texture of the full HUD
 
-An additional HUD FPS limiter is implemented, mainly to save power in scenarios where the game framerate is very high.
+There is also an HUD FPS limiter that defines the maximum FPS of the HUD.
 
 </details>
 
 ### Configuration
 
-A configuration screen is available for advanced players and modpack makers to fine-tune Gnetum for optimal performance, accessible via keybind (bound to ```End``` by default).
+Starting from 4.0.0, integration is implemented with Sodium Config API. The configuration can be accessed from the Video Screen, allowing for adjustment of:
 
-- You can configure whether to cache each element, and if so, in which pass they are rendered.
-- You can set the number of passes. A higher number means the HUD is updated less often, improving FPS.
-- You can set a limit for the FPS of the HUD.
-- A performance analyzer is implemented to help you monitor the rendering time of each pass.
+- the number of passes
+- maximum HUD FPS
+- enabling/disabling caching for each element
 
 ### Compatibility
 
