@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "${mod_license}"
+issueTrackerURL = "${mod_issues}"
+
+[[mods]]
+modId = "${modid}"
+displayName = "${mod_name}"
+version = "${mod_version_full}"
+displayURL = "${mod_link}"
+modUrl = "${mod_link}"
+logoFile = "assets/gnetum/gnetum.png"
+authors = "${mod_authors}"
+logoBlur = false
+
+description = '''${mod_description}'''
+
+[modproperties.${modid}]
+"sodium:config_api_user" = "me.decce.gnetum.compat.sodium.SodiumEntrypoint"
+
+[[mixins]]
+config = "${modid}.mixins.json"
+[[mixins]]
+config = "${modid}.neoforge.mixins.json"
+
+[[dependencies.${modid}]]
+modId = "neoforge"
+type = "required"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${modid}]]
+modId = "minecraft"
+versionRange = "${minecraft_supported_forge}"
+type = "required"

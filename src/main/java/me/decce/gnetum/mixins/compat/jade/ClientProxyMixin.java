@@ -10,8 +10,10 @@ import snownee.jade.util.ClientProxy;
 @Pseudo
 @Mixin(value = ClientProxy.class, remap = false)
 public class ClientProxyMixin {
-	@Redirect(method = "getBossBarRect", at = @At(value = "FIELD", target = "Lsnownee/jade/util/ClientProxy;bossbarShown:Z"))
+	//? neoforge {
+	/*@Redirect(method = "getBossBarRect", at = @At(value = "FIELD", target = "Lsnownee/jade/util/ClientProxy;bossbarShown:Z"))
 	private static boolean getBossBarRect() {
 		return JadeCompat.bossBarShown;
 	}
+	*///?}
 }

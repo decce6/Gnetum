@@ -35,11 +35,7 @@ public class TriStateBoolean implements AnyBoolean {
 
     @Override
     public String text() {
-        return I18n.get((switch (this.value) {
-            case AUTO -> "gnetum.config.auto";
-            case OFF -> "options.off";
-            case ON -> "options.on";
-        }));
+        return value.text().getString();
     }
 
     public String effectiveText() {

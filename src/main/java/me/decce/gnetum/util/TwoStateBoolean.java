@@ -30,10 +30,6 @@ public class TwoStateBoolean implements AnyBoolean {
 
     @Override
     public String text() {
-        return I18n.get((switch (this.value) {
-            case OFF -> "options.off";
-            case ON -> "options.on";
-            default -> throw new RuntimeException("Unexpected value for TwoStateBoolean!");
-        }));
+        return value.text().getString();
     }
 }

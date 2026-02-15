@@ -1,134 +1,160 @@
 package me.decce.gnetum;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import me.decce.gnetum.compat.embeddium.GnetumEmbeddiumCompat;
-import me.decce.gnetum.gui.ConfigScreen;
+import me.decce.gnetum.gl.GLSM;
+import me.decce.gnetum.platform.Platform;
+
+import me.decce.gnetum.time.GlfwTimeSource;
+import me.decce.gnetum.time.TimeSource;
 import me.decce.gnetum.util.AnyBooleanValue;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLModContainer;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.Lazy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.embeddedt.embeddium.api.OptionGUIConstructionEvent;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.resources.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Mod(value = Gnetum.MOD_ID, dist = Dist.CLIENT)
-public final class Gnetum {
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static final String MOD_ID = "gnetum";
-    public static final String HAND_ELEMENT = "gnetum:minecraft_hand";
-    public static final String OTHER_MODS = "gnetum_unknown";
+import java.util.Locale;
 
-    public static final FpsCounter FPS_COUNTER = new FpsCounter();
-    public static GnetumConfig config;
-    public static PassManager passManager;
-    public static UncachedElements uncachedElements;
-    public static String currentElement;
-    public static ElementType currentElementType;
+//? fabric {
+import me.decce.gnetum.platform.fabric.FabricPlatform;
+//?} neoforge {
+/*import me.decce.gnetum.platform.neoforge.NeoforgePlatform;
+*///?}
 
-    public static long lastSwapNanos;
-    public static boolean rendering;
-    public static boolean renderingCanceled; // forge allows mods to cancel rendering of the HUD in the pre event
+public class Gnetum {
+	public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
+	public static final FpsCounter FPS_COUNTER = new FpsCounter();
 
-    public static final Lazy<KeyMapping> CONFIG_MAPPING = Lazy.of(() -> new KeyMapping(
-            "gnetum.config.keyMapping",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_END,
-            "key.categories.misc"));
+	public static CachedElement UNKNOWN_ELEMENT = new CachedElement();
+	private static final TimeSource time = new GlfwTimeSource();
+	private static Framebuffers framebuffers;
+	public static int pass = 1;
+	public static boolean rendering;
+	public static boolean catchingUp;
+	public static GnetumConfig config;
+	public static String currentElement;
 
-    public Gnetum(FMLModContainer container, IEventBus modBus, Dist dist) {
-        modBus.addListener(Gnetum::registerBindings);
-        NeoForge.EVENT_BUS.addListener(this::onClientTick);
-        NeoForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
-        NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
+	private static final Platform PLATFORM = createPlatformInstance();
 
-        if (ModList.get().isLoaded("embeddium")) {
-            OptionGUIConstructionEvent.BUS.addListener(GnetumEmbeddiumCompat::onSodiumPagesRegister);
-        }
+	public static void init() {
+		GLSM.set(new GlImpl());
+		GnetumConfig.reload();
+		config.save();
+	}
 
-        container.registerExtensionPoint(IConfigScreenFactory.class, new GnetumConfigScreenFactory());
-    }
+	public static void nextPass() {
+		if (pass == 0 && FPS_COUNTER.belowMax()) {
+			pass++;
+			finishAllPasses();
+		}
+		else if (pass > 0) {
+			pass++;
+		}
+		if (pass > config.numberOfPasses) {
+			if (FPS_COUNTER.belowMax()) {
+				pass = 1;
+				finishAllPasses();
+			}
+			else {
+				pass = 0;
+			}
+		}
+	}
 
-    public static GnetumConfig getConfig() {
-        if (config == null) {
-            ensureInitialized();
-        }
-        return config;
-    }
+	private static void finishAllPasses() {
+		Distributor.resolve();
+		framebuffers().swapFramebuffers();
+		HudDeltaTracker.reset();
+	}
 
-    public static void ensureInitialized() {
-        if (Gnetum.passManager == null) {
-            Gnetum.passManager = new PassManager();
-            Gnetum.uncachedElements = new UncachedElements();
-        }
-        GnetumConfig.reload(); // We intentionally avoid loading config in the constructor, because at that point GUI layers are not registered yet
-    }
+	public static String getFpsString() {
+		return String.format(Locale.ROOT, "HUD: %d fps T: %s (%d passes)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.maxFps == Constants.UNLIMITED_FPS ? "inf" : Gnetum.config.maxFps, Gnetum.config.numberOfPasses);
+	}
 
-    public static CacheSetting getCacheSetting(String vanillaOverlay) {
-        vanillaOverlay = PackedVanillaElements.consider(vanillaOverlay);
-        if (!config.mapVanillaElements.containsKey(vanillaOverlay)) {
-            config.mapVanillaElements.put(vanillaOverlay, new CacheSetting(SuggestedPass.get(vanillaOverlay)));
-        }
-        return Gnetum.config.mapVanillaElements.get(vanillaOverlay);
-    }
+	public static void disableCachingForCurrentElement(String reason) {
+		if (currentElement == null) {
+			LOGGER.error("No current element to disable");
+			return;
+		}
+		disableCachingForElement(currentElement, reason);
+	}
 
-    public static CacheSetting getCacheSetting(String moddedOverlay, ElementType type) {
-        if (type == ElementType.VANILLA) return getCacheSetting(moddedOverlay);
-        var map = type == ElementType.PRE ? config.mapModdedElementsPre : config.mapModdedElementsPost;
-        if (!map.containsKey(moddedOverlay)) {
-            map.put(moddedOverlay, new CacheSetting(type == ElementType.PRE ? 1 : config.numberOfPasses));
-        }
-        return map.get(moddedOverlay);
-    }
+	public static void disableCachingForElement(String id, String reason) {
+		if (id == null) return;
+		var element = getElement(id);
+		if (element.enabled.get() && element.enabled.value == AnyBooleanValue.AUTO) {
+			LOGGER.info("Disabling caching for element {}. Reason: {}", id, reason);
+			element.enabled.defaultValue = false;
+			framebuffers().dropCurrentFrame();
+		}
+	}
 
-    public static void disableCachingForCurrentElement(String reason) {
-        if (currentElement == null || currentElementType == null) return;
-        CacheSetting cacheSetting = getCacheSetting(currentElement, currentElementType);
-        if (cacheSetting.enabled.get() && cacheSetting.enabled.value == AnyBooleanValue.AUTO) {
-            LOGGER.info("Disabling caching for element {}. Reason: {}", currentElement, reason);
-            cacheSetting.enabled.defaultValue = false;
-            FramebufferManager.getInstance().dropCurrentFrame();
-        }
-    }
+	public static CachedElement getElement() {
+		return getElement(Gnetum.currentElement);
+	}
 
-    public static void registerBindings(RegisterKeyMappingsEvent event) {
-        event.register(CONFIG_MAPPING.get());
-    }
+	public static CachedElement getElement(Identifier element) {
+		return getElement(VersionCompatUtil.stringValueOf(element));
+	}
 
-    public void onClientTick(ClientTickEvent.Post event) {
-        while (CONFIG_MAPPING.get().consumeClick()) {
-            if (!(Minecraft.getInstance().screen instanceof ConfigScreen)) {
-                Minecraft.getInstance().setScreen(new ConfigScreen(PerformanceAnalyzer.analyze()));
-            }
-        }
-    }
+	public static CachedElement getElement(String element) {
+		var map = config.map;
+		if (element == null || !map.containsKey(element)) {
+			return UNKNOWN_ELEMENT;
+		}
+		return map.get(element);
+	}
 
-    public void onCustomizeF3Text(CustomizeGuiOverlayEvent.DebugText event) {
-        if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().getDebugOverlay().showDebugScreen()) {
-            var left = event.getLeft();
-            if (left.size() > 2) {
-                event.getLeft().add(2, String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps));
-            }
-        }
-    }
+	public static boolean shouldRender(String id) {
+		return getElement(id).shouldRender();
+	}
 
-    public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
-        Gnetum.ensureInitialized();
-        Gnetum.FPS_COUNTER.reset();
-        FramebufferManager.getInstance().reset();
-        PackedVanillaElements.reset();
-    }
+	public static boolean isCurrentElementUncached() {
+		if (currentElement == null) {
+			return true;
+		}
+		return getElement(currentElement).isUncached();
+	}
+
+	public static TimeSource time() {
+		return time;
+	}
+
+	public static Framebuffers framebuffers() {
+		if (framebuffers == null) {
+			framebuffers = new Framebuffers();
+		}
+		return framebuffers;
+	}
+
+	public static Platform platform() {
+		return PLATFORM;
+	}
+
+	private static Platform createPlatformInstance() {
+		//? fabric {
+		return new FabricPlatform();
+		//?} neoforge {
+		/*return new NeoforgePlatform();
+		 *///?} forge {
+		/*return new ForgePlatform();
+		*///?}
+	}
+
+	public static void beginElement(String name) {
+		currentElement = name;
+		getElement(name).begin();
+	}
+
+	public static void endElement() {
+		endElement(currentElement);
+	}
+
+	public static void endElement(String name) {
+		getElement(name).end();
+		currentElement = null;
+	}
+
+	public static void reset() {
+		FPS_COUNTER.reset();
+		framebuffers().resize();
+		framebuffers().markForCatchUp();
+	}
 }

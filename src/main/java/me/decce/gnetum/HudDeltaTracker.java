@@ -5,13 +5,14 @@ import net.minecraft.client.DeltaTracker;
 import java.util.Arrays;
 
 public class HudDeltaTracker {
-    private static float lastRealtimeDeltaTicks = Float.NaN;
+    private static float lastRealtimeDeltaTicks;
+    private static boolean isReady;
     private static float[] realtimeDeltaTicks;
     private static boolean logOnce;
 
     public static void update(DeltaTracker.Timer timer) {
         int len = Gnetum.config.numberOfPasses + 1;
-        int curr = Gnetum.passManager.current;
+        int curr = Gnetum.pass;
         if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
             reset();
         }
@@ -36,6 +37,7 @@ public class HudDeltaTracker {
                 lastRealtimeDeltaTicks += realtimeDeltaTicks[i];
             }
         }
+        isReady = true;
     }
 
     public static void disable() {
@@ -44,11 +46,11 @@ public class HudDeltaTracker {
             Gnetum.LOGGER.warn("Incompatible mod detected, disabling HUD delta tracker.");
             Gnetum.LOGGER.warn("Consider reporting to Gnetum developer.");
         }
-        lastRealtimeDeltaTicks = Float.NaN;
+        isReady = false;
     }
 
     public static boolean isReady() {
-        return !Float.isNaN(lastRealtimeDeltaTicks);
+        return isReady;
     }
 
     public static float getRealtimeDeltaTicks() {

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "me.decce.gnetum.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "neoforge.GuiAccessor",
+    "neoforge.GuiLayerManagerAccessor",
+    "neoforge.GuiLayerManagerMixin"
+  ],
+  "mixins": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

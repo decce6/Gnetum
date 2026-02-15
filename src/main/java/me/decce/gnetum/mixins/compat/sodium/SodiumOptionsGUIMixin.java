@@ -1,7 +1,8 @@
 package me.decce.gnetum.mixins.compat.sodium;
 
-import me.decce.gnetum.Gnetum;
-import me.decce.gnetum.compat.sodium.GnetumSodiumPage;
+//? <=1.21.1 {
+/*import me.decce.gnetum.Gnetum;
+import me.decce.gnetum.compat.sodium.LegacySodiumPage;
 import net.caffeinemc.mods.sodium.client.gui.SodiumOptionsGUI;
 import net.caffeinemc.mods.sodium.client.gui.options.OptionPage;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,8 +25,9 @@ public class SodiumOptionsGUIMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void gnetum$init(Screen prevScreen, CallbackInfo ci) {
-        Gnetum.ensureInitialized();
+		Gnetum.platform().elementGatherer().gather();
 
-        this.pages.add(new GnetumSodiumPage());
+        this.pages.add(new LegacySodiumPage());
     }
 }
+*///?}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "${modid}",
+  "name": "${mod_name}",
+  "version": "${mod_version_full}",
+  "authors": ["${mod_authors}"],
+  "contact": {
+    "sources": "${mod_sources}",
+    "issues": "${mod_issues}",
+    "homepage": "${mod_link}"
+  },
+  "description": "${mod_description}",
+  "icon": "assets/gnetum/gnetum.png",
+  "license": "${mod_license}",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.decce.gnetum.platform.fabric.FabricEntrypoint"
+    ],
+    "sodium:config_api_user": [
+      "me.decce.gnetum.compat.sodium.SodiumEntrypoint"
+    ]
+  },
+  "mixins": [
+    "${modid}.mixins.json",
+    "${modid}.fabric.mixins.json",
+    "${modid}.fabric.${version_mixin_tag}.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_supported_fabric}",
+    "fabricloader": ">=0.16.0"
+  }
+}

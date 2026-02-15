@@ -1,97 +1,74 @@
 package me.decce.gnetum.mixins;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import me.decce.gnetum.FramebufferManager;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import me.decce.gnetum.Gnetum;
-import me.decce.gnetum.ElementType;
-import me.decce.gnetum.GuiHelper;
+import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.gui.GuiLayerManager;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = Gui.class)
+//? >=1.21.10 {
+import net.minecraft.client.renderer.fog.FogRenderer;
+import me.decce.gnetum.versioned.StatefulHudHandler;
+//?}
+
+@Mixin(value = Gui.class, priority = 5000)
 public class GuiMixin {
-    @Shadow
-    public int leftHeight;
-    @Shadow
-    public int rightHeight;
-    @Unique
-    private int gnetum$lastLeftHeight = 39;
-    @Unique
-    private int gnetum$lastRightHeight = 39;
-    @Unique
-    private int gnetum$currentLeftHeight;
-    @Unique
-    private int gnetum$currentRightHeight;
-    @Unique
-    private final Matrix4f gnetum$defaultGuiPose = new Matrix4f();
+	@WrapMethod(method = "render")
+	private void gnetum$wrapGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
+		if (!Gnetum.config.isEnabled()) {
+			original.call(guiGraphics, deltaTracker);
+			return;
+		}
 
-    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/gui/GuiLayerManager;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
-    public boolean gnetum$render(GuiLayerManager instance, GuiGraphics guiGraphics, DeltaTracker partialTick)
-    {
-        if (!Gnetum.rendering) {
-            return true;
-        }
+		//TODO: optimize string alloc & hash (cache concat result)
+		var mc = Minecraft.getInstance();
+		var game = (GameRendererAccessor) mc.gameRenderer;
 
-        // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
-        // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
-        //  to them otherwise, creating inconsistencies
-        var pose = guiGraphics.pose().last().pose();
-        if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
-            FramebufferManager.getInstance().markForCatchUp();
-        }
+		Gnetum.framebuffers().resize();
+		Gnetum.framebuffers().bind();
 
-        if (Gnetum.passManager.current == 1) {
-            gnetum$currentLeftHeight = 39;
-            gnetum$currentRightHeight = 39;
-        }
+		if (Gnetum.pass == 0) {
+			VersionCompatUtil.profilerPush("sleep");
+		}
+		else {
+			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
+		}
 
-        if (Gnetum.passManager.current > 0) {
-            Gnetum.renderingCanceled = ((RenderGuiEvent.Pre)GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE))).isCanceled();
+		Gnetum.rendering = true;
 
-            if (Gnetum.passManager.current != 1) {
-                leftHeight = gnetum$currentLeftHeight;
-                rightHeight = gnetum$currentRightHeight;
-            }
+		original.call(guiGraphics, deltaTracker);
 
-            GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, partialTick, rl -> Gnetum.passManager.shouldRender(rl));
+		if (Gnetum.pass > 0) {
+			//? >=1.21.10 {
+			game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
+			//?} else {
+			/*guiGraphics.flush();
+			*///?}
+		}
 
-            GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
+		Gnetum.rendering = false;
+		Gnetum.nextPass();
 
-            gnetum$currentLeftHeight = leftHeight;
-            gnetum$currentRightHeight = rightHeight;
-        }
+		Gnetum.framebuffers().unbind();
 
-        if (Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
-            leftHeight = gnetum$lastLeftHeight;
-            rightHeight = gnetum$lastRightHeight;
-        }
-        else {
-            gnetum$lastLeftHeight = leftHeight;
-            gnetum$lastRightHeight = rightHeight;
-        }
+		VersionCompatUtil.profilerPopPush("uncached");
+		// Note: these are not rendered instantly, but batched with the rest of the GUI - profiler data may be not useful
 
-        return false;
-    }
+		//? >=1.21.10 {
+		if (Gnetum.catchingUp) {
+			StatefulHudHandler.dropDeferredSubmission();
+		}
+		else {
+			StatefulHudHandler.performDeferredSubmission(guiGraphics);
+			Gnetum.framebuffers().blit();
+		}
+		//?} else {
+		//?}
 
-    // Some mods inject at the tail of Gui.render to render their elements (example Sodium Extra)
-    // This causes issues, because the framebuffer is still bound to ours at this time
-    // We only allow these injections to run in a specific pass to solve this issue
-    // TODO: We might want to improve the performance analyzer to not produce warnings when it thinks the last pass does
-    //  not render elements, because some may be rendered here
-    @Inject(method = "render", at = @At("TAIL"), cancellable = true, order = 100)
-    private void gnetum$postRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (Gnetum.rendering && Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
-            ci.cancel();
-        }
-    }
+		VersionCompatUtil.profilerPop();
+	}
 }
