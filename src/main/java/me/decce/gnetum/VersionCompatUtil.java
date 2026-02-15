@@ -25,7 +25,7 @@ public class VersionCompatUtil {
 	}
 
 	public static String stringValueOf(Identifier identifier) {
-		//TODO optimize
+		//TODO optimize string alloc & hash (cache concat result)
 		return identifier.getNamespace().equals("minecraft")
 				? identifier.getPath()
 				: identifier.toString();

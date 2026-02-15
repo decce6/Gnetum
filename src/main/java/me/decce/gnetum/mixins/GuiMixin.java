@@ -24,7 +24,6 @@ public class GuiMixin {
 			return;
 		}
 
-		//TODO: optimize string alloc & hash (cache concat result)
 		var mc = Minecraft.getInstance();
 		var game = (GameRendererAccessor) mc.gameRenderer;
 
