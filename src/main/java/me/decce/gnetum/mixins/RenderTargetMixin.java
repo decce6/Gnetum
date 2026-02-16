@@ -15,7 +15,7 @@ public class RenderTargetMixin {
     public void gnetum$bindWrite(boolean setViewport, CallbackInfo ci) {
         if (Gnetum.rendering && (((RenderTarget)(Object)this) == Minecraft.getInstance().getMainRenderTarget())) {
             ci.cancel();
-            FramebufferManager.getInstance().bind(setViewport);
+            FramebufferManager.getInstance().bind(true);
         }
     }
 }

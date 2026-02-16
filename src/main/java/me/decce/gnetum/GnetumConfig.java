@@ -21,6 +21,7 @@ public class GnetumConfig {
 
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
+    public TwoStateBoolean downscale = new TwoStateBoolean(AnyBooleanValue.OFF);
     public int numberOfPasses = 3;
     public int maxFps = 60;
 
