@@ -16,7 +16,7 @@ public class FpsCounter {
 
     public void reset() {
         this.lastTimeMillis = ((MinecraftAccessor)Minecraft.getInstance()).getLastTime(); // makes sure the fps updates at the same time the game fps is updated
-		this.lastTimeNanos = lastTimeMillis * 1_000_000L;
+		this.lastTimeNanos = Gnetum.time().nanos();
         this.frames = 0;
         this.fps = 0;
     }
