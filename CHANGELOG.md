@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4.0
+
+This version adds two new options that may improve performance in certain scenarios.
+
+- **Downscale HUD Framebuffer**: uses a smaller resolution for the HUD framebuffer, which may improve performance in GPU-bound scenarios
+- **Max HUD Framerate (GUI)**: allows using a lower HUD framerate limit when a GUI screen is open, improving performance in GUIs
+
 ## 2.3.5
 
 - Added a search bar to element screen
