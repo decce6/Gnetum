@@ -36,14 +36,18 @@ public class MoreOptionsScreen extends BaseScreen {
         IntSlider sliderNumberOfPasses = new IntSlider(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, () -> I18n.get("gnetum.config.numberOfPasses") + ": %s", 2, 10, Gnetum.config.numberOfPasses, true, i -> Gnetum.config.numberOfPasses = i);
         sliderNumberOfPasses.setTooltip(Tooltip.create(Component.translatable("gnetum.config.numberOfPasses.tooltip")));
         sliderNumberOfPasses.setTooltipDelay(Duration.ZERO);
-        IntSlider sliderMaxFps = new IntSlider(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, () -> I18n.get("gnetum.config.maxFps") + ": %s fps", 5, GnetumConfig.UNLIMITED_FPS, Gnetum.config.maxFps, 5, true, i -> Gnetum.config.maxFps = i, i -> i == 125, () -> I18n.get("gnetum.config.maxFps") + ": Unlimited");
+        IntSlider sliderMaxFps = new IntSlider(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, () -> I18n.get("gnetum.config.maxFps") + ": %s fps", 5, GnetumConfig.UNLIMITED_FPS, Gnetum.config.getRawMaxFps(), 5, true, i -> Gnetum.config.setMaxFps(i), i -> i == 125, () -> I18n.get("gnetum.config.maxFps") + ": Unlimited");
         sliderMaxFps.setTooltip(Tooltip.create(Component.translatable("gnetum.config.maxFps.tooltip")));
         sliderMaxFps.setTooltipDelay(Duration.ZERO);
+        IntSlider sliderScreenMaxFps = new IntSlider(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, () -> I18n.get("gnetum.config.screenMaxFps") + ": %s fps", 5, 60, Gnetum.config.screenMaxFps, 5, true, i -> Gnetum.config.screenMaxFps = i);
+        sliderScreenMaxFps.setTooltip(Tooltip.create(Component.translatable("gnetum.config.screenMaxFps.tooltip")));
+        sliderScreenMaxFps.setTooltipDelay(Duration.ZERO);
         Button btnReset = Button.builder(Component.translatable("gnetum.config.reset"), b -> Minecraft.getInstance().setScreen(new ConfirmationScreen(() -> new ConfigScreen(null, PerformanceAnalyzer.latestAnalysisResult), () -> this, GnetumConfig::reset))).size(BUTTON_WIDTH, BUTTON_HEIGHT).build();
         this.add(btnShowFps);
         this.add(btnDownscale);
         this.add(sliderNumberOfPasses);
         this.add(sliderMaxFps);
+        this.add(sliderScreenMaxFps);
         this.add(btnReset);
 
         super.addDoneButton();

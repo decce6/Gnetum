@@ -11,6 +11,8 @@
   "gnetum.config.numberOfPasses.tooltip": "Specifies the total number of passes. Higher number provides better performance, but will make the HUD update slower.\n\nThe maximum framerate of the HUD will be the quotient of the game FPS divided by the number of passes.",
   "gnetum.config.maxFps": "HUD Framerate Limit",
   "gnetum.config.maxFps.tooltip": "Specifies the maximum framerate of the HUD. Priority is lower than the number of passes setting.",
+  "gnetum.config.screenMaxFps": "HUD Framerate Limit (GUI)",
+  "gnetum.config.screenMaxFps.tooltip": "When set to a lower value than the HUD Framerate Limit, allows temporarily reducing the HUD FPS when in GUI screens. This can help improve performance in GUIs.",
   "gnetum.config.reset": "Reset Configurations...",
   "gnetum.config.confirmReset": "Are you sure you want to reset all the configurations?\n\nResetting the configurations might help solve some issues. However, this action cannot be undone.",
   "gnetum.config.moddedPre": "Modded Elements (Pre)...",

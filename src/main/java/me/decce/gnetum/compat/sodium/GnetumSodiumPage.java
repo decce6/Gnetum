@@ -61,6 +61,17 @@ public class GnetumSodiumPage extends OptionPage {
                     }
                 }, opts -> Gnetum.getConfig().showHudFps.get())
                 .build());
+        general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
+                .setName(Component.translatable("gnetum.config.downscale"))
+                .setTooltip(Component.translatable("gnetum.config.downscale.tooltip"))
+                .setImpact(OptionImpact.LOW)
+                .setControl(TickBoxControl::new)
+                .setBinding((opts, value) -> {
+                    if (Gnetum.getConfig().downscale.get() != value) {
+                        Gnetum.getConfig().downscale.next();
+                    }
+                }, opts -> Gnetum.getConfig().downscale.get())
+                .build());
         general.add(OptionImpl.createBuilder(int.class, STORAGE)
                 .setEnabled(enabledOption::getValue)
                 .setName(Component.translatable("gnetum.config.numberOfPasses"))
@@ -75,7 +86,15 @@ public class GnetumSodiumPage extends OptionPage {
                 .setTooltip(Component.translatable("gnetum.config.maxFps.tooltip"))
                 .setImpact(OptionImpact.MEDIUM)
                 .setControl(option -> new SliderControl(option, 5, GnetumConfig.UNLIMITED_FPS, 5, i -> i == GnetumConfig.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
-                .setBinding((opts, value) -> Gnetum.getConfig().maxFps = value, opts -> Gnetum.getConfig().maxFps)
+                .setBinding((opts, value) -> Gnetum.getConfig().setMaxFps(value), opts -> Gnetum.getConfig().getRawMaxFps())
+                .build());
+        general.add(OptionImpl.createBuilder(int.class, STORAGE)
+                .setEnabled(enabledOption::getValue)
+                .setName(Component.translatable("gnetum.config.screenMaxFps"))
+                .setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
+                .setImpact(OptionImpact.MEDIUM)
+                .setControl(option -> new SliderControl(option, 5, 60, 5, i -> Component.translatable("options.framerate", i)))
+                .setBinding((opts, value) -> Gnetum.getConfig().screenMaxFps = value, opts -> Gnetum.getConfig().screenMaxFps)
                 .build());
 
         groups.add(general.build());

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class GnetumConfig {
@@ -23,7 +23,8 @@ public class GnetumConfig {
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean downscale = new TwoStateBoolean(AnyBooleanValue.OFF);
     public int numberOfPasses = 3;
-    public int maxFps = 60;
+    private int maxFps = 60;
+    public int screenMaxFps = 20;
 
     public HashMap<String, CacheSetting> mapVanillaElements = new HashMap<>();
     public HashMap<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
@@ -63,6 +64,7 @@ public class GnetumConfig {
         this.mapModdedElementsPre.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
+        this.screenMaxFps = clamp(this.screenMaxFps, 1, 60);
         this.hideElementsOrphanOrUncached();
         this.removeObsoleteVanillaElements();
     }
@@ -116,5 +118,18 @@ public class GnetumConfig {
         if (PerformanceAnalyzer.latestAnalysisResult != null) {
             PerformanceAnalyzer.latestAnalysisResult.markOutdated();
         }
+    }
+
+    public int getMaxFps() {
+        if (maxFps <= screenMaxFps) return maxFps;
+        return Minecraft.getInstance().screen == null ? maxFps : screenMaxFps;
+    }
+
+    public int getRawMaxFps() {
+        return this.maxFps;
+    }
+
+    public void setMaxFps(int maxFps) {
+        this.maxFps = maxFps;
     }
 }
