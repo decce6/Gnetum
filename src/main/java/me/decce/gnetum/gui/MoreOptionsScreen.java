@@ -30,7 +30,7 @@ public class MoreOptionsScreen extends BaseScreen {
         sliderNumberOfPasses.setTooltip(Tooltip.create(Component.translatable("gnetum.config.numberOfPasses.tooltip")));
         sliderNumberOfPasses.setTooltipDelay(0);
         y += h + margin;
-        IntSlider sliderMaxFps = new IntSlider(xl, y, w, h, () -> I18n.get("gnetum.config.maxFps") + ": %s fps", 5, GnetumConfig.UNLIMITED_FPS, Gnetum.config.maxFps, 5, true, i -> Gnetum.config.maxFps = i, i -> i == 125, () -> I18n.get("gnetum.config.maxFps") + ": Unlimited");
+        IntSlider sliderMaxFps = new IntSlider(xl, y, w, h, () -> I18n.get("gnetum.config.maxFps") + ": %s fps", 5, GnetumConfig.UNLIMITED_FPS, Gnetum.config.getRawMaxFps(), 5, true, i -> Gnetum.config.setMaxFps(i), i -> i == 125, () -> I18n.get("gnetum.config.maxFps") + ": Unlimited");
         sliderMaxFps.setTooltip(Tooltip.create(Component.translatable("gnetum.config.maxFps.tooltip")));
         sliderMaxFps.setTooltipDelay(0);
         Button btnReset = Button.builder(Component.translatable("gnetum.config.reset"), b -> Minecraft.getInstance().setScreen(new ConfirmationScreen(() -> new ConfigScreen(null, PerformanceAnalyzer.latestAnalysisResult), () -> this, GnetumConfig::reset))).pos(xr, y).size(w, h).build();

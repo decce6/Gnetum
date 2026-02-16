@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -22,7 +23,8 @@ public class GnetumConfig {
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean downscale = new TwoStateBoolean(AnyBooleanValue.OFF);
     public int numberOfPasses = 3;
-    public int maxFps = 60;
+    private int maxFps = 60;
+    public int screenMaxFps = 20;
 
     public HashMap<String, CacheSetting> mapVanillaElements = new HashMap<>();
     public HashMap<String, CacheSetting> mapModdedElementsPre = new HashMap<>();
@@ -114,5 +116,18 @@ public class GnetumConfig {
         if (PerformanceAnalyzer.latestAnalysisResult != null) {
             PerformanceAnalyzer.latestAnalysisResult.markOutdated();
         }
+    }
+
+    public int getMaxFps() {
+        if (maxFps <= screenMaxFps) return maxFps;
+        return Minecraft.getInstance().screen == null ? maxFps : screenMaxFps;
+    }
+
+    public int getRawMaxFps() {
+        return maxFps;
+    }
+
+    public void setMaxFps(int maxFps) {
+        this.maxFps = maxFps;
     }
 }

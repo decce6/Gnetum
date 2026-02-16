@@ -114,7 +114,7 @@ public final class Gnetum {
         if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().options.renderDebug) {
             var left = event.getLeft();
             if (left.size() > 2) {
-                event.getLeft().add(2, String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.maxFps == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.maxFps));
+                event.getLeft().add(2, String.format("HUD: %d fps (%d passes, max %s)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.numberOfPasses, Gnetum.config.getMaxFps() == GnetumConfig.UNLIMITED_FPS ? "unlimited" : Gnetum.config.getMaxFps()));
             }
         }
     }
