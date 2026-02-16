@@ -62,6 +62,18 @@ public class GnetumEmbeddiumPage extends OptionPage {
                     }
                 }, opts -> Gnetum.config.showHudFps.get())
                 .build());
+        general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
+                .setName(Component.translatable("gnetum.config.downscale"))
+                .setTooltip(Component.translatable("gnetum.config.downscale.tooltip"))
+                .setEnabledPredicate(enabledOption::getValue)
+                .setImpact(OptionImpact.LOW)
+                .setControl(TickBoxControl::new)
+                .setBinding((opts, value) -> {
+                    if (Gnetum.config.downscale.get() != value) {
+                        Gnetum.config.downscale.next();
+                    }
+                }, opts -> Gnetum.config.downscale.get())
+                .build());
         general.add(OptionImpl.createBuilder(int.class, STORAGE)
                 .setName(Component.translatable("gnetum.config.numberOfPasses"))
                 .setTooltip(Component.translatable("gnetum.config.numberOfPasses.tooltip"))
@@ -77,6 +89,14 @@ public class GnetumEmbeddiumPage extends OptionPage {
                 .setImpact(OptionImpact.MEDIUM)
                 .setControl(option -> new SliderControl(option, 5, GnetumConfig.UNLIMITED_FPS, 5, i -> i == GnetumConfig.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
                 .setBinding((opts, value) -> Gnetum.config.setMaxFps(value), opts -> Gnetum.config.getRawMaxFps())
+                .build());
+        general.add(OptionImpl.createBuilder(int.class, STORAGE)
+                .setName(Component.translatable("gnetum.config.screenMaxFps"))
+                .setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
+                .setEnabledPredicate(enabledOption::getValue)
+                .setImpact(OptionImpact.MEDIUM)
+                .setControl(option -> new SliderControl(option, 5, 60, 5, i -> Component.translatable("options.framerate", i)))
+                .setBinding((opts, value) -> Gnetum.config.screenMaxFps = value, opts -> Gnetum.config.screenMaxFps)
                 .build());
 
         groups.add(general.build());
