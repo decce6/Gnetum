@@ -5,6 +5,8 @@
   "gnetum.config.moreOptions": "More Options...",
   "gnetum.config.showFps": "Show HUD FPS in F3",
   "gnetum.config.showFps.tooltip": "Adds a line to the upper-left corner of the F3 screen to show the HUD FPS.",
+  "gnetum.config.downscale": "Downscale HUD Framebuffer",
+  "gnetum.config.downscale.tooltip": "Uses a lower resolution for the HUD framebuffer based on current GUI scale. May cause HUDs to feel \"blurry\" and may not be compatible with all mods.",
   "gnetum.config.numberOfPasses": "Number of Passes",
   "gnetum.config.numberOfPasses.tooltip": "Specifies the total number of passes. Higher number provides better performance, but will make the HUD update slower.\n\nThe maximum framerate of the HUD will be the quotient of the game FPS divided by the number of passes.",
   "gnetum.config.maxFps": "HUD Framerate Limit",

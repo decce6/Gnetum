@@ -16,6 +16,7 @@ public class FramebufferManager {
     private int serialNumber;
     private int width;
     private int height;
+    private boolean downscale;
     private double guiScale;
     private TextureTarget backFramebuffer;
     private TextureTarget frontFramebuffer;
@@ -31,7 +32,8 @@ public class FramebufferManager {
     public void ensureSize() {
         if (mc.getWindow().getWidth() != width ||
             mc.getWindow().getHeight() != height ||
-            mc.getWindow().getGuiScale() != guiScale) {
+            mc.getWindow().getGuiScale() != guiScale ||
+            downscale != Gnetum.config.downscale.get()) {
             this.reset();
         }
     }
@@ -48,16 +50,20 @@ public class FramebufferManager {
     }
 
     public void reset() {
-        this.width = mc.getWindow().getWidth();
-        this.height = mc.getWindow().getHeight();
-        this.guiScale = mc.getWindow().getGuiScale();
+        var window = mc.getWindow();
+        this.width = window.getWidth();
+        this.height = window.getHeight();
+        this.guiScale = window.getGuiScale();
+        this.downscale = Gnetum.config.downscale.get();
+        int fboWidth = downscale ? window.getGuiScaledWidth() : window.getWidth();
+        int fboHeight = downscale ? window.getGuiScaledHeight() : window.getHeight();
         if (backFramebuffer != null && backFramebuffer.frameBufferId > 0) backFramebuffer.destroyBuffers();
-        backFramebuffer = new TextureTarget(width, height, true, false);
+        backFramebuffer = new TextureTarget(fboWidth, fboHeight, true, false);
         backFramebuffer.setClearColor(0, 0, 0, 0);
         backFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(backFramebuffer);
         if (frontFramebuffer != null && frontFramebuffer.frameBufferId > 0) frontFramebuffer.destroyBuffers();
-        frontFramebuffer = new TextureTarget(width, height, true, false);
+        frontFramebuffer = new TextureTarget(fboWidth, fboHeight, true, false);
         frontFramebuffer.setClearColor(0, 0, 0, 0);
         frontFramebuffer.setFilterMode(GlConst.GL_NEAREST);
         this.clear(frontFramebuffer);

@@ -76,7 +76,7 @@ public class GnetumEmbeddiumPage extends OptionPage {
                 .setEnabledPredicate(enabledOption::getValue)
                 .setImpact(OptionImpact.MEDIUM)
                 .setControl(option -> new SliderControl(option, 5, GnetumConfig.UNLIMITED_FPS, 5, i -> i == GnetumConfig.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
-                .setBinding((opts, value) -> Gnetum.config.maxFps = value, opts -> Gnetum.config.maxFps)
+                .setBinding((opts, value) -> Gnetum.config.setMaxFps(value), opts -> Gnetum.config.getRawMaxFps())
                 .build());
 
         groups.add(general.build());
