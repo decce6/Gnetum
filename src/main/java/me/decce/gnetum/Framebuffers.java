@@ -21,6 +21,8 @@ public class Framebuffers {
 	private int serialNumber;
 	private int width;
 	private int height;
+	private int guiScale;
+	private boolean downscale;
 
 	public Framebuffers() {
 		//? >=1.21.10 {
@@ -62,16 +64,26 @@ public class Framebuffers {
 	}
 
 	public void resize() {
-		var mc = Minecraft.getInstance().getMainRenderTarget();
-		if (width != mc.width || height != mc.height) {
-			width = mc.width;
-			height = mc.height;
+		var window = mc.getWindow();
+
+		if (window.getWidth() != width ||
+				window.getHeight() != height ||
+				window.getGuiScale() != guiScale ||
+				Gnetum.config.downscale.get() != downscale)
+		{
+			this.width = window.getWidth();
+			this.height = window.getHeight();
+			this.guiScale = mc.getWindow().getGuiScale();
+			this.downscale = Gnetum.config.downscale.get();
+			var fboWidth = downscale ? window.getGuiScaledWidth() : window.getWidth();
+			var fboHeight = downscale ? window.getGuiScaledHeight() : window.getHeight();
+
 			//? >=1.21.10 {
-			back.createBuffers(mc.width, mc.height);
-			front.createBuffers(mc.width, mc.height);
+			back.resize(fboWidth,  fboHeight);
+			front.resize(fboWidth, fboHeight);
 			//?} else {
-			/*back.createBuffers(mc.width, mc.height, Minecraft.ON_OSX);
-			front.createBuffers(mc.width, mc.height, Minecraft.ON_OSX);
+			/*back.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
+			front.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
 			*///?}
 			markForCatchUp();
 		}
