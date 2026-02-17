@@ -91,10 +91,10 @@ public class GameRendererMixin {
     private void gnetum$preRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, CallbackInfo ci) {
         if (!Gnetum.config.isEnabled()) return;
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
-		if (hand.isUncached()) {
+		if (hand.isUncached(false)) {
 			return;
 		}
-        if (hand.shouldRender()) {
+        if (hand.shouldRender(false)) {
 			Gnetum.beginElement(Constants.HAND_ELEMENT);
             Gnetum.framebuffers().bind();
             this.gnetum$renderingCachedHand = true;
