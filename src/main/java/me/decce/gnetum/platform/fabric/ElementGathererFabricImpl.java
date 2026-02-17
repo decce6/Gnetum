@@ -12,57 +12,51 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //? >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
+
+import java.util.Map;
 //?} else {
 /*import me.decce.gnetum.versioned.HudHandler;
 *///?}
 
-public class ElementGathererFabricImpl implements ElementGatherer {
-	private static boolean gathered;
+public class ElementGathererFabricImpl extends ElementGatherer {
 
-	public void gather() {
-		if (gathered) {
-			return;
-		}
-		gathered = true;
+	public void gatherImpl(Map<String, CachedElement> map) {
 
 		//? >=1.21.10 {
 		var first = HudElementRegistryImpl.getRoot(VanillaHudElements.MISC_OVERLAYS);
 		var last = HudElementRegistryImpl.getRoot(VanillaHudElements.SUBTITLES);
 
-		gather(first);
+		gather(first, map);
 		HudElementRegistryImpl.ROOT_ELEMENTS.values().stream()
 				.filter(root -> root != first && root != last)
 				.forEach(root -> {
-					Gnetum.config.map.putIfAbsent(VersionCompatUtil.stringValueOf(root.id()), new CachedElement());
+					map.putIfAbsent(VersionCompatUtil.stringValueOf(root.id()), new CachedElement());
 				});
-		gather(last);
+		gather(last, map);
 		//?} else {
-		/*Gnetum.config.map.putIfAbsent(HudHandler.VANILLA_LAYERS, new CachedElement());
+		/*map.putIfAbsent(HudHandler.VANILLA_LAYERS, new CachedElement());
 		*///?}
 
 		if (Gnetum.platform().isModLoaded("fabric-api")) {
-			gatherLegacy();
+			gatherLegacy(map);
 		}
-
-		Gnetum.config.map.putIfAbsent(Constants.UNKNOWN_ELEMENTS, Gnetum.UNKNOWN_ELEMENT);
-		Gnetum.UNKNOWN_ELEMENT = Gnetum.config.map.get(Constants.UNKNOWN_ELEMENTS);
 	}
 
 	//? >=1.21.10 {
-	public void gather(HudElementRegistryImpl.RootLayer root) {
+	public void gather(HudElementRegistryImpl.RootLayer root, Map<String, CachedElement> map) {
 		root.layers().forEach(layer -> {
-			Gnetum.config.map.putIfAbsent(VersionCompatUtil.stringValueOf(layer.id()), new CachedElement());
+			map.putIfAbsent(VersionCompatUtil.stringValueOf(layer.id()), new CachedElement());
 		});
 	}
 	//?}
 
 	@SuppressWarnings("deprecation")
-	private void gatherLegacy() {
+	private void gatherLegacy(Map<String, CachedElement> map) {
 		var event = HudRenderCallback.EVENT;
 		HudRenderCallback[] handlers = (HudRenderCallback[]) ArrayBackedEventAccessor.HANDLERS.get(event);
 		for (var callback : handlers) {
 			var modid = Gnetum.platform().getModId(callback.getClass());
-			Gnetum.config.map.putIfAbsent(modid, new CachedElement());
+			map.putIfAbsent(modid, new CachedElement());
 		}
 	}
 
