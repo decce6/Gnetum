@@ -38,7 +38,7 @@ fun fetchLatestChangelog() : String {
     val str = Files.readString(layout.settingsDirectory.file("CHANGELOG.md").asFile.toPath())
     val first = str.indexOf("## ")
     val i = str.indexOf('\n', first) + 2
-    var r = str.indexOf("## ", i + 1)
+    var r = str.indexOf("\n## ", i + 1)
     if (r == -1) r = str.length
     return str.substring(i, r - 1)
 }
