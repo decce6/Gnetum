@@ -1,5 +1,6 @@
 package me.decce.gnetum.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -90,32 +91,22 @@ public class GameRendererMixin {
         *///?}
 	}
 
-
-    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
-    private void gnetum$preRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, CallbackInfo ci) {
-        if (!Gnetum.config.isEnabled()) return;
+	@WrapMethod(method = "renderItemInHand")
+	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
-		if (hand.isUncached(false)) {
+		if (!Gnetum.config.isEnabled() || hand.isUncached(false)) {
+			original.call(f, bl, matrix4f);
 			return;
 		}
-        if (hand.shouldRender(false)) {
+		if (hand.shouldRender(false)) {
+			// No flush needed
 			Gnetum.beginElement(Constants.HAND_ELEMENT);
-            Gnetum.framebuffers().bind();
-            this.gnetum$renderingCachedHand = true;
-        }
-        else {
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void gnetum$postRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, CallbackInfo ci) {
-        if (this.gnetum$renderingCachedHand) {
-            this.gnetum$renderingCachedHand = false;
-			Gnetum.endElement(Constants.HAND_ELEMENT);
+			Gnetum.framebuffers().bind();
+			original.call(f, bl, matrix4f);
 			Gnetum.framebuffers().unbind();
+			Gnetum.endElement(Constants.HAND_ELEMENT);
 		}
-    }
+	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
     private void gnetum$wrapRenderDebugOverlay(Gui gui, GuiGraphics guiGraphics, Operation<Void> original) {
@@ -135,13 +126,8 @@ public class GameRendererMixin {
 				Gnetum.endElement(Constants.DEBUG_OVERLAY);
 			}
 		}
-        if (debug.shouldRender(false)) {
-			Gnetum.beginElement(Constants.DEBUG_OVERLAY);
-            Gnetum.framebuffers().bind();
+		else {
 			original.call(gui, guiGraphics);
-			VersionCompatUtil.flush(guiGraphics);
-			Gnetum.framebuffers().unbind();
-			Gnetum.endElement(Constants.HAND_ELEMENT);
-        }
+		}
     }
 }
