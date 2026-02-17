@@ -18,11 +18,12 @@ public abstract class ElementGatherer {
 
 		var newMap = new LinkedHashMap<String, CachedElement>(Gnetum.config.map.size());
 
-		newMap.put(Constants.HAND_ELEMENT, Gnetum.HAND_ELEMENT);
+		newMap.put(Constants.HAND_ELEMENT, new CachedElement());
 
 		gatherImpl(newMap);
 
-		newMap.put(Constants.UNKNOWN_ELEMENTS, Gnetum.UNKNOWN_ELEMENT);
+		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement());
+		newMap.put(Constants.DEBUG_OVERLAY, new CachedElement());
 
 		for (var entry : Gnetum.config.map.entrySet()) {
 			if (newMap.containsKey(entry.getKey())) {

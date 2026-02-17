@@ -1,6 +1,5 @@
 package me.decce.gnetum.mixins;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import me.decce.gnetum.Gnetum;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;

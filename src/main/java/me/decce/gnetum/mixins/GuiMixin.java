@@ -25,7 +25,6 @@ public class GuiMixin {
 		}
 
 		var mc = Minecraft.getInstance();
-		var game = (GameRendererAccessor) mc.gameRenderer;
 
 		Gnetum.framebuffers().resize();
 		Gnetum.framebuffers().bind();
@@ -42,11 +41,7 @@ public class GuiMixin {
 		original.call(guiGraphics, deltaTracker);
 
 		if (Gnetum.pass > 0) {
-			//? >=1.21.10 {
-			game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
-			//?} else {
-			/*guiGraphics.flush();
-			*///?}
+			VersionCompatUtil.flush(guiGraphics);
 		}
 
 		Gnetum.rendering = false;

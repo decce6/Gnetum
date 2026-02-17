@@ -1,11 +1,15 @@
 package me.decce.gnetum.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
+import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -111,5 +115,33 @@ public class GameRendererMixin {
 			Gnetum.endElement(Constants.HAND_ELEMENT);
 			Gnetum.framebuffers().unbind();
 		}
+    }
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    private void gnetum$wrapRenderDebugOverlay(Gui gui, GuiGraphics guiGraphics, Operation<Void> original) {
+		if (minecraft.isGameLoadFinished() && (!minecraft.options.hideGui || minecraft.screen != null)) {
+			var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);
+			if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null || !Gnetum.config.isEnabled() || debug.isUncached(false)) {
+				original.call(gui, guiGraphics);
+				return;
+			}
+			if (debug.shouldRender(false)) {
+				Gnetum.beginElement(Constants.DEBUG_OVERLAY);
+				VersionCompatUtil.flush(guiGraphics);
+				Gnetum.framebuffers().bind();
+				original.call(gui, guiGraphics);
+				VersionCompatUtil.flush(guiGraphics);
+				Gnetum.framebuffers().unbind();
+				Gnetum.endElement(Constants.DEBUG_OVERLAY);
+			}
+		}
+        if (debug.shouldRender(false)) {
+			Gnetum.beginElement(Constants.DEBUG_OVERLAY);
+            Gnetum.framebuffers().bind();
+			original.call(gui, guiGraphics);
+			VersionCompatUtil.flush(guiGraphics);
+			Gnetum.framebuffers().unbind();
+			Gnetum.endElement(Constants.HAND_ELEMENT);
+        }
     }
 }

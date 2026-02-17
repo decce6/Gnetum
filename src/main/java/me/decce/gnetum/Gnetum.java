@@ -22,8 +22,6 @@ public class Gnetum {
 	public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 	public static final FpsCounter FPS_COUNTER = new FpsCounter();
 
-	public static CachedElement HAND_ELEMENT = new CachedElement();
-	public static CachedElement UNKNOWN_ELEMENT = new CachedElement();
 	private static final TimeSource time = new GlfwTimeSource();
 	private static Framebuffers framebuffers;
 	public static int pass = 1;
@@ -98,7 +96,7 @@ public class Gnetum {
 	public static CachedElement getElement(String element) {
 		var map = config.map;
 		if (element == null || !map.containsKey(element)) {
-			return UNKNOWN_ELEMENT;
+			return getElement(Constants.UNKNOWN_ELEMENTS);
 		}
 		return map.get(element);
 	}

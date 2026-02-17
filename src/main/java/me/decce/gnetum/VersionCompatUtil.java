@@ -1,6 +1,8 @@
 package me.decce.gnetum;
 
-import net.minecraft.resources.Identifier;
+import me.decce.gnetum.mixins.GameRendererAccessor;import net.minecraft.client.Minecraft;import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.fog.FogRenderer;
+import net.minecraft.resources.Identifier;import net.minecraft.server.jsonrpc.internalapi.MinecraftApi;
 
 public class VersionCompatUtil {
 	public static void profilerPush(String str) {
@@ -29,5 +31,14 @@ public class VersionCompatUtil {
 		return identifier.getNamespace().equals("minecraft")
 				? identifier.getPath()
 				: identifier.toString();
+	}
+
+	public static void flush(GuiGraphics guiGraphics) {
+		//? >=1.21.10 {
+		var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
+		game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
+		//?} else {
+		/*guiGraphics.flush();
+		 *///?}
 	}
 }
