@@ -22,6 +22,7 @@ public class Gnetum {
 	public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 	public static final FpsCounter FPS_COUNTER = new FpsCounter();
 
+	public static CachedElement HAND_ELEMENT = new CachedElement();
 	public static CachedElement UNKNOWN_ELEMENT = new CachedElement();
 	private static final TimeSource time = new GlfwTimeSource();
 	private static Framebuffers framebuffers;

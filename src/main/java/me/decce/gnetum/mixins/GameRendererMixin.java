@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import net.minecraft.client.DeltaTracker;
@@ -8,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +30,8 @@ public class GameRendererMixin {
 	private Minecraft minecraft;
 	@Unique
 	private boolean gnetum$wasChatScreenOpen;
+	@Unique
+	private boolean gnetum$renderingCachedHand;
 	@Unique
 	//? >=1.21.10 {
 	private final Matrix3x2f gnetum$lastGuiMatrix = new Matrix3x2f();
@@ -81,4 +85,31 @@ public class GameRendererMixin {
 		}
         *///?}
 	}
+
+
+    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
+    private void gnetum$preRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, CallbackInfo ci) {
+        if (!Gnetum.config.isEnabled()) return;
+		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
+		if (hand.isUncached()) {
+			return;
+		}
+        if (hand.shouldRender()) {
+			Gnetum.beginElement(Constants.HAND_ELEMENT);
+            Gnetum.framebuffers().bind();
+            this.gnetum$renderingCachedHand = true;
+        }
+        else {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("RETURN"))
+    private void gnetum$postRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, CallbackInfo ci) {
+        if (this.gnetum$renderingCachedHand) {
+            this.gnetum$renderingCachedHand = false;
+			Gnetum.endElement(Constants.HAND_ELEMENT);
+			Gnetum.framebuffers().unbind();
+		}
+    }
 }
