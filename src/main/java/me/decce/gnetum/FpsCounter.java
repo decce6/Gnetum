@@ -36,7 +36,7 @@ public class FpsCounter {
     }
 
 	public boolean belowMax() {
-		return Gnetum.config.maxFps == Constants.UNLIMITED_FPS ||
-				Gnetum.time().nanos() >= this.lastTimeNanos + 1_000_000_000L / Gnetum.config.maxFps;
+		return Gnetum.config.getMaxFps() == Constants.UNLIMITED_FPS ||
+				Gnetum.time().nanos() >= this.lastTimeNanos + 1_000_000_000L / Gnetum.config.getMaxFps();
 	}
 }

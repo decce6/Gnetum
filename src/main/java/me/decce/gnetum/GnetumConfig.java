@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TwoStateBoolean;
+import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +29,8 @@ public class GnetumConfig {
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public int numberOfPasses = 3;
-    public int maxFps = 60;
+    private int maxFps = 60;
+    public int screenMaxFps = 20;
 
     public LinkedHashMap<String, CachedElement> map = new LinkedHashMap<>();
 
@@ -61,6 +63,7 @@ public class GnetumConfig {
     public void validate() {
         this.numberOfPasses = clamp(this.numberOfPasses, 2, 10);
         this.maxFps = clamp(this.maxFps, 1, Constants.UNLIMITED_FPS);
+        this.screenMaxFps = clamp(this.screenMaxFps, 1, Constants.SCREEN_UNLIMITED_FPS);
     }
 
     private static int clamp(int value, int min, int max) { // min & max: inclusive
@@ -88,5 +91,19 @@ public class GnetumConfig {
         /*if (PerformanceAnalyzer.latestAnalysisResult != null) {
             PerformanceAnalyzer.latestAnalysisResult.markOutdated();
         }*/
+    }
+
+    public int getMaxFps() {
+        if (maxFps <= screenMaxFps) return maxFps;
+        if (screenMaxFps == Constants.SCREEN_UNLIMITED_FPS) return maxFps;
+        return Minecraft.getInstance().screen == null ? maxFps : screenMaxFps;
+    }
+
+    public int getRawMaxFps() {
+        return maxFps;
+    }
+
+    public void setMaxFps(int maxFps) {
+        this.maxFps = maxFps;
     }
 }
