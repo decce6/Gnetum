@@ -46,7 +46,7 @@ public class CachedElement {
 	}
 
 	public boolean isUncached(boolean enableOnAuto) {
-		var enabled = this.enabled.value == AnyBooleanValue.AUTO ? enableOnAuto : this.enabled.get();
+		var enabled = this.enabled.value == AnyBooleanValue.AUTO ? !enableOnAuto : this.enabled.get();
 		return !enabled;
 	}
 
