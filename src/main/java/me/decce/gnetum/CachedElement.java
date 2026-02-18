@@ -33,6 +33,7 @@ public class CachedElement {
 	public void end() {
 		var timeEnd = Gnetum.time().get();
 		time[timeIndex] = timeEnd - timeBegin;
+		next();
 	}
 
 	public boolean shouldRender() {
