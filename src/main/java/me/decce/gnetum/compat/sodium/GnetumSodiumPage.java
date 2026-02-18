@@ -93,7 +93,7 @@ public class GnetumSodiumPage extends OptionPage {
                 .setName(Component.translatable("gnetum.config.screenMaxFps"))
                 .setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
                 .setImpact(OptionImpact.MEDIUM)
-                .setControl(option -> new SliderControl(option, 5, 60, 5, i -> Component.translatable("options.framerate", i)))
+                .setControl(option -> new SliderControl(option, 5, GnetumConfig.SCREEN_UNLIMITED_FPS, 5, i -> i == GnetumConfig.SCREEN_UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
                 .setBinding((opts, value) -> Gnetum.getConfig().screenMaxFps = value, opts -> Gnetum.getConfig().screenMaxFps)
                 .build());
 
