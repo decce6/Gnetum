@@ -94,11 +94,11 @@ public class GameRendererMixin {
 	@WrapMethod(method = "renderItemInHand")
 	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
-		if (!Gnetum.config.isEnabled() || hand.isUncached(false)) {
+		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
 			original.call(f, bl, matrix4f);
 			return;
 		}
-		if (hand.shouldRender(false)) {
+		if (hand.shouldRender()) {
 			// No flush needed
 			Gnetum.beginElement(Constants.HAND_ELEMENT);
 			Gnetum.framebuffers().bind();
@@ -112,11 +112,11 @@ public class GameRendererMixin {
     private void gnetum$wrapRenderDebugOverlay(Gui gui, GuiGraphics guiGraphics, Operation<Void> original) {
 		if (minecraft.isGameLoadFinished() && (!minecraft.options.hideGui || minecraft.screen != null)) {
 			var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);
-			if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null || !Gnetum.config.isEnabled() || debug.isUncached(false)) {
+			if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null || !Gnetum.config.isEnabled() || debug.isUncached()) {
 				original.call(gui, guiGraphics);
 				return;
 			}
-			if (debug.shouldRender(false)) {
+			if (debug.shouldRender()) {
 				Gnetum.beginElement(Constants.DEBUG_OVERLAY);
 				VersionCompatUtil.flush(guiGraphics);
 				Gnetum.framebuffers().bind();

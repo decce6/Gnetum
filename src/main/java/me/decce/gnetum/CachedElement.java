@@ -40,16 +40,6 @@ public class CachedElement {
 				(!enabled.get());
 	}
 
-	public boolean shouldRender(boolean enableOnAuto) {
-		var enabled = this.enabled.value == AnyBooleanValue.AUTO ? enableOnAuto : this.enabled.get();
-		return !enabled || Gnetum.pass == pass;
-	}
-
-	public boolean isUncached(boolean enableOnAuto) {
-		var enabled = this.enabled.value == AnyBooleanValue.AUTO ? enableOnAuto : this.enabled.get();
-		return !enabled;
-	}
-
 	public boolean isUncached() {
 		return !enabled.get();
 	}

@@ -31,6 +31,9 @@ public abstract class ElementGatherer {
 			}
 		}
 
+		newMap.get(Constants.DEBUG_OVERLAY).enabled.defaultValue = false;
+		newMap.get(Constants.HAND_ELEMENT).enabled.defaultValue = false;
+
 		Gnetum.config.map = newMap;
 	}
 
