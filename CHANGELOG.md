@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.1
+
+It is now possible to set Max HUD Framerate (GUI) to unlimited. 
+
 ## 3.3.0
 
 This version adds two new options that may improve performance in certain scenarios.
