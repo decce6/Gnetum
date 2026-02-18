@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.1.0
+
+Three options have been ported from prior versions of Gnetum:
+
+- **Downscale HUD Framebuffer**: uses a smaller resolution for the HUD framebuffer, which may improve performance in GPU-bound scenarios
+- **Max HUD Framerate (GUI)**: allows using a lower HUD framerate limit when a GUI screen is open, improving performance in GUIs
+- **Hand Caching**: allows caching the hand (currently disabled by default)
+
+Additionally, these changes have been made:
+
+- **Debug Overlay** caching has been added (currently disabled by default)
+- Fixed HUDs not rendering with Very Many Players mod
+
 ## 4.0.0
 
 This is a major update to Gnetum, rewritten for multi-version and loader support.
