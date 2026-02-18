@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class GnetumConfig {
     public static final int UNLIMITED_FPS = 125; // when maxFps is set to this value it means unlimited
+    public static final int SCREEN_UNLIMITED_FPS = 65; // when screenMaxFps is set to this value it means unlimited
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("gnetum.json");
 
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
@@ -64,6 +65,7 @@ public class GnetumConfig {
         this.mapModdedElementsPre.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.mapModdedElementsPost.forEach((s, c) -> c.pass = clamp(c.pass, 1, this.numberOfPasses));
         this.maxFps = clamp(this.maxFps, 1, UNLIMITED_FPS);
+        this.screenMaxFps = clamp(this.screenMaxFps, 1, SCREEN_UNLIMITED_FPS);
         this.hideElementsOrphanOrUncached();
         this.removeObsoleteVanillaElements();
     }
@@ -120,6 +122,7 @@ public class GnetumConfig {
 
     public int getMaxFps() {
         if (maxFps <= screenMaxFps) return maxFps;
+        if (screenMaxFps == SCREEN_UNLIMITED_FPS) return maxFps;
         return Minecraft.getInstance().screen == null ? maxFps : screenMaxFps;
     }
 

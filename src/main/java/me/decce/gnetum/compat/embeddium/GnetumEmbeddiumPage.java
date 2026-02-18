@@ -95,7 +95,7 @@ public class GnetumEmbeddiumPage extends OptionPage {
                 .setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
                 .setEnabledPredicate(enabledOption::getValue)
                 .setImpact(OptionImpact.MEDIUM)
-                .setControl(option -> new SliderControl(option, 5, 60, 5, i -> Component.translatable("options.framerate", i)))
+                .setControl(option -> new SliderControl(option, 5, GnetumConfig.SCREEN_UNLIMITED_FPS, 5, i -> i == GnetumConfig.SCREEN_UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
                 .setBinding((opts, value) -> Gnetum.config.screenMaxFps = value, opts -> Gnetum.config.screenMaxFps)
                 .build());
 
