@@ -41,4 +41,16 @@ public class TriStateBoolean implements AnyBoolean {
     public String effectiveText() {
         return I18n.get(this.get() ? "options.on" : "options.off");
     }
+
+    public String tooltip() {
+        return this.tooltip(this.value);
+    }
+
+    public String tooltip(AnyBooleanValue value) {
+        return switch (value) {
+            case AUTO -> I18n.get( "gnetum.config.tooltip.auto", effectiveText());
+            case OFF -> I18n.get("gnetum.config.tooltip.off");
+            case ON -> I18n.get("gnetum.config.tooltip.on");
+        };
+    }
 }

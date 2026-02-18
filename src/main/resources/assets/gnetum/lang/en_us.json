@@ -14,12 +14,13 @@
   "gnetum.config.reset": "Reset Configurations...",
   "gnetum.config.confirmReset": "Are you sure you want to reset all the configurations?\n\nResetting the configurations might help solve some issues. However, this action cannot be undone.",
   "gnetum.config.pass": "Pass",
-  "gnetum.config.tooltip.auto": "Gnetum will automatically decide whether to cache this element.\n\nCurrent Status: %s",
-  "gnetum.config.tooltip.on": "Caching for this element is forcibly enabled.",
-  "gnetum.config.tooltip.off": "Caching for this element is forcibly disabled.",
+  "gnetum.config.tooltip.auto": "AUTO: Enables caching where possible, but can automatically disable when element is incompatible with caching. (Current: %s)",
+  "gnetum.config.tooltip.on": "ON: Caching for this element is forcibly enabled.",
+  "gnetum.config.tooltip.off": "OFF: Caching for this element is forcibly disabled.",
   "gnetum.config.auto": "AUTO",
-  "gnetum.config.element.tooltip": "AUTO: enables caching where possible, but can automatically disable when element is incompatible with caching.\nON: forcibly enable caching.\nOFF: forcibly disable caching.",
 
-  "gnetum.config.element.gnetum.minecraft_hand": "Hand (Experimental)",
-  "gnetum.config.unknown_element": "Unknown Elements"
+  "gnetum.config.unknown_element": "Unknown Elements",
+
+  "gnetum.config.element.hand.tooltip": "Set to ON to enable hand caching. This option is currently not enabled on AUTO.",
+  "gnetum.config.element.debug_overlay.tooltip": "Set to ON to enable caching for debug overlay (F3). Only works when in game and no GUI screen is open. This option is currently not enabled on AUTO."
 }

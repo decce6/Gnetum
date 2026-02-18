@@ -11,10 +11,12 @@ import net.caffeinemc.mods.sodium.api.config.StorageEventHandler;
 import net.caffeinemc.mods.sodium.api.config.option.OptionImpact;
 import net.caffeinemc.mods.sodium.api.config.structure.ConfigBuilder;
 import net.caffeinemc.mods.sodium.api.config.structure.OptionGroupBuilder;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SodiumEntrypoint implements ConfigEntryPoint {
@@ -105,7 +107,7 @@ public class SodiumEntrypoint implements ConfigEntryPoint {
 			group.addOption(builder
 					.createEnumOption(Identifier.parse("gnetum:element" + i++), AnyBooleanValue.class)
 					.setName(Component.literal(name))
-					.setTooltip(tooltip)
+					.setTooltip(elementTooltip(element.getKey()))
 					.setStorageHandler(handler)
 					.setElementNameProvider(AnyBooleanValue::text)
 					.setDefaultValue(AnyBooleanValue.AUTO)
@@ -114,6 +116,20 @@ public class SodiumEntrypoint implements ConfigEntryPoint {
 					.setImpact(OptionImpact.VARIES));
 		}
 		return group;
+	}
+
+	private Function<AnyBooleanValue, Component> elementTooltip(String name) {
+		var displayName = Beautifier.beautify(name);
+		var key = "gnetum.config.element." + name + ".tooltip";
+		boolean hasTooltip = I18n.exists(key);
+		String tooltip = I18n.get(key);
+		return v -> {
+			var ret = Component.literal(displayName).append(" (").append(name).append(")\n\n");
+			if (hasTooltip) {
+				ret.append(tooltip).append("\n\n");
+			}
+			return ret.append(Gnetum.getElement(name).enabled.tooltip(v));
+		};
 	}
 
 	private Consumer<Boolean> consume(TwoStateBoolean bool) {
