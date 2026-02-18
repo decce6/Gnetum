@@ -17,7 +17,6 @@ import net.caffeinemc.mods.sodium.client.gui.options.control.TickBoxControl;
 import net.caffeinemc.mods.sodium.client.gui.options.storage.OptionStorage;
 import net.minecraft.network.chat.Component;
 
-import javax.sound.sampled.EnumControl;
 import java.util.ArrayList;
 import java.util.List;
 
