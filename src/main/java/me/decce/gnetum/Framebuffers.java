@@ -37,7 +37,7 @@ public class Framebuffers {
 
 	public void blit() {
 		//? >=1.21.10 {
-		front.blitAndBlendToTexture(mc.getMainRenderTarget().getColorTextureView());
+		FramebufferBlitter.blit(front.getColorTextureView(), mc.getMainRenderTarget().getColorTextureView());
 		//?} else {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
