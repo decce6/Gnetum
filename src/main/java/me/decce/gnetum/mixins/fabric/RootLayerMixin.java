@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 
 @Mixin(HudElementRegistryImpl.RootLayer.class)
+@Mixin(value = HudElementRegistryImpl.RootLayer.class, remap = false)
 public class RootLayerMixin {
 	@Shadow
 	@Final

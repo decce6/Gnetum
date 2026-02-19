@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
-@Mixin(HudElementRegistryImpl.class)
+@Mixin(value = HudElementRegistryImpl.class, remap = false)
 public interface HudElementRegistryImplAccessor {
     @Accessor("VANILLA_ELEMENT_IDS")
     static List<Identifier> getVanillaElementIds() {
