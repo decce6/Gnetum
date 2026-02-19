@@ -18,6 +18,7 @@ import java.util.Map;
 
 public class FabricPlatform implements Platform {
 	private final Map<Path, String> pathToModId = new HashMap<>();
+	private final Map<Class<?>, String> classToModId = new HashMap<>();
 
 	private static List<Path> determineLocation(String modid) {
 		var container = net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modid).orElse(null);
@@ -56,13 +57,21 @@ public class FabricPlatform implements Platform {
 
 	@Override
 	public String getModId(Class<?> clazz) {
+		var cachedModId = classToModId.get(clazz);
+		if (cachedModId != null) {
+			return cachedModId;
+		}
 		var cs = clazz.getProtectionDomain().getCodeSource();
 		if (cs == null) {
+			classToModId.put(clazz, Constants.UNKNOWN_ELEMENTS);
 			return Constants.UNKNOWN_ELEMENTS;
 		}
 		try {
-			return pathToModId.get(Paths.get(cs.getLocation().toURI()));
+			var modid = pathToModId.get(Paths.get(cs.getLocation().toURI()));
+			classToModId.put(clazz, modid);
+			return modid;
 		} catch (URISyntaxException e) {
+			classToModId.put(clazz, Constants.UNKNOWN_ELEMENTS);
 			return Constants.UNKNOWN_ELEMENTS;
 		}
 	}
