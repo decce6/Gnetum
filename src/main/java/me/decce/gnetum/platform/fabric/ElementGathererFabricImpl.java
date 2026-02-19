@@ -6,6 +6,7 @@ import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
+import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
 import me.decce.gnetum.platform.ElementGatherer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
@@ -18,19 +19,20 @@ import java.util.Map;
 /*import me.decce.gnetum.versioned.HudHandler;
 *///?}
 
+@SuppressWarnings("UnstableApiUsage")
 public class ElementGathererFabricImpl extends ElementGatherer {
 
 	public void gatherImpl(Map<String, CachedElement> map) {
 
 		//? >=1.21.10 {
-		var first = HudElementRegistryImpl.getRoot(VanillaHudElements.MISC_OVERLAYS);
-		var last = HudElementRegistryImpl.getRoot(VanillaHudElements.SUBTITLES);
+		var first = HudElementRegistryImplAccessor.getFirst();
+		var last = HudElementRegistryImplAccessor.getLast();
 
 		gather(first, map);
-		HudElementRegistryImpl.ROOT_ELEMENTS.values().stream()
-				.filter(root -> root != first && root != last)
+		HudElementRegistryImplAccessor.getVanillaElementIds().stream()
+				.filter(root -> !root.equals(first.id()) && !root.equals(last.id()))
 				.forEach(root -> {
-					map.putIfAbsent(VersionCompatUtil.stringValueOf(root.id()), new CachedElement());
+					map.putIfAbsent(VersionCompatUtil.stringValueOf(root), new CachedElement());
 				});
 		gather(last, map);
 		//?} else {
