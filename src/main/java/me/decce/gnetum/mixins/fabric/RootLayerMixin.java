@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 import net.fabricmc.fabric.impl.client.rendering.hud.HudLayer;
 import net.minecraft.client.DeltaTracker;
@@ -15,27 +14,13 @@ import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
-import java.util.List;
-
-@Mixin(HudElementRegistryImpl.RootLayer.class)
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(value = HudElementRegistryImpl.RootLayer.class, remap = false)
 public class RootLayerMixin {
 	@Shadow
 	@Final
 	private Identifier id;
-	@Shadow
-	@Final
-	private List<HudLayer> layers;
-	@Unique
-	private static HudElementRegistryImpl.RootLayer gnetum$getFirst() {
-		return HudElementRegistryImpl.getRoot(VanillaHudElements.MISC_OVERLAYS);
-	}
-	@Unique
-	private static HudElementRegistryImpl.RootLayer gnetum$getLast() {
-		return HudElementRegistryImpl.getRoot(VanillaHudElements.SUBTITLES);
-	}
 
 	@WrapMethod(method = "render")
 	public void gnetum$wrapRender(GuiGraphics context, DeltaTracker tickCounter, HudElement vanillaElement, Operation<Void> original) {
@@ -44,7 +29,7 @@ public class RootLayerMixin {
 			return;
 		}
 		var thisLayer = (HudElementRegistryImpl.RootLayer)(Object)this;
-		if (thisLayer == gnetum$getFirst() || thisLayer == gnetum$getLast()) {
+		if (thisLayer == HudElementRegistryImplAccessor.getFirst() || thisLayer == HudElementRegistryImplAccessor.getLast()) {
 			for (HudLayer layer : thisLayer.layers()) {
 				if (!layer.isRemoved()) {
 					var name = VersionCompatUtil.stringValueOf(layer.id());
