@@ -81,9 +81,9 @@ stonecutter {
             optionallyInclude("forge", "archloom", versions)
         }
 
-        // fabricUnobfuscated (listOf("26.1"))
+        fabricUnobfuscated (listOf("26.1"))
         fabric (listOf("1.21.11"))
-        neoforge (listOf("1.21.11"))
+        neoforge (listOf("26.1", "1.21.11"))
         forge (listOf())
 
         // This is the default target.

@@ -12,8 +12,12 @@ neoForge {
 }
 
 dependencies {
-    compileOnly("${prop("deps.sodium")}")
-    compileOnly("maven.modrinth:jade:${prop("deps.jade")}")
+    if (hasProperty("deps.sodium")) {
+        compileOnly("${prop("deps.sodium")}")
+    }
+    if (hasProperty("deps.jade")) {
+        compileOnly("maven.modrinth:jade:${prop("deps.jade")}")
+    }
 }
 
 val jijShadowJar = tasks.register<Jar>("jijShadowJar") {
