@@ -11,6 +11,7 @@
     "GuiGraphicsAccessor",
     "GuiMixin",
     "GuiRenderStateMixin",
+    "MappableRingBufferMixin",
     "MinecraftAccessor",
     "MinecraftMixin",
     "RenderPipelineAccessor",
