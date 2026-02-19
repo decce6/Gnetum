@@ -25,7 +25,7 @@ public class StatefulHudHandler {
 
 	public static void performDeferredSubmission(GuiGraphics guiGraphics) {
 		var state = ((GuiGraphicsAccessor)guiGraphics).getGuiRenderState();
-		deferredSubmissions.forEach(submission -> {
+		for (var submission : deferredSubmissions) {
 			//TODO: optimize ?
 			switch (submission) {
 				case GuiElementRenderState gui -> state.submitGuiElement(gui);
@@ -37,7 +37,7 @@ public class StatefulHudHandler {
 				default ->
 						throw new IllegalStateException("Unknown submission type " + submission.getClass().getName());
 			}
-		});
+		}
 		deferredSubmissions.clear();
 	}
 }
