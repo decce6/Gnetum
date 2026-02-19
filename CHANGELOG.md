@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.1.1
+
+- Fixed F3 menu appearing more "dense" with caching enabled
+- [Fabric] Fixed HUDs sometimes rendering in wrong orders
+
 ## 4.1.0
 
 Three options have been ported from prior versions of Gnetum:
