@@ -96,7 +96,7 @@ public class Gnetum {
 	public static CachedElement getElement(String element) {
 		var map = config.map;
 		if (element == null || !map.containsKey(element)) {
-			return getElement(Constants.UNKNOWN_ELEMENTS);
+			return map.get(Constants.UNKNOWN_ELEMENTS);
 		}
 		return map.get(element);
 	}
