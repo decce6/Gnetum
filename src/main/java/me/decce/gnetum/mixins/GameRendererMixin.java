@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -92,17 +93,29 @@ public class GameRendererMixin {
 	}
 
 	@WrapMethod(method = "renderItemInHand")
-	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
+	//? if >26 {
+	private void gnetum$wrapRenderItemInHand(CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
+	//? } else {
+	/*private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
+	*///? }
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
-			original.call(f, bl, matrix4f);
+			//? if >26 {
+			original.call(cameraState, deltaPartialTick, modelViewMatrix);
+			//? } else {
+			/*original.call(f, bl, matrix4f);
+			*///? }
 			return;
 		}
 		if (hand.shouldRender()) {
 			// No flush needed
 			Gnetum.beginElement(Constants.HAND_ELEMENT);
 			Gnetum.framebuffers().bind();
-			original.call(f, bl, matrix4f);
+			//? if >26 {
+			original.call(cameraState, deltaPartialTick, modelViewMatrix);
+			//? } else {
+			/*original.call(f, bl, matrix4f);
+			*///? }
 			Gnetum.framebuffers().unbind();
 			Gnetum.endElement(Constants.HAND_ELEMENT);
 		}
