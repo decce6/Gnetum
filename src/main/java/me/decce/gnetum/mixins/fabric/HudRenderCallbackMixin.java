@@ -13,7 +13,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @SuppressWarnings("deprecation")
 @Mixin(value = HudRenderCallback.class, remap = false)
 public interface HudRenderCallbackMixin {
+	//? >26 {
+	/*@WrapOperation(method = "lambda$static$1", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/api/client/rendering/v1/HudRenderCallback;onHudRender(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+	 *///? } else {
 	@WrapOperation(method = "lambda$static$0", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/api/client/rendering/v1/HudRenderCallback;onHudRender(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+	//? }
 	private static void gnetum$render(HudRenderCallback callback, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled() || !Gnetum.rendering) {
 			original.call(callback, guiGraphics, deltaTracker);
