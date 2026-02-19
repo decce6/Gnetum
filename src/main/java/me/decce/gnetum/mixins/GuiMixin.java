@@ -24,8 +24,6 @@ public class GuiMixin {
 			return;
 		}
 
-		var mc = Minecraft.getInstance();
-
 		Gnetum.framebuffers().resize();
 		Gnetum.framebuffers().bind();
 
@@ -45,9 +43,9 @@ public class GuiMixin {
 		}
 
 		Gnetum.rendering = false;
-		Gnetum.nextPass();
 
 		Gnetum.framebuffers().unbind();
+		Gnetum.nextPass();
 
 		VersionCompatUtil.profilerPopPush("uncached");
 		// Note: these are not rendered instantly, but batched with the rest of the GUI - profiler data may be not useful
