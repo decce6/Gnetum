@@ -1,6 +1,6 @@
 package me.decce.gnetum.compat.sodium;
 
-//? >=1.21.10 {
+//? >=1.21.10 && sodium {
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.util.AnyBooleanValue;

@@ -94,17 +94,17 @@ public class GameRendererMixin {
 
 	@WrapMethod(method = "renderItemInHand")
 	//? if >26 {
-	private void gnetum$wrapRenderItemInHand(CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
-	//? } else {
-	/*private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
-	*///? }
+	/*private void gnetum$wrapRenderItemInHand(CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
+	*///? } else {
+	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
+	//? }
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
 			//? if >26 {
-			original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			//? } else {
-			/*original.call(f, bl, matrix4f);
-			*///? }
+			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
+			*///? } else {
+			original.call(f, bl, matrix4f);
+			//? }
 			return;
 		}
 		if (hand.shouldRender()) {
@@ -112,10 +112,10 @@ public class GameRendererMixin {
 			Gnetum.beginElement(Constants.HAND_ELEMENT);
 			Gnetum.framebuffers().bind();
 			//? if >26 {
-			original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			//? } else {
-			/*original.call(f, bl, matrix4f);
-			*///? }
+			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
+			*///? } else {
+			original.call(f, bl, matrix4f);
+			//? }
 			Gnetum.framebuffers().unbind();
 			Gnetum.endElement(Constants.HAND_ELEMENT);
 		}
