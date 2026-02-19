@@ -24,14 +24,13 @@ public class GuiMixin {
 			return;
 		}
 
-		Gnetum.framebuffers().resize();
-		Gnetum.framebuffers().bind();
-
 		if (Gnetum.pass == 0) {
 			VersionCompatUtil.profilerPush("sleep");
 		}
 		else {
 			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
+			Gnetum.framebuffers().resize();
+			Gnetum.framebuffers().bind();
 		}
 
 		Gnetum.rendering = true;
@@ -40,11 +39,11 @@ public class GuiMixin {
 
 		if (Gnetum.pass > 0) {
 			VersionCompatUtil.flush(guiGraphics);
+			Gnetum.framebuffers().unbind();
 		}
 
 		Gnetum.rendering = false;
 
-		Gnetum.framebuffers().unbind();
 		Gnetum.nextPass();
 
 		VersionCompatUtil.profilerPopPush("uncached");
