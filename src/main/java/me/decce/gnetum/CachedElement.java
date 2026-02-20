@@ -10,7 +10,6 @@ public class CachedElement {
 	transient final double[] time = new double[RECORDED_TIME];
 	private transient double timeBegin;
 	private transient int timeIndex;
-    public transient boolean hidden;
 
     public CachedElement() {
         this(new TriStateBoolean(AnyBooleanValue.AUTO));
