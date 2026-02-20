@@ -25,9 +25,10 @@ public abstract class ElementGatherer {
 		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement(Constants.UNKNOWN_ELEMENTS));
 		newMap.put(Constants.DEBUG_OVERLAY, new CachedElement(Constants.DEBUG_OVERLAY));
 
-		for (var entry : Gnetum.config.map.entrySet()) {
-			if (newMap.containsKey(entry.getKey())) {
-				newMap.put(entry.getKey(), entry.getValue());
+		for (var entry : newMap.entrySet()) {
+			if (Gnetum.config.map.containsKey(entry.getKey())) {
+				var original = Gnetum.config.map.get(entry.getKey());
+				entry.getValue().enabled = original.enabled;
 			}
 		}
 
