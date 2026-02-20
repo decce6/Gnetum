@@ -29,7 +29,8 @@ public class ElementGathererNeoForgeImpl extends ElementGatherer {
 		var layerManager = ((GuiAccessor)gui).getLayerManager();
 		var layers = ((GuiLayerManagerAccessor) layerManager).getLayers();
 		for (var layer : layers) {
-			map.putIfAbsent(VersionCompatUtil.stringValueOf(layer.name()), new CachedElement());
+			var name = VersionCompatUtil.stringValueOf(layer.name());
+			map.putIfAbsent(name, new CachedElement(name));
 		}
 
 		gatherEvent(RenderGuiEvent.Post.class, map);
@@ -40,7 +41,7 @@ public class ElementGathererNeoForgeImpl extends ElementGatherer {
 		var listeners = EventBusAccessor.getListenerList(bus, event).getListeners();
 		for (var listener : listeners) {
 			var modid = EventListenerHelper.tryGetModId(listener).orElse(Constants.UNKNOWN_ELEMENTS);
-			map.putIfAbsent(modid, new CachedElement());
+			map.putIfAbsent(modid, new CachedElement(modid));
 		}
 	}
 }

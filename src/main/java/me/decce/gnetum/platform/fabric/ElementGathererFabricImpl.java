@@ -32,7 +32,8 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 		HudElementRegistryImplAccessor.getVanillaElementIds().stream()
 				.filter(root -> !root.equals(first.id()) && !root.equals(last.id()))
 				.forEach(root -> {
-					map.putIfAbsent(VersionCompatUtil.stringValueOf(root), new CachedElement());
+					var name = VersionCompatUtil.stringValueOf(root);
+					map.putIfAbsent(name, new CachedElement(name));
 				});
 		gather(last, map);
 		//?} else {
@@ -47,7 +48,8 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 	//? >=1.21.10 {
 	public void gather(HudElementRegistryImpl.RootLayer root, Map<String, CachedElement> map) {
 		root.layers().forEach(layer -> {
-			map.putIfAbsent(VersionCompatUtil.stringValueOf(layer.id()), new CachedElement());
+			var name = VersionCompatUtil.stringValueOf(layer.id());
+			map.putIfAbsent(name, new CachedElement(name));
 		});
 	}
 	//?}
@@ -58,7 +60,7 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 		HudRenderCallback[] handlers = (HudRenderCallback[]) ArrayBackedEventAccessor.HANDLERS.get(event);
 		for (var callback : handlers) {
 			var modid = Gnetum.platform().getModId(callback.getClass());
-			map.putIfAbsent(modid, new CachedElement());
+			map.putIfAbsent(modid, new CachedElement(modid));
 		}
 	}
 

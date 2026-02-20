@@ -24,10 +24,11 @@ public interface HudRenderCallbackMixin {
 			return;
 		}
 		var modid = Gnetum.platform().getModId(callback.getClass());
-		if (Gnetum.shouldRender(modid)) {
-			Gnetum.beginElement(modid);
+		var element = Gnetum.getElement(modid);
+		if (element.shouldRender()) {
+			element.begin();
 			original.call(callback, guiGraphics, deltaTracker);
-			Gnetum.endElement(modid);
+			element.end();
 		}
 	}
 }

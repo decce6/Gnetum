@@ -37,9 +37,9 @@ public class RootLayerMixin {
 					if (!element.shouldRender()) {
 						continue;
 					}
-					Gnetum.beginElement(name);
+					element.begin();
 					layer.element(vanillaElement).render(context, tickCounter);
-					Gnetum.endElement(name);
+					element.end();
 				}
 			}
 		}
@@ -49,9 +49,9 @@ public class RootLayerMixin {
 			if (!element.shouldRender()) {
 				return;
 			}
-			Gnetum.beginElement(name);
+			element.begin();
 			original.call(context, tickCounter, vanillaElement);
-			Gnetum.endElement(name);
+			element.end();
 		}
 	}
 }

@@ -8,14 +8,16 @@ public class CachedElement {
     public TriStateBoolean enabled;
 	transient int pass = 1;
 	transient final double[] time = new double[RECORDED_TIME];
+	transient final String name;
 	private transient double timeBegin;
 	private transient int timeIndex;
 
-    public CachedElement() {
-        this(new TriStateBoolean(AnyBooleanValue.AUTO));
+    public CachedElement(String name) {
+        this(name, new TriStateBoolean(AnyBooleanValue.AUTO));
     }
 
-    public CachedElement(TriStateBoolean enabled) {
+    public CachedElement(String name, TriStateBoolean enabled) {
+		this.name = name;
         this.enabled = enabled;
     }
 
@@ -27,9 +29,11 @@ public class CachedElement {
 
 	public void begin() {
 		timeBegin = Gnetum.time().get();
+		Gnetum.currentElement = this;
 	}
 
 	public void end() {
+		Gnetum.currentElement = null;
 		var timeEnd = Gnetum.time().get();
 		time[timeIndex] = timeEnd - timeBegin;
 		next();

@@ -28,7 +28,7 @@ public class Gnetum {
 	public static boolean rendering;
 	public static boolean catchingUp;
 	public static GnetumConfig config;
-	public static String currentElement;
+	public static CachedElement currentElement;
 
 	private static final Platform PLATFORM = createPlatformInstance();
 
@@ -75,30 +75,26 @@ public class Gnetum {
 		disableCachingForElement(currentElement, reason);
 	}
 
-	public static void disableCachingForElement(String id, String reason) {
-		if (id == null) return;
-		var element = getElement(id);
+	public static void disableCachingForElement(CachedElement element, String reason) {
+		if (element == null) return;
 		if (element.enabled.get() && element.enabled.value == AnyBooleanValue.AUTO) {
-			LOGGER.info("Disabling caching for element {}. Reason: {}", id, reason);
+			LOGGER.info("Disabling caching for element {}. Reason: {}", element.name, reason);
 			element.enabled.defaultValue = false;
 			framebuffers().dropCurrentFrame();
 		}
 	}
 
-	public static CachedElement getElement() {
-		return getElement(Gnetum.currentElement);
+	public static CachedElement getElement(Identifier name) {
+		return getElement(VersionCompatUtil.stringValueOf(name));
 	}
 
-	public static CachedElement getElement(Identifier element) {
-		return getElement(VersionCompatUtil.stringValueOf(element));
-	}
-
-	public static CachedElement getElement(String element) {
+	public static CachedElement getElement(String name) {
 		var map = config.map;
-		if (element == null || !map.containsKey(element)) {
+		var element = map.get(name);
+		if (element == null) {
 			return map.get(Constants.UNKNOWN_ELEMENTS);
 		}
-		return map.get(element);
+		return element;
 	}
 
 	public static boolean shouldRender(String id) {
@@ -109,7 +105,7 @@ public class Gnetum {
 		if (currentElement == null) {
 			return true;
 		}
-		return getElement(currentElement).isUncached();
+		return currentElement.isUncached();
 	}
 
 	public static TimeSource time() {
@@ -135,20 +131,6 @@ public class Gnetum {
 		 *///?} forge {
 		/*return new ForgePlatform();
 		*///?}
-	}
-
-	public static void beginElement(String name) {
-		currentElement = name;
-		getElement(name).begin();
-	}
-
-	public static void endElement() {
-		endElement(currentElement);
-	}
-
-	public static void endElement(String name) {
-		getElement(name).end();
-		currentElement = null;
 	}
 
 	public static void reset() {

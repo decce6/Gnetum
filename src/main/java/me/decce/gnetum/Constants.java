@@ -2,7 +2,7 @@ package me.decce.gnetum;
 
 public class Constants {
 	public static final String MOD_ID = "gnetum";
-	public static final String MOD_VERSION_SHORT = /*$ mod_version_short*/"4.1.0";
+	public static final String MOD_VERSION_SHORT = /*$ mod_version_short*/"4.1.1";
 	public static final String HAND_ELEMENT = "hand";
 	public static final String UNKNOWN_ELEMENTS = "_unknown_";
 	public static final String DEBUG_OVERLAY = "debug_overlay";

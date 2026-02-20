@@ -109,7 +109,7 @@ public class GameRendererMixin {
 		}
 		if (hand.shouldRender()) {
 			// No flush needed
-			Gnetum.beginElement(Constants.HAND_ELEMENT);
+			hand.begin();
 			Gnetum.framebuffers().bind();
 			//? if >26 {
 			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
@@ -117,7 +117,7 @@ public class GameRendererMixin {
 			original.call(f, bl, matrix4f);
 			//? }
 			Gnetum.framebuffers().unbind();
-			Gnetum.endElement(Constants.HAND_ELEMENT);
+			hand.end();
 		}
 	}
 
@@ -130,13 +130,13 @@ public class GameRendererMixin {
 				return;
 			}
 			if (debug.shouldRender()) {
-				Gnetum.beginElement(Constants.DEBUG_OVERLAY);
+				debug.begin();
 				VersionCompatUtil.flush(guiGraphics);
 				Gnetum.framebuffers().bind();
 				original.call(gui, guiGraphics);
 				VersionCompatUtil.flush(guiGraphics);
 				Gnetum.framebuffers().unbind();
-				Gnetum.endElement(Constants.DEBUG_OVERLAY);
+				debug.end();
 			}
 		}
 		else {
