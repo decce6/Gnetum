@@ -11,6 +11,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.resources.Identifier;
 
 import java.util.OptionalInt;
 
@@ -18,7 +19,7 @@ public class FramebufferBlitter {
     public static final BlendFunction GNETUM_FBO_BLEND = new BlendFunction(SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
     public static final RenderPipeline GNETUM_FBO_BLIT = RenderPipeline
             .builder()
-            .withLocation("pipeline/entity_outline_blit")
+            .withLocation(Identifier.parse("gnetum:fbo_blit_pipeline"))
             .withVertexShader("core/screenquad")
             .withFragmentShader("core/blit_screen")
             .withSampler("InSampler")
