@@ -14,4 +14,10 @@ public class DeltaTrackerMixin {
         if (!Gnetum.rendering || !HudDeltaTracker.isReady()) return original;
         return HudDeltaTracker.getRealtimeDeltaTicks();
     }
+
+    @ModifyReturnValue(method = "getGameTimeDeltaTicks", at = @At("RETURN"))
+    public float gnetum$getGameTimeDeltaTicks(float original) {
+        if (!Gnetum.rendering || !HudDeltaTracker.isReady()) return original;
+        return HudDeltaTracker.getGameTimeDeltaTicks();
+    }
 }
