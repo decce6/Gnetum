@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.0
+
+- Further improved performance
+- Added a new "Fast Framebuffer Blitting" option that improves the GPU performance by discarding pixels that are fully transparent
+- Fixed delta tracker (animation interpolation)
+
 ## 4.1.1
 
 - Fixed F3 menu appearing more "dense" with caching enabled
