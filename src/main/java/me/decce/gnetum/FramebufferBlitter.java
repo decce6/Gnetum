@@ -17,11 +17,23 @@ import java.util.OptionalInt;
 
 public class FramebufferBlitter {
     public static final BlendFunction GNETUM_FBO_BLEND = new BlendFunction(SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
-    public static final RenderPipeline GNETUM_FBO_BLIT = RenderPipeline
+    public static final RenderPipeline GNETUM_FAST_FBO_BLIT = RenderPipeline
             .builder()
-            .withLocation(Identifier.parse("gnetum:fbo_blit_pipeline"))
+            .withLocation(Identifier.parse("gnetum:fast_fbo_blit_pipeline"))
             .withVertexShader("core/screenquad")
             .withFragmentShader(Identifier.parse("gnetum:fast_blit_screen"))
+            .withSampler("InSampler")
+            .withBlend(GNETUM_FBO_BLEND)
+            .withDepthWrite(false)
+            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+            .withColorWrite(true, false)
+            .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
+            .build();
+    public static final RenderPipeline GNETUM_NORMAL_FBO_BLIT = RenderPipeline
+            .builder()
+            .withLocation(Identifier.parse("gnetum:normal_fbo_blit_pipeline"))
+            .withVertexShader("core/screenquad")
+            .withFragmentShader("core/blit_screen")
             .withSampler("InSampler")
             .withBlend(GNETUM_FBO_BLEND)
             .withDepthWrite(false)
@@ -32,7 +44,12 @@ public class FramebufferBlitter {
 
     public static void blit(GpuTextureView from, GpuTextureView to) {
         try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "Blit render target", to, OptionalInt.empty())) {
-            renderPass.setPipeline(GNETUM_FBO_BLIT);
+            if (Gnetum.config.fastFboBlit.get()) {
+                renderPass.setPipeline(GNETUM_FAST_FBO_BLIT);
+            }
+            else {
+                renderPass.setPipeline(GNETUM_NORMAL_FBO_BLIT);
+            }
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.bindTexture("InSampler", from, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST));
             renderPass.draw(0, 3);
