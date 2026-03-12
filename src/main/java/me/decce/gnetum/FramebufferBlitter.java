@@ -21,7 +21,7 @@ public class FramebufferBlitter {
             .builder()
             .withLocation(Identifier.parse("gnetum:fbo_blit_pipeline"))
             .withVertexShader("core/screenquad")
-            .withFragmentShader("core/blit_screen")
+            .withFragmentShader(Identifier.parse("gnetum:fast_blit_screen"))
             .withSampler("InSampler")
             .withBlend(GNETUM_FBO_BLEND)
             .withDepthWrite(false)
