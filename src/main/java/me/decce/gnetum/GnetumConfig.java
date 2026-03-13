@@ -42,10 +42,7 @@ public class GnetumConfig {
     }
 
     private static GnetumConfig createDefault() {
-        var config = new GnetumConfig();
-		//TODO
-        // config.mapVanillaElements.put(Gnetum.HAND_ELEMENT, new CacheSetting(1, new TriStateBoolean(AnyBooleanValue.AUTO, false)));
-        return config;
+        return new GnetumConfig();
     }
 
     private static GnetumConfig load() {
