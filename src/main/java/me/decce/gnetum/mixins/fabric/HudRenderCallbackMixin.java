@@ -1,13 +1,14 @@
 package me.decce.gnetum.mixins.fabric;
 
-//? fabric {
+import org.spongepowered.asm.mixin.Mixin;
+
+//? fabric && >=1.21.10 {
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.decce.gnetum.Gnetum;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @SuppressWarnings("deprecation")
@@ -32,4 +33,7 @@ public interface HudRenderCallbackMixin {
 		}
 	}
 }
-//?}
+//?} else {
+/*@Mixin(targets = {})
+public interface HudRenderCallbackMixin {}
+*///?}

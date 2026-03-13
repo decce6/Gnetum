@@ -23,8 +23,7 @@
   },
   "mixins": [
     "${modid}.mixins.json",
-    "${modid}.fabric.mixins.json",
-    "${modid}.fabric.${version_mixin_tag}.mixins.json"
+    "${modid}.fabric.mixins.json"
   ],
   "depends": {
     "minecraft": "${minecraft_supported_fabric}",

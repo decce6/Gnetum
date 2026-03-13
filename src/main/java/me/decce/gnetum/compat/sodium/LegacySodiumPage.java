@@ -2,6 +2,7 @@ package me.decce.gnetum.compat.sodium;
 
 //? <=1.21.1 {
 /*import com.google.common.collect.ImmutableList;
+import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GnetumConfig;
 import me.decce.gnetum.util.AnyBooleanValue;
@@ -73,15 +74,15 @@ public class LegacySodiumPage extends OptionPage {
 				.setTooltip(Component.translatable("gnetum.config.numberOfPasses.tooltip"))
 				.setImpact(OptionImpact.MEDIUM)
 				.setControl(option -> new SliderControl(option, 2, 10, 1, ControlValueFormatter.number()))
-				.setBinding((opts, value) -> Gnetum.config.numberOfPasses = value, opts -> Gnetum.config.numberOfPasses)
+				.setBinding((opts, value) -> Gnetum.config.setNumberOfPasses(value), opts -> Gnetum.config.getNumberOfPasses())
 				.build());
 		general.add(OptionImpl.createBuilder(int.class, STORAGE)
 				.setEnabled(enabledOption::getValue)
 				.setName(Component.translatable("gnetum.config.maxFps"))
 				.setTooltip(Component.translatable("gnetum.config.maxFps.tooltip"))
 				.setImpact(OptionImpact.MEDIUM)
-				.setControl(option -> new SliderControl(option, 5, GnetumConfig.UNLIMITED_FPS, 5, i -> i == GnetumConfig.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
-				.setBinding((opts, value) -> Gnetum.config.maxFps = value, opts -> Gnetum.config.maxFps)
+				.setControl(option -> new SliderControl(option, 5, Constants.UNLIMITED_FPS, 5, i -> i == Constants.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
+				.setBinding((opts, value) -> Gnetum.config.setMaxFps(value), opts -> Gnetum.config.getRawMaxFps())
 				.build());
 
 		groups.add(general.build());

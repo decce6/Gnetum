@@ -1,3 +1,4 @@
+//? >=1.21.10 {
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
@@ -56,3 +57,4 @@ public class FramebufferBlitter {
         }
     }
 }
+//? }

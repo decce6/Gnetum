@@ -3,13 +3,13 @@ package me.decce.gnetum.mixins;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
-import net.minecraft.client.renderer.MappableRingBuffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+//? >=1.21.10 {
 // We require additional buffer flushing before switching framebuffers. To avoid client side stall when awaiting
 // fence completion on glClientWaitSync, we increase the buffer count here.
-@Mixin(MappableRingBuffer.class)
+@Mixin(net.minecraft.client.renderer.MappableRingBuffer.class)
 public class MappableRingBufferMixin {
     @ModifyExpressionValue(method = { "<init>", "close" } , at = @At(value = "CONSTANT", args = "intValue=3"))
     private int gnetum$increaseBufferSize(int original) {
@@ -30,3 +30,7 @@ public class MappableRingBufferMixin {
         return original * 3;
     }
 }
+//? } else {
+/*@Mixin(targets = {})
+public class MappableRingBufferMixin {}
+*///? }

@@ -103,9 +103,8 @@ public class GuiRenderStateMixin {
 }
 //?} else {
 
-/*import net.minecraft.client.gui.Gui;
-import org.spongepowered.asm.mixin.Mixin;
+/*import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Gui.class)
+@Mixin(targets = {})
 public class GuiRenderStateMixin { }
 *///?}

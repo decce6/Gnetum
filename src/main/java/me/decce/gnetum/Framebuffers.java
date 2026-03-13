@@ -21,7 +21,11 @@ public class Framebuffers {
 	private int serialNumber;
 	private int width;
 	private int height;
+	//? >=1.21.10 {
 	private int guiScale;
+	//? } else {
+	/*private double guiScale;
+	*///? }
 	private boolean downscale;
 
 	public Framebuffers() {
@@ -31,6 +35,10 @@ public class Framebuffers {
 		//?} else {
 		/*back = new TextureTarget(1, 1, true,Minecraft.ON_OSX);
 		front = new TextureTarget(1, 1, true,Minecraft.ON_OSX);
+		back.setClearColor(0, 0, 0, 0);
+		front.setClearColor(0, 0, 0, 0);
+		back.setFilterMode(GlConst.GL_NEAREST);
+		front.setFilterMode(GlConst.GL_NEAREST);
 		*///?}
 		resize();
 	}
@@ -106,19 +114,17 @@ public class Framebuffers {
 	}
 
 	public void bind() {
-		//? >=1.21.10 {
 		var accessor = (MinecraftAccessor) mc;
 		backupMainRenderTarget = accessor.gnetum$getMainRenderTarget();
 		accessor.gnetum$setMainRenderTarget(Gnetum.framebuffers().back());
-		//?} else {
+		//? <=1.21.1 {
 		/*back.bindWrite(true);
 		*///?}
 	}
 
 	public void unbind() {
-		//? >=1.21.10 {
 		((MinecraftAccessor) mc).gnetum$setMainRenderTarget(backupMainRenderTarget);
-		//?} else {
+		//?	<=1.21.1 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 		*///?}
 	}

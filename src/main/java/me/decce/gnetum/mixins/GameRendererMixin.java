@@ -14,7 +14,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -86,17 +85,21 @@ public class GameRendererMixin {
 
 	@WrapMethod(method = "renderItemInHand")
 	//? if >26 {
-	/*private void gnetum$wrapRenderItemInHand(CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
-	*///? } else {
+	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
+	*///? } else if >=1.21.10 {
 	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
-	//? }
+	//? } else {
+	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.Camera camera, float f, Matrix4f matrix4f, Operation<Void> original) {
+	*///? }
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
 			//? if >26 {
 			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			*///? } else {
+			*///? } else if >=1.21.10 {
 			original.call(f, bl, matrix4f);
-			//? }
+			//? } else {
+			/*original.call(camera, f, matrix4f);
+			*///? }
 			return;
 		}
 		if (hand.shouldRender()) {
@@ -105,14 +108,17 @@ public class GameRendererMixin {
 			Gnetum.framebuffers().bind();
 			//? if >26 {
 			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			*///? } else {
+			 *///? } else if >=1.21.10 {
 			original.call(f, bl, matrix4f);
-			//? }
+			 //? } else {
+			/*original.call(camera, f, matrix4f);
+			*///? }
 			Gnetum.framebuffers().unbind();
 			hand.end();
 		}
 	}
 
+	//? >=1.21.10 {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
     private void gnetum$wrapRenderDebugOverlay(Gui gui, GuiGraphics guiGraphics, Operation<Void> original) {
 		if (minecraft.isGameLoadFinished() && (!minecraft.options.hideGui || minecraft.screen != null)) {
@@ -135,4 +141,5 @@ public class GameRendererMixin {
 			original.call(gui, guiGraphics);
 		}
     }
+	//? }
 }

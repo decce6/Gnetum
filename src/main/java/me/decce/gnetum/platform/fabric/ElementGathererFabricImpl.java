@@ -6,15 +6,14 @@ import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
-import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
 import me.decce.gnetum.platform.ElementGatherer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
-//? >=1.21.10 {
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
-
 import java.util.Map;
+
+//? >=1.21.10 {
+import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
+import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 //?} else {
 /*import me.decce.gnetum.versioned.HudHandler;
 *///?}
@@ -37,7 +36,9 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 				});
 		gather(last, map);
 		//?} else {
-		/*map.putIfAbsent(HudHandler.VANILLA_LAYERS, new CachedElement());
+		/*for (HudHandler.Element element : HudHandler.Element.values()) {
+			map.putIfAbsent(element.getName(), element.newElement());
+		}
 		*///?}
 
 		if (Gnetum.platform().isModLoaded("fabric-api")) {

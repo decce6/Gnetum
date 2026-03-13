@@ -1,6 +1,6 @@
 package me.decce.gnetum.mixins.fabric;
 
-//? fabric {
+//? fabric && >=1.21.10 {
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;

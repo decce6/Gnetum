@@ -1,5 +1,7 @@
 package me.decce.gnetum.mixins.fabric;
 
+import org.spongepowered.asm.mixin.Mixin;
+
 //? fabric && >=1.21.10 {
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -12,7 +14,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -55,4 +56,7 @@ public class RootLayerMixin {
 		}
 	}
 }
-//?}
+//?} else {
+/*@Mixin(targets = {})
+public class RootLayerMixin {}
+*///?}

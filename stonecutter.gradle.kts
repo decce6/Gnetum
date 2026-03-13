@@ -9,6 +9,10 @@ stonecutter parameters {
     constants["sodium"] = node.project.hasProperty("deps.sodium")
     constants["jade"] = node.project.hasProperty("deps.jade")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"
+    replacements.string(current.parsed >= "1.21.11") {
+        replace("ResourceLocation", "Identifier")
+        replace("location()", "identifier()")
+    }
 }
 
 tasks.register("publishAll") {

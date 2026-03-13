@@ -1,8 +1,12 @@
 package me.decce.gnetum;
 
-import me.decce.gnetum.mixins.GameRendererAccessor;import net.minecraft.client.Minecraft;import net.minecraft.client.gui.GuiGraphics;
+import me.decce.gnetum.mixins.GameRendererAccessor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.Identifier;
+//? >=1.21.10 {
 import net.minecraft.client.renderer.fog.FogRenderer;
-import net.minecraft.resources.Identifier;import net.minecraft.server.jsonrpc.internalapi.MinecraftApi;
+//? }
 
 public class VersionCompatUtil {
 	public static void profilerPush(String str) {

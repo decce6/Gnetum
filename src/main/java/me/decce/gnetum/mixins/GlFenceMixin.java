@@ -1,10 +1,12 @@
 package me.decce.gnetum.mixins;
 
+import org.spongepowered.asm.mixin.Mixin;
+
+//? >=1.21.10 {
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.opengl.GlFence;
 import me.decce.gnetum.Gnetum;
 import org.lwjgl.opengl.GL32C;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GlFence.class)
@@ -20,3 +22,7 @@ public class GlFenceMixin {
         return original;
     }
 }
+//? } else {
+/*@Mixin(targets = {})
+public class GlFenceMixin { }
+*///? }
