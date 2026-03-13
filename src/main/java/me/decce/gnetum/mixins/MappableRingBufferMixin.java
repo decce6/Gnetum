@@ -22,7 +22,8 @@ public class MappableRingBufferMixin {
         if (!Gnetum.config.isEnabled()) {
             return original;
         }
-        if (!Gnetum.getElement(Constants.DEBUG_OVERLAY).isUncached()) {
+        var element = Gnetum.getElement(Constants.DEBUG_OVERLAY);
+        if (element != null && !element.isUncached()) {
             // F3 caching requires two additional flushes
             return original * 4;
         }
