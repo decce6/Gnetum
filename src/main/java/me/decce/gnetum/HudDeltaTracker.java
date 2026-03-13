@@ -13,7 +13,7 @@ public class HudDeltaTracker {
     private static boolean logOnce;
 
     public static void update(DeltaTracker.Timer timer) {
-        int len = Gnetum.config.numberOfPasses + 1;
+        int len = Gnetum.config.getNumberOfPasses() + 1;
         int curr = Gnetum.pass;
         if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
             reset();
@@ -23,7 +23,7 @@ public class HudDeltaTracker {
     }
 
     public static void reset() {
-        int len = Gnetum.config.numberOfPasses + 1;
+        int len = Gnetum.config.getNumberOfPasses() + 1;
         if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
             realtimeDeltaTicks = new float[len];
             gameTimeDeltaTicks = new float[len];
@@ -38,7 +38,7 @@ public class HudDeltaTracker {
     private static void store() {
         lastRealtimeDeltaTicks = 0f;
         lastGameTimeDeltaTicks = 0f;
-        for (int i = 0; i <= Gnetum.config.numberOfPasses; i++) {
+        for (int i = 0; i <= Gnetum.config.getNumberOfPasses(); i++) {
             if (i < realtimeDeltaTicks.length) {
                 lastRealtimeDeltaTicks += realtimeDeltaTicks[i];
                 lastGameTimeDeltaTicks += gameTimeDeltaTicks[i];

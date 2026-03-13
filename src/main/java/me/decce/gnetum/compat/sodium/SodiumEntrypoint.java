@@ -69,7 +69,7 @@ public class SodiumEntrypoint implements ConfigEntryPoint {
 					.setRange(2, 10, 1)
 					.setDefaultValue(3)
 					.setEnabledProvider(cs -> cs.readBooleanOption(enabledOption), enabledOption)
-					.setBinding((i) -> Gnetum.config.numberOfPasses = i, () -> Gnetum.config.numberOfPasses)
+					.setBinding((i) -> Gnetum.config.setNumberOfPasses(i), () -> Gnetum.config.getNumberOfPasses())
 					.setImpact(OptionImpact.MEDIUM)
 				)
 				.addOption(builder.createBooleanOption(Identifier.parse("gnetum:fast_blit"))

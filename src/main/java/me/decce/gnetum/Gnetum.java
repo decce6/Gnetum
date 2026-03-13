@@ -45,7 +45,7 @@ public class Gnetum {
 		else if (pass > 0) {
 			pass++;
 		}
-		if (pass > config.numberOfPasses) {
+		if (pass > config.getNumberOfPasses()) {
 			if (FPS_COUNTER.belowMax()) {
 				pass = 1;
 				finishAllPasses();
@@ -63,7 +63,7 @@ public class Gnetum {
 	}
 
 	public static String getFpsString() {
-		return String.format(Locale.ROOT, "HUD: %d fps T: %s (%d passes)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.getMaxFps() == Constants.UNLIMITED_FPS ? "inf" : Gnetum.config.getMaxFps(), Gnetum.config.numberOfPasses);
+		return String.format(Locale.ROOT, "HUD: %d fps T: %s (%d passes)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.getMaxFps() == Constants.UNLIMITED_FPS ? "inf" : Gnetum.config.getMaxFps(), Gnetum.config.getNumberOfPasses());
 	}
 
 	public static void disableCachingForCurrentElement(String reason) {

@@ -14,7 +14,7 @@ public class Distributor {
 		double totalTime = 0.0d;
 		var map = Gnetum.config.map;
 		int elementIndex = 0;
-		int count = Gnetum.config.numberOfPasses;
+		int count = Gnetum.config.getNumberOfPasses();
 		for (var element : map.values()) {
 			var times = element.time;
 			elementTimes[elementIndex] = 0.0d;
@@ -34,7 +34,7 @@ public class Distributor {
 		int pass = 1;
 		for (var element : Gnetum.config.map.values()) {
 			time += elementTimes[i++];
-			if (time >= target && pass < Gnetum.config.numberOfPasses) {
+			if (time >= target && pass < Gnetum.config.getNumberOfPasses()) {
 				time %= target;
 				pass++;
 			}

@@ -30,7 +30,7 @@ public class GnetumConfig {
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean downscale = new TwoStateBoolean(AnyBooleanValue.OFF);
     public TwoStateBoolean fastFboBlit = new TwoStateBoolean(AnyBooleanValue.ON);
-    public int numberOfPasses = 3;
+    private int numberOfPasses = 3;
     private int maxFps = 60;
     public int screenMaxFps = 20;
 
@@ -104,5 +104,17 @@ public class GnetumConfig {
 
     public void setMaxFps(int maxFps) {
         this.maxFps = maxFps;
+    }
+
+    public int getNumberOfPasses() {
+        return numberOfPasses;
+    }
+
+    public void setNumberOfPasses(int numberOfPasses) {
+        if (this.numberOfPasses != numberOfPasses) {
+            this.numberOfPasses = numberOfPasses;
+            Gnetum.pass = 0;
+            Gnetum.framebuffers().markForCatchUp();
+        }
     }
 }
