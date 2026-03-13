@@ -45,7 +45,7 @@ public class GameRendererMixin {
 	/*private final Matrix4f gnetum$lastGuiMatrix = new Matrix4f();
 	*///?}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 		if (!Gnetum.config.isEnabled()) {
 			return;
@@ -59,14 +59,6 @@ public class GameRendererMixin {
 		}
 
 		gnetum$checkForCatchUp(guiGraphics);
-
-		/*
-		while (Gnetum.framebuffers().needsCatchUp()) {
-			Gnetum.catchingUp = true;
-			this.minecraft.gui.render(guiGraphics, deltaTracker);
-			Gnetum.catchingUp = false;
-		}
-		*/
 
 	}
 

@@ -5,13 +5,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 
 //? >=1.21.10 {
-import net.minecraft.client.renderer.fog.FogRenderer;
 import me.decce.gnetum.versioned.StatefulHudHandler;
 //?}
 
@@ -46,20 +44,20 @@ public class GuiMixin {
 
 		Gnetum.nextPass();
 
-		VersionCompatUtil.profilerPopPush("uncached");
-		// Note: these are not rendered instantly, but batched with the rest of the GUI - profiler data may be not useful
-
 		//? >=1.21.10 {
-		if (Gnetum.catchingUp) {
+		if (Gnetum.framebuffers().needsCatchUp()) {
 			StatefulHudHandler.dropDeferredSubmission();
+			original.call(guiGraphics, deltaTracker);
 		}
 		else {
+			VersionCompatUtil.profilerPopPush("uncached");
 			StatefulHudHandler.performDeferredSubmission(guiGraphics);
+			VersionCompatUtil.flush(guiGraphics);
 			Gnetum.framebuffers().blit();
+			VersionCompatUtil.profilerPop();
 		}
 		//?} else {
 		//?}
 
-		VersionCompatUtil.profilerPop();
 	}
 }

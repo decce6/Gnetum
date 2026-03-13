@@ -26,7 +26,6 @@ public class Gnetum {
 	private static Framebuffers framebuffers;
 	public static int pass = 1;
 	public static boolean rendering;
-	public static boolean catchingUp;
 	public static GnetumConfig config;
 	public static CachedElement currentElement;
 
