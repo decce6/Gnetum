@@ -36,6 +36,8 @@ public class GameRendererMixin {
 	@Unique
 	private boolean gnetum$wasChatScreenOpen;
 	@Unique
+	private boolean gnetum$wasHudHidden;
+	@Unique
 	private boolean gnetum$renderingCachedHand;
 	@Unique
 	//? >=1.21.10 {
@@ -66,6 +68,12 @@ public class GameRendererMixin {
 		boolean chatScreenOpen = minecraft.screen instanceof ChatScreen;
 		if (chatScreenOpen != gnetum$wasChatScreenOpen) {
 			gnetum$wasChatScreenOpen = chatScreenOpen;
+			Gnetum.framebuffers().markForCatchUp();
+		}
+
+		boolean hudHidden = minecraft.options.hideGui;
+		if (hudHidden != gnetum$wasHudHidden) {
+			gnetum$wasHudHidden = hudHidden;
 			Gnetum.framebuffers().markForCatchUp();
 		}
 
