@@ -3,6 +3,7 @@
 ## 4.2.1
 
 - Improved transition when opening/closing chat screen
+- Fixed vignette being rendered above HUD instead of behind it
 - Fixed crash at launch with F3 menu open
 - Fixed crash when reducing the number of passes
 

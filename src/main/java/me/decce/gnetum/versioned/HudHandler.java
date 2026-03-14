@@ -2,11 +2,11 @@ package me.decce.gnetum.versioned;
 
 //? <1.21.10 {
 
-import me.decce.gnetum.CachedElement;
+/*import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.resources.Identifier;
 
-/*public class HudHandler {
+/^public class HudHandler {
 	//? fabric {
 	public enum Element {
 		ARMOR_LEVEL("armor_level"),
@@ -29,4 +29,4 @@ import net.minecraft.resources.Identifier;
 	}
 //? }
 }
-*///?}
+^/*///?}
