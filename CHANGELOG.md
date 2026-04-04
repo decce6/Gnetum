@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.3.0
+
+- Fixed flickering when opening/closing chat screen
+- Improved compatibility with Xaero's Minimap
+  - In-game waypoints are no longer cached
+  - The minimap now can be cached on Fabric (previously it was only possible on NeoForge)
+  - Fixed flickering with bossbar / status effects
+- Fixed performance regressions in 4.2.1
+- Fixed crosshair flickering when cache is force-enabled
+- Added 26.1 support
+
 ## 4.2.1
 
 - Improved transition when opening/closing chat screen
