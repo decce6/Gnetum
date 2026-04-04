@@ -17,10 +17,11 @@
     "MinecraftAccessor",
     "MinecraftMixin",
     "RenderPipelineAccessor",
-    "compat.jade.BossHealthOverlayMixin",
-    "compat.jade.ClientProxyMixin"
+    "compat.bossbar.BossHealthOverlayMixin",
+    "compat.jade.ClientProxyMixin",
+    "compat.effects.GuiMixin",
+    "compat.xaerominimap.XaeroMinimapCoreMixin"
   ],
-  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }

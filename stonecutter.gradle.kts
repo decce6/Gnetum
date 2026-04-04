@@ -8,6 +8,7 @@ stonecutter parameters {
     constants.match(node.metadata.project.substringAfterLast('-'), "fabric", "neoforge", "forge")
     constants["sodium"] = node.project.hasProperty("deps.sodium")
     constants["jade"] = node.project.hasProperty("deps.jade")
+    constants["xaerominimap"] = node.project.hasProperty("deps.xaerominimap")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"
     replacements.string(current.parsed >= "1.21.11") {
         replace("ResourceLocation", "Identifier")

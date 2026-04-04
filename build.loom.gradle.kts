@@ -22,6 +22,9 @@ dependencies {
     if (hasProperty("deps.jade")) {
         modCompileOnly("maven.modrinth:jade:${prop("deps.jade")}")
     }
+    if (hasProperty("deps.xaerominimap")) {
+        modCompileOnly("maven.modrinth:xaeros-minimap:${prop("deps.xaerominimap")}")
+    }
 }
 
 tasks {

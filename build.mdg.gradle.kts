@@ -18,6 +18,9 @@ dependencies {
     if (hasProperty("deps.jade")) {
         compileOnly("maven.modrinth:jade:${prop("deps.jade")}")
     }
+    if (hasProperty("deps.xaerominimap")) {
+        compileOnly("maven.modrinth:xaeros-minimap:${prop("deps.xaerominimap")}")
+    }
 }
 
 val jijShadowJar = tasks.register<Jar>("jijShadowJar") {
