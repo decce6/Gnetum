@@ -14,7 +14,7 @@ public class MappableRingBufferMixin {
     @ModifyExpressionValue(method = { "<init>", "close" } , at = @At(value = "CONSTANT", args = "intValue=3"))
     private int gnetum$increaseBufferSize(int original) {
         // We must generate a size that is the largest we might need because we cannot resize afterward
-        return original * 4;
+        return original + 6;
     }
 
     @ModifyExpressionValue(method = "rotate" , at = @At(value = "CONSTANT", args = "intValue=3"))
@@ -25,9 +25,9 @@ public class MappableRingBufferMixin {
         var element = Gnetum.getElement(Constants.DEBUG_OVERLAY);
         if (element != null && !element.isUncached()) {
             // F3 caching requires two additional flushes
-            return original * 4;
+            return original + 6;
         }
-        return original * 3;
+        return original + 3;
     }
 }
 //? } else {
