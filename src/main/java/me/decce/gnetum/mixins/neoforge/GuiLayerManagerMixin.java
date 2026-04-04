@@ -45,7 +45,7 @@ public class GuiLayerManagerMixin {
 
 	@Inject(method = "renderInner", at = @At("HEAD"), cancellable = true)
 	private void gnetum$renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick, CallbackInfo ci) {
-		if (!Gnetum.config.isEnabled()) {
+		if (!Gnetum.rendering) {
 			return;
 		}
 		ci.cancel();
