@@ -13,10 +13,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,6 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? >=1.21.10 {
 import org.joml.Matrix3x2f;
 //?}
+//? >26 {
+import org.joml.Matrix4fc;
+//? }
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -34,22 +35,22 @@ public class GameRendererMixin {
 	@Final
 	private Minecraft minecraft;
 	@Unique
-	private boolean gnetum$wasScreenOpen;
-	@Unique
-	private boolean gnetum$wasHudHidden;
-	@Unique
 	//? >=1.21.10 {
 	private final Matrix3x2f gnetum$lastGuiMatrix = new Matrix3x2f();
 	//?} else {
 	/*private final Matrix4f gnetum$lastGuiMatrix = new Matrix4f();
-	*///?}
+	 *///?}
+	@Unique
+	private boolean gnetum$wasScreenOpen;
+	@Unique
+	private boolean gnetum$wasHudHidden;
 
 	//? >26 {
 	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
-	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 	*///? } else {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
-	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 	//? }
 		if (!Gnetum.config.isEnabled()) {
 			return;
@@ -62,12 +63,43 @@ public class GameRendererMixin {
 			HudDeltaTracker.disable();
 		}
 
-		gnetum$checkForCatchUp(guiGraphics);
+		gnetum$checkForPoseCatchUp(guiGraphics);
+	}
 
+	//? >26 {
+	/*@Inject(method = "extractGui", at = @At("HEAD"))
+	private void gnetum$updateScreenCatchup(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	*///? } else {
+	@Inject(method = "render", at = @At("HEAD"))
+	private void gnetum$updateScreenCatchup(CallbackInfo ci) {
+	//? }
+		if (!Gnetum.config.isEnabled()) {
+			return;
+		}
+
+		gnetum$checkForScreenCatchUp();
 	}
 
 	@Unique
-	private void gnetum$checkForCatchUp(GuiGraphics guiGraphics) {
+	private void gnetum$checkForPoseCatchUp(GuiGraphics guiGraphics) {
+		var pose = guiGraphics.pose();
+		//? >= 1.21.10 {
+		if (!pose.equals(gnetum$lastGuiMatrix, 0.01F)) {
+			gnetum$lastGuiMatrix.set(pose);
+			Gnetum.framebuffers().markForCatchUp();
+		}
+		//?} else {
+		/*if (!pose.last().pose().equals(gnetum$lastGuiMatrix, 0.01F)) {
+			gnetum$lastGuiMatrix.set(pose.last().pose());
+			Gnetum.framebuffers().markForCatchUp();
+		}
+        *///?}
+	}
+
+	@Unique
+	private void gnetum$checkForScreenCatchUp() {
+		var minecraft = Minecraft.getInstance();
+
 		boolean screenOpen = minecraft.screen != null;
 		if (screenOpen != gnetum$wasScreenOpen) {
 			gnetum$wasScreenOpen = screenOpen;
@@ -79,19 +111,6 @@ public class GameRendererMixin {
 			gnetum$wasHudHidden = hudHidden;
 			Gnetum.framebuffers().markForCatchUp();
 		}
-
-		var pose = guiGraphics.pose();
-        //? >= 1.21.10 {
-        if (!pose.equals(gnetum$lastGuiMatrix, 0.01F)) {
-            gnetum$lastGuiMatrix.set(pose);
-            Gnetum.framebuffers().markForCatchUp();
-        }
-        //?} else {
-		/*if (!pose.last().pose().equals(gnetum$lastGuiMatrix, 0.01F)) {
-			gnetum$lastGuiMatrix.set(pose.last().pose());
-			Gnetum.framebuffers().markForCatchUp();
-		}
-        *///?}
 	}
 
 	@WrapMethod(method = "renderItemInHand")
