@@ -87,10 +87,8 @@ public class GuiRenderStateMixin {
 			pipelineAccessor.setBlendFunction(Optional.of(blend));
 			//? }
 		}
-		if (gnetum$isBlendIncompatible(blend)) {
-			gnetum$submitForUncached(state);
+		if (gnetum$isBlendIncompatible(blend) && !Gnetum.isCurrentElementForceCached()) {
 			Gnetum.disableCachingForCurrentElement("Blend Func (%s, %s, %s, %s)".formatted(blend.sourceColor(), blend.destColor(), blend.sourceAlpha(), blend.destAlpha()));
-			ci.cancel();
 		}
 	}
 

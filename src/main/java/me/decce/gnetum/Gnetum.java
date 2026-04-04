@@ -66,6 +66,13 @@ public class Gnetum {
 		return String.format(Locale.ROOT, "HUD: %d fps T: %s (%d passes)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.getMaxFps() == Constants.UNLIMITED_FPS ? "inf" : Gnetum.config.getMaxFps(), Gnetum.config.getNumberOfPasses());
 	}
 
+	public static boolean isCurrentElementForceCached() {
+		if (currentElement == null) {
+			return false;
+		}
+		return currentElement.enabled.value == AnyBooleanValue.ON;
+	}
+
 	public static void disableCachingForCurrentElement(String reason) {
 		if (currentElement == null) {
 			LOGGER.error("No current element to disable");
