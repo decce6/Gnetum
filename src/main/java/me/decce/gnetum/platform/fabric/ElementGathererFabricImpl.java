@@ -2,10 +2,10 @@ package me.decce.gnetum.platform.fabric;
 
 //? fabric {
 import me.decce.gnetum.CachedElement;
-import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
+import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.platform.ElementGatherer;
 
 import java.util.Map;
@@ -30,6 +30,8 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 		var first = HudElementRegistryImplAccessor.getFirst();
 		var last = HudElementRegistryImplAccessor.getLast();
 
+		gatherCompatPre(map);
+
 		gather(first, map);
 		HudElementRegistryImplAccessor.getVanillaElementIds().stream()
 				.filter(root -> !root.equals(first.id()) && !root.equals(last.id()))
@@ -47,6 +49,14 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 		if (Gnetum.platform().isModLoaded("fabric-api")) {
 			gatherLegacy(map);
 		}
+	}
+
+	private void gatherCompatPre(Map<String, CachedElement> map) {
+		//? xaerominimap {
+		if (XaeroMinimapCompat.INSTALLED) {
+			map.putIfAbsent(XaeroMinimapCompat.ELEMENT, new CachedElement(XaeroMinimapCompat.ELEMENT));
+		}
+		//? }
 	}
 
 	//? >=1.21.10 {

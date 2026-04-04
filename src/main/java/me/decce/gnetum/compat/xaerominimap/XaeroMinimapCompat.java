@@ -10,6 +10,7 @@ import xaero.common.core.XaeroMinimapCore;
 
 public class XaeroMinimapCompat {
 	public static final boolean INSTALLED = Gnetum.platform().isModLoaded("xaerominimap");
+	public static final String ELEMENT = "xaero_minimap";
 	public static boolean statusEffectsShown;
 	public static boolean bossBarShown;
 	public static int bossBarHeight;
