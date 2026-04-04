@@ -19,6 +19,9 @@ public interface Gui_Graphics_Accessor // Named with _ because we use stonecutte
 	@Accessor
 	GuiRenderState getGuiRenderState();
 	@Invoker
+	//? <26 {
+			(value = "submitBlit")
+	//? }
 	void invokeInnerBlit(RenderPipeline pipeline,
 	                     GpuTextureView textureView,
 	                     GpuSampler sampler,
