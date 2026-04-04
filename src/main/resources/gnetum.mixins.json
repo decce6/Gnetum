@@ -20,6 +20,7 @@
     "compat.bossbar.BossHealthOverlayMixin",
     "compat.jade.ClientProxyMixin",
     "compat.effects.GuiMixin",
+    "compat.xaerominimap.ClientEventsMixin",
     "compat.xaerominimap.XaeroMinimapCoreMixin"
   ],
   "injectors": {

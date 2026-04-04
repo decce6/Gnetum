@@ -8,11 +8,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 
 //? >=1.21.10 {
 import me.decce.gnetum.versioned.StatefulHudHandler;
@@ -22,6 +17,9 @@ import static me.decce.gnetum.versioned.HudHandler.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 *///?}
+//? xaerominimap {
+import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+//? }
 
 @Mixin(value = Gui.class, priority = 5000)
 public class GuiMixin {
@@ -59,6 +57,10 @@ public class GuiMixin {
 
 		Gnetum.nextPass();
 
+		//? xaerominimap {
+		VersionCompatUtil.profilerPopPush("uncached");
+		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
+		//? }
 		if (Gnetum.framebuffers().needsCatchUp()) {
 			StatefulHudHandler.dropDeferredSubmission();
 			original.call(guiGraphics, deltaTracker);
@@ -67,8 +69,8 @@ public class GuiMixin {
 			VersionCompatUtil.profilerPopPush("uncached");
 			StatefulHudHandler.performDeferredSubmission(guiGraphics);
 			Gnetum.framebuffers().blit(guiGraphics);
-			VersionCompatUtil.profilerPop();
 		}
+		VersionCompatUtil.profilerPop();
 	}
 
 	//? } else {

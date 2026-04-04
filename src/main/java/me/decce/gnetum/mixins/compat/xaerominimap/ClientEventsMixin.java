@@ -8,14 +8,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(targets = "xaero.common.core.XaeroMinimapCore", remap = false)
-public class XaeroMinimapCoreMixin {
+@Mixin(targets = "xaero.common.events.ClientEvents", remap = false)
+public class ClientEventsMixin {
     //? if xaerominimap {
-    @Inject(method = "beforeIngameGuiRender", at = @At("HEAD"))
+    @Inject(method = "handleRenderGameOverlayEventPre", at = @At("HEAD"), cancellable = true)
     private static void gnetum$beforeIngameGuiRender(CallbackInfo ci) {
-        //? fabric {
-        XaeroMinimapCompat.update();
-        //? }
+        if (!XaeroMinimapCompat.error && !XaeroMinimapCompat.shouldRenderWaypoint) {
+            ci.cancel();
+        }
     }
     //? }
 }
