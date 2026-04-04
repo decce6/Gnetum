@@ -8,6 +8,7 @@ import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.VersionCompatUtil;
+import me.decce.gnetum.versioned.StatefulHudHandler;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -33,7 +34,7 @@ public class GameRendererMixin {
 	@Final
 	private Minecraft minecraft;
 	@Unique
-	private boolean gnetum$wasChatScreenOpen;
+	private boolean gnetum$wasScreenOpen;
 	@Unique
 	private boolean gnetum$wasHudHidden;
 	@Unique
@@ -44,7 +45,7 @@ public class GameRendererMixin {
 	*///?}
 
 	//? >26 {
-	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 	*///? } else {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
@@ -67,9 +68,9 @@ public class GameRendererMixin {
 
 	@Unique
 	private void gnetum$checkForCatchUp(GuiGraphics guiGraphics) {
-		boolean chatScreenOpen = minecraft.screen instanceof ChatScreen;
-		if (chatScreenOpen != gnetum$wasChatScreenOpen) {
-			gnetum$wasChatScreenOpen = chatScreenOpen;
+		boolean screenOpen = minecraft.screen != null;
+		if (screenOpen != gnetum$wasScreenOpen) {
+			gnetum$wasScreenOpen = screenOpen;
 			Gnetum.framebuffers().markForCatchUp();
 		}
 
@@ -102,29 +103,28 @@ public class GameRendererMixin {
 	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.Camera camera, float f, Matrix4f matrix4f, Operation<Void> original) {
 	*///? }
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
+		Runnable callOriginal = () ->
+				//? if >26 {
+				/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
+				 *///? } else if >=1.21.10 {
+				original.call(f, bl, matrix4f);
+				//? } else {
+				/*original.call(camera, f, matrix4f);
+				 *///? }
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
-			//? if >26 {
-			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			*///? } else if >=1.21.10 {
-			original.call(f, bl, matrix4f);
-			//? } else {
-			/*original.call(camera, f, matrix4f);
-			*///? }
+			callOriginal.run();
 			return;
 		}
 		if (hand.shouldRender()) {
 			// No flush needed
 			hand.begin();
 			Gnetum.framebuffers().bind();
-			//? if >26 {
-			/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
-			 *///? } else if >=1.21.10 {
-			original.call(f, bl, matrix4f);
-			 //? } else {
-			/*original.call(camera, f, matrix4f);
-			*///? }
+			callOriginal.run();
 			Gnetum.framebuffers().unbind();
 			hand.end();
+		}
+		if (Gnetum.framebuffers().needsCatchUp()) {
+			callOriginal.run();
 		}
 	}
 
@@ -143,12 +143,27 @@ public class GameRendererMixin {
 			}
 			if (debug.shouldRender()) {
 				debug.begin();
-				VersionCompatUtil.flush(guiGraphics);
+
+				StatefulHudHandler.alternativeGuiRenderState.reset();
+				var guiRenderer = (GuiRendererAccessor) ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getGuiRenderer();
+
+				var originalState = guiRenderer.getRenderState();
+				guiRenderer.setRenderState(StatefulHudHandler.alternativeGuiRenderState);
+
 				Gnetum.framebuffers().bind();
-				original.call(gui, guiGraphics);
-				VersionCompatUtil.flush(guiGraphics);
+
+				original.call(gui, StatefulHudHandler.alternativeGuiGraphics);
+				VersionCompatUtil.flush(StatefulHudHandler.alternativeGuiGraphics);
+
 				Gnetum.framebuffers().unbind();
+
+				guiRenderer.setRenderState(originalState);
+
 				debug.end();
+			}
+
+			if (Gnetum.framebuffers().needsCatchUp()) {
+				original.call(gui, guiGraphics);
 			}
 		}
 		else {

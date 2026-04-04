@@ -2,11 +2,9 @@ package me.decce.gnetum.versioned;
 
 //? >=1.21.10 {
 import me.decce.gnetum.mixins.Gui_Graphics_Accessor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
-import net.minecraft.client.gui.render.state.GuiItemRenderState;
-import net.minecraft.client.gui.render.state.GuiTextRenderState;
-import net.minecraft.client.gui.render.state.ScreenArea;
+import net.minecraft.client.gui.render.state.*;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 
 import java.util.LinkedList;
@@ -14,6 +12,8 @@ import java.util.Queue;
 
 public class StatefulHudHandler {
 	public static final Queue<ScreenArea> deferredSubmissions = new LinkedList<>();
+	public static final GuiRenderState alternativeGuiRenderState = new GuiRenderState();
+	public static final GuiGraphics alternativeGuiGraphics = new GuiGraphics(Minecraft.getInstance(), alternativeGuiRenderState, 0, 0);
 
 	public static void submitLater(ScreenArea state) {
 		deferredSubmissions.add(state);

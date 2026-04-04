@@ -11,6 +11,7 @@
     "GlFenceMixin",
     "Gui_Graphics_Accessor",
     "GuiMixin",
+    "GuiRendererAccessor",
     "GuiRenderStateMixin",
     "MappableRingBufferMixin",
     "MinecraftAccessor",
