@@ -1,7 +1,7 @@
 package me.decce.gnetum.versioned;
 
 //? >=1.21.10 {
-import me.decce.gnetum.mixins.GuiGraphicsAccessor;
+import me.decce.gnetum.mixins.Gui_Graphics_Accessor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.gui.render.state.GuiItemRenderState;
@@ -24,7 +24,7 @@ public class StatefulHudHandler {
 	}
 
 	public static void performDeferredSubmission(GuiGraphics guiGraphics) {
-		var state = ((GuiGraphicsAccessor)guiGraphics).getGuiRenderState();
+		var state = ((Gui_Graphics_Accessor)guiGraphics).getGuiRenderState();
 		for (var submission : deferredSubmissions) {
 			//TODO: optimize ?
 			switch (submission) {

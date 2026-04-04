@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,9 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? >=1.21.10 {
 import org.joml.Matrix3x2f;
-//?} else {
-/*import org.joml.Matrix4f;
-*///?}
+//?}
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -38,16 +37,19 @@ public class GameRendererMixin {
 	@Unique
 	private boolean gnetum$wasHudHidden;
 	@Unique
-	private boolean gnetum$renderingCachedHand;
-	@Unique
 	//? >=1.21.10 {
 	private final Matrix3x2f gnetum$lastGuiMatrix = new Matrix3x2f();
 	//?} else {
 	/*private final Matrix4f gnetum$lastGuiMatrix = new Matrix4f();
 	*///?}
 
+	//? >26 {
+	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	*///? } else {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$catchUpGui(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	//? }
 		if (!Gnetum.config.isEnabled()) {
 			return;
 		}
@@ -93,7 +95,7 @@ public class GameRendererMixin {
 
 	@WrapMethod(method = "renderItemInHand")
 	//? if >26 {
-	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.CameraRenderState cameraState, float deltaPartialTick, Matrix4f modelViewMatrix, Operation<Void> original) {
+	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, float deltaPartialTick, Matrix4fc modelViewMatrix, Operation<Void> original) {
 	*///? } else if >=1.21.10 {
 	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
 	//? } else {
@@ -126,8 +128,12 @@ public class GameRendererMixin {
 		}
 	}
 
-	//? >=1.21.10 {
+	//? if >=1.21.10 {
+	//? if >26 {
+	/*@WrapOperation(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+	*///? } else {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+	//? }
     private void gnetum$wrapRenderDebugOverlay(Gui gui, GuiGraphics guiGraphics, Operation<Void> original) {
 		if (minecraft.isGameLoadFinished() && (!minecraft.options.hideGui || minecraft.screen != null)) {
 			var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);

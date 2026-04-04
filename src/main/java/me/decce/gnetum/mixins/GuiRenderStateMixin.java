@@ -21,6 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 
+//? >26 {
+/*import com.mojang.blaze3d.pipeline.ColorTargetState;
+*///? }
+
 @Mixin(GuiRenderState.class)
 public class GuiRenderStateMixin {
 	@Unique
@@ -60,16 +64,28 @@ public class GuiRenderStateMixin {
 			return;
 		}
 		var pipeline = state.pipeline();
+		//? >26 {
+		/*var optionalBlend = pipeline.getColorTargetState().blendFunction();
+		if (optionalBlend.isEmpty()) {
+			return;
+		}
+		var blend = optionalBlend.get();
+		*///? } else {
 		var optionalBlend = pipeline.getBlendFunction();
 		if (optionalBlend.isEmpty()) {
 			return;
 		}
 		var blend = optionalBlend.get();
+		//? }
 		var pipelineAccessor = (RenderPipelineAccessor) pipeline;
 		if (blend.sourceAlpha() != SourceFactor.ONE || blend.destAlpha() != DestFactor.ONE_MINUS_SRC_ALPHA) {
 			// TODO: optimize alloc
 			blend = new BlendFunction(blend.sourceColor(), blend.destColor(), SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
+			//? >26 {
+			/*pipelineAccessor.setColorTargetState(new ColorTargetState(Optional.of(blend), pipeline.getColorTargetState().writeMask()));
+			*///? } else {
 			pipelineAccessor.setBlendFunction(Optional.of(blend));
+			//? }
 		}
 		if (gnetum$isBlendIncompatible(blend)) {
 			gnetum$submitForUncached(state);

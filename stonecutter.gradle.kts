@@ -13,6 +13,14 @@ stonecutter parameters {
         replace("ResourceLocation", "Identifier")
         replace("location()", "identifier()")
     }
+    replacements.string(current.parsed >= "26.1") {
+        replace("GuiGraphics", "GuiGraphicsExtractor")
+        replace("net.minecraft.client.gui.render.state", "net.minecraft.client.renderer.state.gui")
+        replace("submitText", "addText")
+        replace("submitPicturesInPictureState", "addPicturesInPictureState")
+        replace("submitItem", "addItem")
+        replace("submitGuiElement", "addGuiElement")
+    }
 }
 
 tasks.register("publishAll") {

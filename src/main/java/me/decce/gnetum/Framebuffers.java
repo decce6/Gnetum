@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.decce.gnetum.mixins.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 //? <1.21.10 {
 /*import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.blaze3d.platform.GlConst;
@@ -43,9 +44,9 @@ public class Framebuffers {
 		resize();
 	}
 
-	public void blit() {
+	public void blit(GuiGraphics guiGraphics) {
 		//? >=1.21.10 {
-		FramebufferBlitter.blit(front.getColorTextureView(), mc.getMainRenderTarget().getColorTextureView());
+		FramebufferBlitter.blit(front.getColorTextureView(), guiGraphics);
 		//?} else {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();

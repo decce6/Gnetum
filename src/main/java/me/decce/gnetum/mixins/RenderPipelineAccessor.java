@@ -7,13 +7,18 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Optional;
 
-//? >=1.21.10 {
+//? if >26 {
+/*import com.mojang.blaze3d.pipeline.ColorTargetState;
+*///? } else if >=1.21.10 {
 import com.mojang.blaze3d.pipeline.BlendFunction;
-//?}
+//? }
 
 @Mixin(RenderPipeline.class)
 public interface RenderPipelineAccessor {
-	//? >=1.21.10 {
+	//? if >=26 {
+	/*@Accessor @Mutable
+	void setColorTargetState(ColorTargetState color);
+	*///? } else if >=1.21.10 {
 	@Accessor @Mutable
 	void setBlendFunction(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<BlendFunction> blend);
 	//?}

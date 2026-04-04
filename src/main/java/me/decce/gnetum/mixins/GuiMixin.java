@@ -25,8 +25,12 @@ import net.minecraft.world.entity.player.Player;
 
 @Mixin(value = Gui.class, priority = 5000)
 public class GuiMixin {
-	//? >=1.21.10 {
+	//? if >=1.21.10 {
+	//? if >26 {
+	/*@WrapMethod(method = "extractRenderState")
+	*///? } else {
 	@WrapMethod(method = "render")
+	//? }
 	private void gnetum$wrapGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled()) {
 			original.call(guiGraphics, deltaTracker);
@@ -62,8 +66,7 @@ public class GuiMixin {
 		else {
 			VersionCompatUtil.profilerPopPush("uncached");
 			StatefulHudHandler.performDeferredSubmission(guiGraphics);
-			VersionCompatUtil.flush(guiGraphics);
-			Gnetum.framebuffers().blit();
+			Gnetum.framebuffers().blit(guiGraphics);
 			VersionCompatUtil.profilerPop();
 		}
 	}

@@ -23,7 +23,11 @@ public class RootLayerMixin {
 	@Final
 	private Identifier id;
 
+	//? > 26 {
+	/*@WrapMethod(method = "extractRenderState")
+	*///? } else {
 	@WrapMethod(method = "render")
+	//? }
 	public void gnetum$wrapRender(GuiGraphics context, DeltaTracker tickCounter, HudElement vanillaElement, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled() || !Gnetum.rendering) {
 			original.call(context, tickCounter, vanillaElement);
@@ -39,7 +43,11 @@ public class RootLayerMixin {
 						continue;
 					}
 					element.begin();
+					//? >26 {
+					/*layer.element(vanillaElement).extractRenderState(context, tickCounter);
+					*///? } else {
 					layer.element(vanillaElement).render(context, tickCounter);
+					//? }
 					element.end();
 				}
 			}

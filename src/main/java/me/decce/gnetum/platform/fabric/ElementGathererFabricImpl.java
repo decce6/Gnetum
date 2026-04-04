@@ -7,9 +7,12 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
 import me.decce.gnetum.platform.ElementGatherer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 import java.util.Map;
+
+//? >=1.21.10 && <26 {
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+//? }
 
 //? >=1.21.10 {
 import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
@@ -57,12 +60,14 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 
 	@SuppressWarnings("deprecation")
 	private void gatherLegacy(Map<String, CachedElement> map) {
+		//? if <26 {
 		var event = HudRenderCallback.EVENT;
 		HudRenderCallback[] handlers = (HudRenderCallback[]) ArrayBackedEventAccessor.HANDLERS.get(event);
 		for (var callback : handlers) {
 			var modid = Gnetum.platform().getModId(callback.getClass());
 			map.putIfAbsent(modid, new CachedElement(modid));
 		}
+		//? }
 	}
 
 }

@@ -9,7 +9,7 @@
     "GameRendererAccessor",
     "GameRendererMixin",
     "GlFenceMixin",
-    "GuiGraphicsAccessor",
+    "Gui_Graphics_Accessor",
     "GuiMixin",
     "GuiRenderStateMixin",
     "MappableRingBufferMixin",
