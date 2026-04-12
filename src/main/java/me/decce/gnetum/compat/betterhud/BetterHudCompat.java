@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import jobicade.betterhud.BetterHud;
 import jobicade.betterhud.element.HudElement;
 import jobicade.betterhud.events.RenderEvents;
+import me.decce.gnetum.ElementType;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.hud.Hud;
 import me.decce.gnetum.hud.VanillaHuds;
@@ -47,12 +48,18 @@ public class BetterHudCompat {
         return modInstalled && BetterHud.getProxy().isModEnabled();
     }
 
-    public static void onRenderGameOverlays(RenderGameOverlayEvent.Pre event) {
+    public static void onRenderGameOverlays(RenderGameOverlayEvent.Pre event, boolean uncached) {
         BetterHud.MANAGER.reset(event.getResolution());
         RenderEvents.beginOverlayState();
-        int pass = Gnetum.rendering ? Gnetum.passManager.current : 0;
         for (HudElement element : HudElement.SORTER.getSortedData(HudElement.SortType.PRIORITY)) {
-            if (passOf(element) == pass) {
+            var hud = hudOf(element);
+            var name = hud.id().toString();
+            if (uncached && Gnetum.passManager.cachingDisabled(name)) {
+                element.tryRender(event);
+            }
+            else if (!uncached && Gnetum.passManager.shouldRender(name)) {
+                Gnetum.currentElement = name;
+                Gnetum.currentElementType = ElementType.VANILLA;
                 element.tryRender(event);
             }
         }
@@ -60,15 +67,10 @@ public class BetterHudCompat {
         GlStateManager.enableBlend();
     }
 
-    public static int passOf(HudElement element) {
+    public static Hud hudOf(HudElement element) {
         if (mapTranslation.containsKey(element)) {
-            return passOf(mapTranslation.get(element));
+            return mapTranslation.get(element);
         }
-        return passOf(OTHER_HUD);
-    }
-
-    public static int passOf(Hud hud) {
-        var cache = Gnetum.getCacheSetting(hud.id().toString());
-        return cache.enabled.get() ? cache.pass : 0;
+        return OTHER_HUD;
     }
 }

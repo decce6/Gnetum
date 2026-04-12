@@ -127,6 +127,9 @@ public class GuiIngameForgeMixin {
             gnetum$mc.profiler.startSection("uncached");
             Gnetum.renderingCanceled = gnetum$postEvent(new RenderGameOverlayEvent.Pre(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderVanillaHuds(id -> Gnetum.passManager.cachingDisabled(id));
+            if (BetterHudCompat.isEnabled()) {
+                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL), true);
+            }
             gnetum$mc.profiler.endSection();
         }
         else {
@@ -153,7 +156,7 @@ public class GuiIngameForgeMixin {
             gnetum$postEvent(new RenderGameOverlayEvent.Post(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
 
             if (BetterHudCompat.isEnabled()) {
-                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL));
+                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Pre(eventParent, ALL), false);
             }
 
             gnetum$currentLeftHeight = left_height;
@@ -191,9 +194,6 @@ public class GuiIngameForgeMixin {
 
             gnetum$mc.profiler.startSection("uncached");
             gnetum$postEvent(new RenderGameOverlayEvent.Post(eventParent, RenderGameOverlayEvent.ElementType.ALL), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
-//            if (BetterHudCompat.isEnabled()) {
-//                BetterHudCompat.onRenderGameOverlays(new RenderGameOverlayEvent.Post(eventParent, ALL));
-//            }
 
             if (ScalingGuisCompat.modInstalled) {
                 ScalingGuisCompat.restoreGameScale(Gnetum.getScaledResolution());
