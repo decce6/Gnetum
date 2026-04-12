@@ -7,6 +7,7 @@ import me.decce.gnetum.compat.thaumcraft.ThaumcraftCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -31,6 +32,11 @@ public class VanillaHuds {
                 // Thaumcraft changes the matrix mode to GL_TEXTURE but does not change it back: https://github.com/decce6/Gnetum/issues/59
                 // See thaumcraft.client.lib.events.RenderEventHandler#renderShaders
                 GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+
+                // Due to GlStateManager bugs, mods that call the blendFunc method, i.e. the non-separate one, may also break the state manager
+                // We fix this by forcifully applying the GL state here
+                GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
             })
             .build();
     public static final Hud VIGNETTE = Hud.builder()
