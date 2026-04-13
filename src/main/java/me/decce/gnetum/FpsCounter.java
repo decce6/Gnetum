@@ -16,10 +16,16 @@ public class FpsCounter {
 
     public void tick() {
         frames++;
-        while (Minecraft.getSystemTime() >= this.lastTime + 1000L) {
+        var currentTime = Minecraft.getSystemTime();
+        if (currentTime >= lastTime + 2000L) {
+            fps = 0;
+            frames = 0;
+            lastTime = Minecraft.getSystemTime();
+        }
+        else if (currentTime >= lastTime + 1000L) {
             fps = frames;
             frames = 0;
-            this.lastTime += 1000L;
+            lastTime = Minecraft.getSystemTime();
         }
     }
 
