@@ -3,6 +3,7 @@ package me.decce.gnetum.hud;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GuiHelper;
 import me.decce.gnetum.compat.CompatHelper;
+import me.decce.gnetum.compat.effortlessbuilding.EffortlessBuildingCompat;
 import me.decce.gnetum.compat.thaumcraft.ThaumcraftCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,6 +21,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import static me.decce.gnetum.Gnetum.getScaledResolution;
 import static me.decce.gnetum.hud.SharedValues.*;
@@ -38,6 +40,20 @@ public class VanillaHuds {
                 // We fix this by forcifully applying the GL state here
                 GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+                if (EffortlessBuildingCompat.INSTALLED) {
+                    // Fix GL state leaks (nl.requios.effortlessbuilding.render.BlockPreviewRenderer)
+                    // EffortlessBuilding calls raw GL functions, breaking GlStateManager, hence the need for us to call GL function too
+                    GlStateManager.disableLighting();
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GlStateManager.disableLight(0);
+                    GL11.glDisable(GL11.GL_LIGHT0);
+                    GlStateManager.disableLight(1);
+                    GL11.glDisable(GL11.GL_LIGHT1);
+                    GlStateManager.disableColorMaterial();
+                    GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+                    GL14.glBlendColor(0, 0, 0, 0);
+                }
             })
             .build();
     public static final Hud VIGNETTE = Hud.builder()
