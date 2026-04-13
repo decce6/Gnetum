@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.4.0
+
+This version fixes a myriad of bugs and incompatibilities.
+
+- Fixed blackscreen with BetterHUD
+- Fixed blending state with the Betweenlands mod
+- Fixed VoxelMap compatibility (map not clipped properly)
+- Fixed flickering with EffortlessBuilding
+- Fixed flickering with Quark's hotbar swapping feature
+- Fixed compatibility with Just Enough Effects mod
+- Fixed freeze when enabling Gnetum mid-game
+
 ## 1.3.5
 
 - Improved F3 information when framebuffer is not available
