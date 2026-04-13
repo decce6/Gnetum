@@ -116,6 +116,9 @@ public class FramebufferManager {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
         GlStateManager.disableDepth();
+        GlStateManager.disableAlpha();
+        GlStateManager.colorMask(true, true, true, false);
+        GlStateManager.depthMask(false);
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
@@ -132,6 +135,11 @@ public class FramebufferManager {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.colorMask(true, true, true, true);
+        GlStateManager.depthMask(true);
+
+        frontFramebuffer.unbindFramebufferTexture();
 
         mc.profiler.endSection();
     }
