@@ -33,10 +33,11 @@ public class VanillaHuds {
                 // See thaumcraft.client.lib.events.RenderEventHandler#renderShaders
                 GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
-                // Due to GlStateManager bugs, mods that call the blendFunc method, i.e. the non-separate one, may also break the state manager
+                // Due to GlStateManager bugs, mods (e.g. the Betweenlands) that call the blendFunc method, i.e. the
+                //  non-separate one, may also break the state manager
                 // We fix this by forcifully applying the GL state here
-                GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+                GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
             })
             .build();
     public static final Hud VIGNETTE = Hud.builder()
