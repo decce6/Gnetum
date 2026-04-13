@@ -8,6 +8,7 @@
   "client": [
     "compat.betterhud.HudElementMixin",
     "compat.scalingguis.ClientEventHandlerMixin",
+    "compat.quark.ChangeHotbarKeybindMixin",
     "compat.xaerosminimap.ImprovedFramebufferMixin"
   ]
 }

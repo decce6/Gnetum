@@ -4,6 +4,7 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GuiHelper;
 import me.decce.gnetum.compat.CompatHelper;
 import me.decce.gnetum.compat.effortlessbuilding.EffortlessBuildingCompat;
+import me.decce.gnetum.compat.quark.QuarkCompat;
 import me.decce.gnetum.compat.thaumcraft.ThaumcraftCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -119,10 +120,12 @@ public class VanillaHuds {
             .depth(true)
             .condition(() -> mc.playerController.shouldDrawHUD() && mc.getRenderViewEntity() instanceof EntityPlayer)
             .onRender(() -> {
+                QuarkCompat.preShift();
                 int width = getScaledResolution().getScaledWidth();
                 int height = getScaledResolution().getScaledHeight();
                 if (GuiIngameForge.renderHealth) getAccessor().callRenderHealth(width, height);
                 if (GuiIngameForge.renderArmor) getAccessor().callRenderArmor(width, height);
+                QuarkCompat.postShift();
             })
             .build();
     public static final Hud PLAYER_RIGHT = Hud.builder()
@@ -131,11 +134,13 @@ public class VanillaHuds {
             .depth(true)
             .condition(() -> mc.playerController.shouldDrawHUD() && mc.getRenderViewEntity() instanceof EntityPlayer)
             .onRender(() -> {
+                QuarkCompat.preShift();
                 int width = getScaledResolution().getScaledWidth();
                 int height = getScaledResolution().getScaledHeight();
                 if (GuiIngameForge.renderFood) getAccessor().callRenderFood(width, height);
                 if (GuiIngameForge.renderHealthMount) getAccessor().callRenderHealthMount(width, height);
                 if (GuiIngameForge.renderAir) getAccessor().callRenderAir(width, height);
+                QuarkCompat.postShift();
             })
             .build();
     public static final Hud SLEEP_FADE = Hud.builder()
@@ -149,20 +154,32 @@ public class VanillaHuds {
             .blend(false)
             .depth(true)
             .condition(() -> GuiIngameForge.renderJumpBar)
-            .onRender(() -> getAccessor().callRenderJumpBar(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
+            .onRender(() -> {
+                QuarkCompat.preShift();
+                getAccessor().callRenderJumpBar(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
+                QuarkCompat.postShift();
+            })
             .build();
     public static final Hud EXPERIENCE = Hud.builder()
             .id("experience")
             .blend(false)
             .depth(true)
             .condition(() -> GuiIngameForge.renderExperiance)
-            .onRender(() -> getAccessor().callRenderExperience(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight()))
+            .onRender(() -> {
+                QuarkCompat.preShift();
+                getAccessor().callRenderExperience(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
+                QuarkCompat.postShift();
+            })
             .build();
     public static final Hud TOOL_HIGHLIGHT = Hud.builder()
             .id("tool_highlight")
             .defaultBlendFunc()
             .depth(true)
-            .onRender(() -> getAccessor().callRenderToolHighlight(getScaledResolution()))
+            .onRender(() -> {
+                QuarkCompat.preShift();
+                getAccessor().callRenderToolHighlight(getScaledResolution());
+                QuarkCompat.postShift();
+            })
             .build();
     public static final Hud HUD_TEXT = Hud.builder()
             .id("hud_text")
