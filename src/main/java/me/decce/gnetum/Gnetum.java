@@ -113,14 +113,6 @@ public class Gnetum {
     }
 
     @SubscribeEvent
-    public static void onJoinWorld(WorldEvent.Load event) {
-        if (config.isEnabled() && event.getWorld().isRemote){
-            Gnetum.FPS_COUNTER.reset();
-            FramebufferManager.getInstance().reset();
-        }
-    }
-
-    @SubscribeEvent
     public static void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (KEYBIND.isPressed() && !(Minecraft.getMinecraft().currentScreen instanceof BaseScreen)) {
             Minecraft.getMinecraft().displayGuiScreen(new ConfigScreen(PerformanceAnalyzer.analyze()));
