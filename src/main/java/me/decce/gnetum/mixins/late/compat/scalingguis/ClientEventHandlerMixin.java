@@ -1,5 +1,6 @@
 package me.decce.gnetum.mixins.late.compat.scalingguis;
 
+import me.decce.gnetum.Gnetum;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,6 +12,8 @@ import spazley.scalingguis.handlers.ClientEventHandler;
 public class ClientEventHandlerMixin {
 	@Inject(method = "onPreRenderGameOverlay", at = @At("HEAD"), cancellable = true)
 	private void gnetum$cancelHudTakeOver(RenderGameOverlayEvent.Pre e, CallbackInfo ci) {
-		ci.cancel();
+		if (Gnetum.config.isEnabled()) {
+			ci.cancel();
+		}
 	}
 }
