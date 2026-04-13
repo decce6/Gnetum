@@ -10,6 +10,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.world.World;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
@@ -80,7 +82,7 @@ public class VanillaHuds {
             .id("portal")
             .defaultBlendFunc()
             .depth(true)
-            .condition(() -> GuiIngameForge.renderPortal && !mc.player.isPotionActive(MobEffects.NAUSEA))
+            .condition(() -> GuiIngameForge.renderPortal && !((EntityLivingBase) mc.player).isPotionActive(MobEffects.NAUSEA))
             .onRender(() -> getAccessor().callRenderPortal(getScaledResolution(), partialTicks))
             .build();
     public static final Hud HOTBAR = Hud.builder()
@@ -218,9 +220,9 @@ public class VanillaHuds {
             .defaultBlendFunc()
             .depth(true)
             .onRender(() -> {
-                Scoreboard scoreboard = mc.world.getScoreboard();
+                Scoreboard scoreboard = ((World) mc.world).getScoreboard();
                 ScoreObjective objective = null;
-                ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(mc.player.getName());
+                ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(((EntityPlayer)mc.player).getName());
                 if (scoreplayerteam != null)
                 {
                     int slot = scoreplayerteam.getColor().getColorIndex();
