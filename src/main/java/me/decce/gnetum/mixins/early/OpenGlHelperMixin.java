@@ -28,10 +28,21 @@ public class OpenGlHelperMixin {
     @Inject(method = "glBlendFunc", at = @At("HEAD"), cancellable = true)
     private static void gnetum$blendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha, CallbackInfo ci) {
         if (!Gnetum.rendering) return;
-        if (srcFactorAlpha != GL11.GL_ONE || dstFactorAlpha != GL11.GL_ONE_MINUS_SRC_ALPHA) {
-            GlStateManager.tryBlendFuncSeparate(srcFactor, dstFactor, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            ci.cancel();
-            return;
+        if (srcFactorAlpha != GL11.GL_DST_COLOR || dstFactorAlpha != GL11.GL_ZERO) {
+            /*
+            The above check is for VoxelMap compatibility: https://github.com/decce6/Gnetum/issues/65
+            VoxelMap clips the minimap to the rounded rect, in a way that can briefly be described as follows:
+            - First bind VoxelMap's FBO
+            - Next, draw an ellipse image with blend func (SRC_ALPHA, 0). The image is a black-filled circle with the remaining part transparent.
+            - Then, draw the actual minimap with blend func (1, 0, DST_COLOR, 0). This effectively clips rendering to the ellipse region.
+              - Without the above check, the blend func was changed to (1, 0, 1, 1-SRC_ALPHA), which caused the issue above.
+            - Finally the FBO is drawn with blend func (SRC_ALPHA, 1-SRC_ALPHA).
+             */
+            if (srcFactorAlpha != GL11.GL_ONE || dstFactorAlpha != GL11.GL_ONE_MINUS_SRC_ALPHA) {
+                GlStateManager.tryBlendFuncSeparate(srcFactor, dstFactor, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                ci.cancel();
+                return;
+            }
         }
         if (FramebufferTracker.getCurrentlyBoundFbo() == FramebufferManager.getInstance().id() && gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
             // Do not disable caching for Xaero's Minimap

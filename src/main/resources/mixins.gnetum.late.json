@@ -8,7 +8,6 @@
   "client": [
     "compat.betterhud.HudElementMixin",
     "compat.scalingguis.ClientEventHandlerMixin",
-    "compat.voxelmap.MapMixin",
     "compat.xaerosminimap.ImprovedFramebufferMixin"
   ]
 }
