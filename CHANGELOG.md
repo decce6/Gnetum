@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.2
+
+Fixed flickering issue in GUIs when holding items from the "Timeless & Classics Guns: Zero" mod.
+
 ## 3.3.1
 
 It is now possible to set Max HUD Framerate (GUI) to unlimited. 
