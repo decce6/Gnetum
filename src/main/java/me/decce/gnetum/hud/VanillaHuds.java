@@ -46,7 +46,8 @@ public class VanillaHuds {
 
                 if (EffortlessBuildingCompat.INSTALLED) {
                     // Fix GL state leaks (nl.requios.effortlessbuilding.render.BlockPreviewRenderer)
-                    // EffortlessBuilding calls raw GL functions, breaking GlStateManager, hence the need for us to call GL function too
+                    // EffortlessBuilding uses GlStateManager inside `glPush/PopAttrib`, thus breaking it.
+                    // We need to call both the state manager functions and raw GL functions to correct this.
                     GlStateManager.disableLighting();
                     GL11.glDisable(GL11.GL_LIGHTING);
                     GlStateManager.disableLight(0);
@@ -55,8 +56,13 @@ public class VanillaHuds {
                     GL11.glDisable(GL11.GL_LIGHT1);
                     GlStateManager.disableColorMaterial();
                     GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+                    GlStateManager.enableBlend();
+                    GL11.glEnable(GL11.GL_BLEND);
                     GL14.glBlendColor(0, 0, 0, 0);
                 }
+
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             })
             .build();
     public static final Hud VIGNETTE = Hud.builder()
