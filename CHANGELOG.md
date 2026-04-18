@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1
+
+- Fixed more GL state leaks from other mods
+- Improved framebuffer clear fallback path when OpenGL 3.0 is not available. Specifically, this should fix some visual artifacts on macOS.
+
 ## 1.4.0
 
 This version fixes a myriad of bugs and incompatibilities.
