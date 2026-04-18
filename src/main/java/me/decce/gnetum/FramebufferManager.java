@@ -83,14 +83,21 @@ public class FramebufferManager {
         OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fbo);
         GlStateManager.clearDepth(1.0D);
         if (GL30SUPPORT) {
+            // Avoid altering clearColor state by using glClearBuffer
             // Fixes https://github.com/decce6/Gnetum/issues/8
             GL30.glClearBuffer(GL11.GL_COLOR, 0, clearColor);
             GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         }
         else {
             // macOS does not have GL30 in compatibility context
-            GlStateManager.clearColor(0, 0, 0, 0);
-            GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+            // Note: We exceptionally use the notorious `glPushAttrib` here, because we need to restore the original
+            //  clear color state, yet there is no reliable way for us to know that state. Because we only use raw GL
+            //  functions in the Push/PopAttrib pair, we shouldn't break anything.
+            GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); // This saves the clear color
+            // Intentionally use glClearColor and not GL state manager methods to avoid breaking it
+            GL11.glClearColor(0, 0, 0, 0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glPopAttrib();
         }
     }
 
