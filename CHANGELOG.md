@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.3
+
+- Fixed flickering when opening/closing chat screen
+- Slightly improved performance
+
 ## 2.4.2
 
 Fixed flickering issue in GUIs when holding items from the "Timeless & Classics Guns: Zero" mod.
