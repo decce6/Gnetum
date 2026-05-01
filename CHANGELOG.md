@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.3.1
+
+- Fixed screenshot breakage
+- Fixed Xaero's Minimap compatibility on 26.1+
+
 ## 4.3.0
 
 - Fixed flickering when opening/closing chat screen
