@@ -7,10 +7,15 @@ import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.platform.ElementGatherer;
+//? fabric && <1.21.10 {
+/*import me.decce.gnetum.hud.Hud;
+import me.decce.gnetum.hud.HudManager;
+import me.decce.gnetum.hud.VanillaHuds;
+*///? }
 
 import java.util.Map;
 
-//? >=1.21.10 && <26 {
+//? <26 {
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //? }
 
@@ -41,8 +46,10 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 				});
 		gather(last, map);
 		//?} else {
-		/*for (HudHandler.Element element : HudHandler.Element.values()) {
-			map.putIfAbsent(element.getName(), element.newElement());
+		/*VanillaHuds.init();
+		for (Hud hud : HudManager.huds) {
+			var name = VersionCompatUtil.stringValueOf(hud.id());
+			map.putIfAbsent(name, new CachedElement(name));
 		}
 		*///?}
 

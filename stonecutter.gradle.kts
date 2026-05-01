@@ -13,6 +13,7 @@ stonecutter parameters {
     replacements.string(current.parsed >= "1.21.11") {
         replace("ResourceLocation", "Identifier")
         replace("location()", "identifier()")
+        replace("com.mojang.blaze3d.platform.GlStateManager", "com.mojang.blaze3d.opengl.GlStateManager")
     }
     replacements.string(current.parsed >= "26.1") {
         replace("GuiGraphics", "GuiGraphicsExtractor")

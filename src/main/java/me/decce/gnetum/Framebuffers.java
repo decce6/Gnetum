@@ -51,9 +51,10 @@ public class Framebuffers {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
 		RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
-		front.blitToScreen(width,  height, false);
+		front.blitToScreen(width, height, false);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 		*///?}
 
 		fixMatrix();
@@ -65,9 +66,9 @@ public class Framebuffers {
 		//? neoforge {
 		//var far = ClientHooks.getGuiFarPlane();
 		//? } else {
-		var far = 3000.0F;
+		var far = 21000.0F;
 		//? }
-		Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, far);
+		Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)(window.getWidth() / window.getGuiScale()), (float)(window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, far);
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
 		*///?}
 	}
@@ -135,7 +136,7 @@ public class Framebuffers {
 		RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), 0,
 				back.getDepthTexture(), 1.0);
 		//?} else {
-		/*back.clear(false);
+		/*back.clear(Minecraft.ON_OSX);
 		*///?}
 	}
 

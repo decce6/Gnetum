@@ -9,8 +9,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Pseudo
 @Mixin(targets = "snownee.jade.util.ClientProxy", remap = false)
 public class ClientProxyMixin {
+	// TODO
+	//? >=1.21.10 {
 	@Redirect(method = "getBossBarRect", at = @At(value = "FIELD", target = "Lsnownee/jade/util/ClientProxy;bossbarShown:Z"))
 	private static boolean getBossBarRect() {
 		return JadeCompat.bossBarShown;
 	}
+	//?}
 }

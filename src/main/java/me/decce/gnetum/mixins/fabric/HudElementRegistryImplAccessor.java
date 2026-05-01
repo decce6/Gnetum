@@ -1,9 +1,9 @@
 package me.decce.gnetum.mixins.fabric;
 
+import org.spongepowered.asm.mixin.Mixin;
 //? fabric && >=1.21.10 {
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 import net.minecraft.resources.Identifier;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
@@ -24,4 +24,7 @@ public interface HudElementRegistryImplAccessor {
         throw new AssertionError();
     }
 }
-//? }
+//? } else {
+/*@Mixin(targets = "")
+public interface HudElementRegistryImplAccessor {}
+*///? }

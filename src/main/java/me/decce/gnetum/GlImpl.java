@@ -2,11 +2,7 @@ package me.decce.gnetum;
 
 import me.decce.gnetum.gl.Gl;
 
-//? >=1.21.10 {
 import com.mojang.blaze3d.opengl.GlStateManager;
-//?} else {
- /*import com.mojang.blaze3d.platform.GlStateManager;
-*///?}
 
 public class GlImpl implements Gl {
 	@Override

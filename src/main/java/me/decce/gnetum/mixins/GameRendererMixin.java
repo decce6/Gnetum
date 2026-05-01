@@ -8,7 +8,6 @@ import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.VersionCompatUtil;
-import me.decce.gnetum.versioned.StatefulHudHandler;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -23,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? >=1.21.10 {
+
+import me.decce.gnetum.versioned.StatefulHudHandler;
 import org.joml.Matrix3x2f;
 //?}
 //? >26 {

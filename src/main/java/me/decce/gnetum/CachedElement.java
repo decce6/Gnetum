@@ -44,6 +44,16 @@ public class CachedElement {
 				(!enabled.get());
 	}
 
+	//? <=1.21.1{
+	/*public boolean shouldRenderAsCached() {
+		return enabled.get() && Gnetum.pass == pass;
+	}
+
+	public boolean shouldRenderAsUncached() {
+		return !enabled.get();
+	}
+	*///? }
+
 	public boolean isUncached() {
 		return !enabled.get();
 	}
