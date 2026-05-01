@@ -99,7 +99,9 @@ public class ForgeGuiMixin {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
-            guiGraphics.flush();
+            if (Gnetum.passManager.current > 0) {
+                guiGraphics.flush();
+            }
             minecraft.getProfiler().pop();
         }
         else {
