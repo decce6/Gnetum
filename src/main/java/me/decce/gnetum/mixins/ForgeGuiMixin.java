@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -58,6 +59,8 @@ public class ForgeGuiMixin {
     private int gnetum$currentRightHeight;
     @Unique
     private Matrix4f gnetum$defaultGuiPose = new Matrix4f();
+    @Unique
+    private boolean gnetum$wasChatScreenOpen;
 
     @Unique
     private GuiAccessor gnetum$getGuiAccessor() {
@@ -71,6 +74,12 @@ public class ForgeGuiMixin {
     {
         if (!Gnetum.config.isEnabled()) {
             return original.call(instance, event);
+        }
+
+        var chatScreenOpen = Minecraft.getInstance().screen instanceof ChatScreen;
+        if (gnetum$wasChatScreenOpen != chatScreenOpen) {
+            gnetum$wasChatScreenOpen = chatScreenOpen;
+            FramebufferManager.getInstance().markForCatchUp();
         }
 
         guiGraphics.pose().pushPose();
