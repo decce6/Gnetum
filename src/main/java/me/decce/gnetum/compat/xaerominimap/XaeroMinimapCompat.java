@@ -32,7 +32,11 @@ public class XaeroMinimapCompat {
 	public static void tryRenderWaypoint(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
 		runSafely(() -> {
 			shouldRenderWaypoint = true;
+			//? >26 {
+			/*HudMod.INSTANCE.getEvents().handleRenderGameOverlayEventPre();
+			*///? } else {
 			HudMod.INSTANCE.getEvents().handleRenderGameOverlayEventPre(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true));
+			//? }
 			shouldRenderWaypoint = false;
 		});
 	}
