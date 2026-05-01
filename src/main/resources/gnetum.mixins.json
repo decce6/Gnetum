@@ -8,7 +8,6 @@
     "DeltaTrackerMixin",
     "GameRendererAccessor",
     "GameRendererMixin",
-    "GlFenceMixin",
     "GlStateManagerMixin",
     "Gui_Graphics_Accessor",
     "GuiAccessor",
