@@ -145,6 +145,7 @@ public class GuiIngameForgeMixin {
             FramebufferManager.getInstance().bind();
             Gnetum.rendering = true;
 
+            SharedValues.defaultBlendFunc(); // Fixes ClassicBar
             Gnetum.renderingCanceled = gnetum$postEvent(new RenderGameOverlayEvent.Pre(eventParent, ALL), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE));
 
             if (Gnetum.passManager.current != 1) {
