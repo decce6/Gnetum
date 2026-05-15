@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.2
+
+- Fixed HUD element offset with Valkyrie mod
+- Fixed Classic Bar compatibility
+
 ## 1.4.1
 
 - Fixed more GL state leaks from other mods
