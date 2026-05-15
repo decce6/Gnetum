@@ -111,8 +111,8 @@ public class FramebufferManager {
             this.frontFramebuffer = temp;
             this.serialNumber++;
             Gnetum.FPS_COUNTER.tick();
-            this.clear();
         }
+        this.clear();
         this.dropCurrentFrame = false;
     }
 
