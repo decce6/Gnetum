@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.3
+
+- Fixed blackscreen with the Spotting Scope item from LegendGear Returns
+
 ## 1.4.2
 
 - Fixed HUD element offset with Valkyrie mod
