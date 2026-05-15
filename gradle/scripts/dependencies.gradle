@@ -39,6 +39,7 @@ dependencies {
     implementation ("curse.maven:voxelmap-225179:3029445")
     implementation ("curse.maven:scalingguis-319656:5150678")
     implementation ("curse.maven:quark-243121:2924091")
+    implementation ("curse.maven:valkyrie-874067:5235356")
 
     implementation ("org.lwjgl:lwjgl-glfw:3.3.6")
 

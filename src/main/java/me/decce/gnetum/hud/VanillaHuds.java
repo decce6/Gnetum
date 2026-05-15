@@ -129,8 +129,9 @@ public class VanillaHuds {
                 QuarkCompat.preShift();
                 int width = getScaledResolution().getScaledWidth();
                 int height = getScaledResolution().getScaledHeight();
-                if (GuiIngameForge.renderHealth) getAccessor().callRenderHealth(width, height);
-                if (GuiIngameForge.renderArmor) getAccessor().callRenderArmor(width, height);
+                int offset = CompatHelper.getHudOffset();
+                if (GuiIngameForge.renderHealth) getAccessor().callRenderHealth(width, height - offset);
+                if (GuiIngameForge.renderArmor) getAccessor().callRenderArmor(width, height - offset);
                 QuarkCompat.postShift();
             })
             .build();
@@ -143,9 +144,10 @@ public class VanillaHuds {
                 QuarkCompat.preShift();
                 int width = getScaledResolution().getScaledWidth();
                 int height = getScaledResolution().getScaledHeight();
-                if (GuiIngameForge.renderFood) getAccessor().callRenderFood(width, height);
-                if (GuiIngameForge.renderHealthMount) getAccessor().callRenderHealthMount(width, height);
-                if (GuiIngameForge.renderAir) getAccessor().callRenderAir(width, height);
+                int offset = CompatHelper.getHudOffset();
+                if (GuiIngameForge.renderFood) getAccessor().callRenderFood(width, height - offset);
+                if (GuiIngameForge.renderHealthMount) getAccessor().callRenderHealthMount(width, height - offset);
+                if (GuiIngameForge.renderAir) getAccessor().callRenderAir(width, height - offset);
                 QuarkCompat.postShift();
             })
             .build();
@@ -162,7 +164,7 @@ public class VanillaHuds {
             .condition(() -> GuiIngameForge.renderJumpBar)
             .onRender(() -> {
                 QuarkCompat.preShift();
-                getAccessor().callRenderJumpBar(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
+                getAccessor().callRenderJumpBar(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight() - CompatHelper.getHudOffset());
                 QuarkCompat.postShift();
             })
             .build();
@@ -173,7 +175,7 @@ public class VanillaHuds {
             .condition(() -> GuiIngameForge.renderExperiance)
             .onRender(() -> {
                 QuarkCompat.preShift();
-                getAccessor().callRenderExperience(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight());
+                getAccessor().callRenderExperience(getScaledResolution().getScaledWidth(), getScaledResolution().getScaledHeight() - CompatHelper.getHudOffset());
                 QuarkCompat.postShift();
             })
             .build();
