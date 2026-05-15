@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.4
+
+Fixed Voidscape compatibility.
+
 ## 2.4.3
 
 - Fixed flickering when opening/closing chat screen
