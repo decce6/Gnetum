@@ -3,7 +3,6 @@ package me.decce.gnetum.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.*;
@@ -14,10 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
+import net.minecraftforge.client.gui.overlay.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.ASMEventHandler;
 import net.minecraftforge.eventbus.api.Event;
@@ -61,6 +57,21 @@ public class ForgeGuiMixin {
     private Matrix4f gnetum$defaultGuiPose = new Matrix4f();
     @Unique
     private boolean gnetum$wasChatScreenOpen;
+    @Unique
+    private int gnetum$lastVanillaOverlayIndex = -1;
+
+    private int gnetum$getLastVanillaOverlayIndex() {
+        if (gnetum$lastVanillaOverlayIndex == -1) {
+            var layers = GuiOverlayManager.getOverlays();
+            for (int i = 0; i < layers.size(); i++) {
+                if (VanillaGuiOverlay.PLAYER_LIST.id().equals(layers.get(i).id())) {
+                    gnetum$lastVanillaOverlayIndex = i;
+                    break;
+                }
+            }
+        }
+        return gnetum$lastVanillaOverlayIndex;
+    }
 
     @Unique
     private GuiAccessor gnetum$getGuiAccessor() {
@@ -107,7 +118,7 @@ public class ForgeGuiMixin {
         if (!needsCatchUp) {
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
-            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), 0, gnetum$getLastVanillaOverlayIndex());
             if (Gnetum.passManager.current > 0) {
                 guiGraphics.flush();
             }
@@ -171,6 +182,7 @@ public class ForgeGuiMixin {
 
             minecraft.getProfiler().push("uncached");
             gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), gnetum$getLastVanillaOverlayIndex() + 1, -1);
             minecraft.getProfiler().pop();
         }
         else {
@@ -183,9 +195,17 @@ public class ForgeGuiMixin {
 
     @Unique
     private void gnetum$renderLayers(List<NamedGuiOverlay> list, GuiGraphics guiGraphics, float partialTick, Predicate<String> check) {
+        gnetum$renderLayers(list, guiGraphics, partialTick, check,0, -1);
+    }
+
+    @Unique
+    private void gnetum$renderLayers(List<NamedGuiOverlay> list, GuiGraphics guiGraphics, float partialTick, Predicate<String> check, int startIndex, int endIndex) {
         ForgeGui forgeGui = (ForgeGui)(Object)this;
         //noinspection ForLoopReplaceableByForEach
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = startIndex; i < list.size(); i++) {
+            if (endIndex != -1 && i > endIndex) {
+                break;
+            }
             var entry = list.get(i);
             try
             {
