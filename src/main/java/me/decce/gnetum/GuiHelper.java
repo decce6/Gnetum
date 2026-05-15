@@ -15,12 +15,28 @@ import net.neoforged.bus.api.EventListener;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class GuiHelper {
+    public static int lastVanillaOverlayIndex = -1;
+
+    public static int getLastVanillaOverlayIndex() {
+        if (lastVanillaOverlayIndex == -1) {
+            var layers = getGuiLayerManagerAccessor().getLayers();
+            for (int i = 0; i < layers.size(); i++) {
+                if (VanillaGuiLayers.SAVING_INDICATOR.equals(layers.get(i).name())) {
+                    lastVanillaOverlayIndex = i;
+                    break;
+                }
+            }
+        }
+        return lastVanillaOverlayIndex;
+    }
+
     public static GuiAccessor getGuiAccessor() {
         return (GuiAccessor)(Gui)(Object)Minecraft.getInstance().gui;
     }
@@ -30,10 +46,17 @@ public class GuiHelper {
     }
 
     public static void renderLayers(List<GuiLayerManager.NamedLayer> list, GuiGraphics guiGraphics, DeltaTracker partialTick, Predicate<String> check) {
+        renderLayers(list,guiGraphics, partialTick, check, 0, -1);
+    }
+
+    // startIndex = inclusive, endIndex = inclusive
+    public static void renderLayers(List<GuiLayerManager.NamedLayer> list, GuiGraphics guiGraphics, DeltaTracker partialTick, Predicate<String> check, int startIndex, int endIndex) {
         guiGraphics.pose().pushPose();
 
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = startIndex; i < list.size(); i++) {
+            if (endIndex != -1 && i > endIndex) {
+                break;
+            }
             var layer = list.get(i);
             String id = layer.name().toString();
             if (check.test(id)) {

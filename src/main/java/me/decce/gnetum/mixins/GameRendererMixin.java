@@ -86,7 +86,7 @@ public class GameRendererMixin {
                 JourneyMapCompat.invokeRenderWaypointDecos(guiGraphics);
                 PingWheelCompat.invokeRenderGUI(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true));
                 GuiHelper.postEvent(new RenderGuiEvent.Pre(guiGraphics, deltaTracker), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
-                GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay));
+                GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay), 0, GuiHelper.getLastVanillaOverlayIndex());
             });
             Minecraft.getInstance().getProfiler().pop();
         }
@@ -125,6 +125,7 @@ public class GameRendererMixin {
             Minecraft.getInstance().getProfiler().push("uncached");
             ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
                 GuiHelper.postEvent(new RenderGuiEvent.Post(guiGraphics, deltaTracker), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+                GuiHelper.renderLayers(GuiHelper.getGuiLayerManagerAccessor().getLayers(), guiGraphics, deltaTracker, overlay -> Gnetum.passManager.cachingDisabled(overlay), GuiHelper.getLastVanillaOverlayIndex() + 1, -1);
             });
             Minecraft.getInstance().getProfiler().pop();
         }
