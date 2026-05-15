@@ -44,9 +44,13 @@ public class OpenGlHelperMixin {
                 return;
             }
         }
-        if (FramebufferTracker.getCurrentlyBoundFbo() == FramebufferManager.getInstance().id() && gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
-            // Do not disable caching for Xaero's Minimap
-            if (Gnetum.currentElementType != ElementType.VANILLA || !VanillaHuds.HELMET.id().toString().equals(Gnetum.currentElement)) {
+        if (FramebufferTracker.getCurrentlyBoundFbo() == FramebufferManager.getInstance().id()) {
+            if (srcFactor == GL11.GL_ONE_MINUS_DST_COLOR && dstFactor == GL11.GL_ZERO
+                    && Gnetum.currentElementType == ElementType.VANILLA
+                    && VanillaHuds.HELMET.id().toString().equals(Gnetum.currentElement)) {
+                // No-op: Do not disable caching for Xaero's Minimap
+            }
+            else if(gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
                 Gnetum.disableCachingForCurrentElement(String.format("Blending Function (%d, %d, %d, %d)", srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha));
             }
         }
