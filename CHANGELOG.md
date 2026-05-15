@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.3
+
+- Slightly improved performance
+- Fixed Voidscape compatibility
+
 ## 3.3.2
 
 Fixed flickering issue in GUIs when holding items from the "Timeless & Classics Guns: Zero" mod.
