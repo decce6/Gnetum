@@ -3,6 +3,7 @@ package me.decce.gnetum.compat.immediatelyfast;
 import me.decce.gnetum.Gnetum;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.fml.ModList;
+import net.raphimc.immediatelyfast.ImmediatelyFast;
 import net.raphimc.immediatelyfast.feature.batching.BatchingBuffers;
 
 public class ImmediatelyFastCompat {
@@ -28,6 +29,14 @@ public class ImmediatelyFastCompat {
             guiGraphics.flush();
             runnable.run();
             guiGraphics.flush();
+        }
+    }
+
+    public static void flushIfInstalledAndUsingHudBatching(GuiGraphics guiGraphics) {
+        if (INSTALLED) {
+            if (ImmediatelyFast.runtimeConfig.hud_batching) {
+                guiGraphics.flush();
+            }
         }
     }
 }
