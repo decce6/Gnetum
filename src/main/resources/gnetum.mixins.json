@@ -14,7 +14,8 @@
     "PoseStackAccessor",
     "RenderTargetMixin",
     "compat.jade.BossHealthOverlayMixin",
-    "compat.jade.OverlayRendererMixin"
+    "compat.jade.OverlayRendererMixin",
+    "compat.guiclock.ForgeGUIEventMixin"
   ],
   "mixins": [],
   "injectors": {
