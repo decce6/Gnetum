@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.4
+
+- Significantly improved pose stack handling (improves mod compatibility)
+- Fixed GUI flickering with ImmediatelyFast HUD batching enabled
+
 ## 3.3.3
 
 - Slightly improved performance
