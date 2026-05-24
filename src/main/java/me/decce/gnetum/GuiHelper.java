@@ -71,8 +71,8 @@ public class GuiHelper {
                         post(layer, guiGraphics, partialTick);
                     }
                 });
-                RenderSystem.enableDepthTest(); // Some mods break the GL state here - let's fix it up to prevent flickering
                 ImmediatelyFastCompat.flushIfInstalledAndUsingHudBatching(guiGraphics); // Duplicate ImmediatelyFast behavior: https://github.com/RaphiMC/ImmediatelyFast/blob/e05390bbc2c2bdc3d19cad458d894dc4f605d3fb/common/src/main/java/net/raphimc/immediatelyfast/injection/mixins/hud_batching/MixinLayeredDrawer.java#L32-L37
+                RenderSystem.enableDepthTest(); // Some mods break the GL state here - let's fix it up to prevent flickering
             }
             guiGraphics.pose().translate(0.0F, 0.0F, GuiLayerManager.Z_SEPARATION);
         }
