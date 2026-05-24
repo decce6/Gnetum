@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.5
+
+- Significantly improved pose stack handling (improves mod compatibility)
+- Added GUI Clock compat. This mod previously significantly hurt performance, broke the pose stack and caused all elements to be uncachable by Gnetum.
+  - For more information, see https://github.com/Serilum/GUI-Clock/pull/3 and https://github.com/Serilum/GUI-Clock/pull/6
+
 ## 2.4.4
 
 Fixed Voidscape compatibility.
