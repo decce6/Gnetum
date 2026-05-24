@@ -9,6 +9,7 @@ import me.decce.gnetum.FramebufferManager;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.GuiHelper;
 import me.decce.gnetum.HudDeltaTracker;
+import me.decce.gnetum.PoseStackHelper;
 import me.decce.gnetum.compat.immediatelyfast.ImmediatelyFastCompat;
 import me.decce.gnetum.compat.journeymap.JourneyMapCompat;
 import me.decce.gnetum.compat.pingwheel.PingWheelCompat;
@@ -67,7 +68,7 @@ public class GameRendererMixin {
             return;
         }
 
-        guiGraphics.pose().pushPose();
+        PoseStackHelper.beginHudRendering(guiGraphics.pose());
 
         FramebufferManager.getInstance().ensureSize();
 
@@ -133,6 +134,6 @@ public class GameRendererMixin {
             original.call(instance, guiGraphics, deltaTracker);
         }
 
-        guiGraphics.pose().popPose();
+        PoseStackHelper.endHudRendering(guiGraphics.pose());
     }
 }
