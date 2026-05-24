@@ -215,7 +215,7 @@ public class ForgeGuiMixin {
                         Gnetum.currentElement = id;
                         Gnetum.currentElementType = ElementType.VANILLA;
                     }
-                    PoseStackHelper.checkIf(Gnetum.rendering, guiGraphics.pose(), () -> {
+                    PoseStackHelper.checked(guiGraphics.pose(), () -> {
                         IGuiOverlay overlay = entry.overlay();
                         if (gnetum$pre(entry, guiGraphics)) return;
                         var accessor = gnetum$getGuiAccessor();
@@ -307,6 +307,6 @@ public class ForgeGuiMixin {
 
     @Unique
     private void gnetum$invokeWrapperSafe(PoseStack poseStack, IEventBusInvokeDispatcher wrapper, IEventListener listener, Event event) {
-        PoseStackHelper.checkIf(Gnetum.rendering, poseStack, () -> wrapper.invoke(listener, event));
+        PoseStackHelper.checked(poseStack, () -> wrapper.invoke(listener, event));
     }
 }
