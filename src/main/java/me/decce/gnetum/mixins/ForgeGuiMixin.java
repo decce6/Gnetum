@@ -93,7 +93,7 @@ public class ForgeGuiMixin {
             FramebufferManager.getInstance().markForCatchUp();
         }
 
-        guiGraphics.pose().pushPose();
+        PoseStackHelper.beginHudRendering(guiGraphics.pose());
 
         // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
         // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
@@ -186,10 +186,10 @@ public class ForgeGuiMixin {
             minecraft.getProfiler().pop();
         }
         else {
-            guiGraphics.pose().popPose();
+            PoseStackHelper.endHudRendering(guiGraphics.pose());
             return original.call(instance, event);
         }
-        guiGraphics.pose().popPose();
+        PoseStackHelper.endHudRendering(guiGraphics.pose());
         return true;
     }
 
