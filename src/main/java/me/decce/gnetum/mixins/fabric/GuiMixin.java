@@ -1,6 +1,6 @@
 package me.decce.gnetum.mixins.fabric;
 
-//? fabric {
+//? fabric && >=1.21.10 {
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.decce.gnetum.Gnetum;
@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = Gui.class)
 public class GuiMixin {
-    //? if >=1.21.10 {
     // Fabric API only wraps the renderBackground and renderExperienceLevel calls - we need to wrap the render call as well
     // Fixes https://github.com/decce6/Gnetum/issues/84
     //? >=26 {
@@ -41,6 +40,11 @@ public class GuiMixin {
         original.call(instance, guiGraphics, deltaTracker);
         element.end();
     }
-    //? }
 }
-//? }
+//? } else {
+
+/*import org.spongepowered.asm.mixin.Mixin;
+
+@Mixin(targets = {})
+public class GuiMixin {}
+*///? }
