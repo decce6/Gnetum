@@ -116,13 +116,13 @@ public class GuiMixin {
 
 		if (Gnetum.pass > 0) {
 			VersionCompatUtil.flush(guiGraphics);
-			Gnetum.framebuffers().unbind();
 		}
 		VersionCompatUtil.profilerPop();
 
 		Gnetum.rendering = false;
 
 		Gnetum.nextPass();
+		Gnetum.framebuffers().unbind();
 
 		if (Gnetum.framebuffers().needsCatchUp()) {
 			original.call(layeredDraw, guiGraphics, deltaTracker);
