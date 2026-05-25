@@ -1,92 +1,67 @@
 package me.decce.gnetum.mixins;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+//? >=26.2 {
+/*import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.decce.gnetum.CachedElement;
+import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
-import net.minecraft.client.DeltaTracker;
+import me.decce.gnetum.versioned.StatefulHudHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Hud;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(Gui.class)
+public class GuiMixin {
+    @Shadow @Final
+    private Minecraft minecraft;
+
+    @WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    private void gnetum$wrapRenderDebugOverlay(Hud hud, GuiGraphics guiGraphics, Operation<Void> original) {
+        if (this.minecraft.isGameLoadFinished() && (!this.minecraft.gui.hud.isHidden() || this.minecraft.gui.screen() != null)) {
+            var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);
+            if (minecraft.level == null || minecraft.gui.screen() != null || !Gnetum.config.isEnabled() || debug.isUncached()) {
+                original.call(hud, guiGraphics);
+                return;
+            }
+            if (debug.shouldRender()) {
+                debug.begin();
+
+                StatefulHudHandler.alternativeGuiRenderState.reset();
+                var guiRenderer = (GuiRendererAccessor) ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getGuiRenderer();
+
+                var originalState = guiRenderer.getRenderState();
+                guiRenderer.setRenderState(StatefulHudHandler.alternativeGuiRenderState);
+
+                Gnetum.framebuffers().bind();
+
+                original.call(hud, StatefulHudHandler.alternativeGuiGraphics);
+                VersionCompatUtil.flush(StatefulHudHandler.alternativeGuiGraphics);
+
+                Gnetum.framebuffers().unbind();
+
+                guiRenderer.setRenderState(originalState);
+
+                debug.end();
+            }
+
+            if (Gnetum.framebuffers().needsCatchUp()) {
+                original.call(hud, guiGraphics);
+            }
+        }
+        else {
+            original.call(hud, guiGraphics);
+        }
+    }
+}
+*///? } else {
 import org.spongepowered.asm.mixin.Mixin;
 
-//? >=1.21.10 {
-import me.decce.gnetum.versioned.StatefulHudHandler;
-//?} else {
-/*import static me.decce.gnetum.hud.SharedValues.guiGraphics;
-import me.decce.gnetum.hud.HudManager;
-import me.decce.gnetum.hud.SharedValues;
-import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.function.Predicate;
-*///?}
-//? xaerominimap {
-import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+@Mixin(targets = {})
+public class GuiMixin { }
 //? }
-
-@Mixin(value = Gui.class, priority = 5000)
-public class GuiMixin {
-	//? if >=1.21.10 {
-	//? if >26 {
-	/*@WrapMethod(method = "extractRenderState")
-	*///? } else {
-	@WrapMethod(method = "render")
-	//? }
-	private void gnetum$wrapGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-		if (!Gnetum.config.isEnabled()) {
-			original.call(guiGraphics, deltaTracker);
-			return;
-		}
-
-		if (Gnetum.pass == 0) {
-			VersionCompatUtil.profilerPush("sleep");
-		}
-		else {
-			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
-			Gnetum.framebuffers().resize();
-			Gnetum.framebuffers().bind();
-		}
-
-		Gnetum.rendering = true;
-
-		original.call(guiGraphics, deltaTracker);
-
-		if (Gnetum.pass > 0) {
-			VersionCompatUtil.flush(guiGraphics);
-			Gnetum.framebuffers().unbind();
-		}
-
-		Gnetum.rendering = false;
-
-		Gnetum.nextPass();
-
-		//? xaerominimap {
-		VersionCompatUtil.profilerPopPush("uncached");
-		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
-		//? }
-		if (Gnetum.framebuffers().needsCatchUp()) {
-			StatefulHudHandler.dropDeferredSubmission();
-			original.call(guiGraphics, deltaTracker);
-		}
-		else {
-			VersionCompatUtil.profilerPopPush("uncached");
-			StatefulHudHandler.performDeferredSubmission(guiGraphics);
-			Gnetum.framebuffers().blit(guiGraphics);
-		}
-		VersionCompatUtil.profilerPop();
-	}
-
-	//? } else {
-
-	//? }
-
-
-}

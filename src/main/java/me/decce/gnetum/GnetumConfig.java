@@ -95,7 +95,7 @@ public class GnetumConfig {
     public int getMaxFps() {
         if (maxFps <= screenMaxFps) return maxFps;
         if (screenMaxFps == Constants.SCREEN_UNLIMITED_FPS) return maxFps;
-        return Minecraft.getInstance().screen == null ? maxFps : screenMaxFps;
+        return VersionCompatUtil.isInScreen() ? screenMaxFps : maxFps;
     }
 
     public int getRawMaxFps() {

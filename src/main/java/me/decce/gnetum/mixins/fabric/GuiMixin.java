@@ -10,21 +10,38 @@ import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+//? >=26.2 {
+/*import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui.contextualbar.ContextualBar;
+import org.spongepowered.asm.mixin.injection.Inject;
 
+*///? } else {
+import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
+//? }
+//? if >=26.2 {
+/*@Mixin(value = Hud.class)
+*///? } else {
 @Mixin(value = Gui.class)
+//? }
 public class GuiMixin {
     // Fabric API only wraps the renderBackground and renderExperienceLevel calls - we need to wrap the render call as well
     // Fixes https://github.com/decce6/Gnetum/issues/84
-    //? >=26 {
+    //? >=26.2 {
+    /*@WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    *///? } else >=26 {
     /*@WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     *///? } else {
     @WrapOperation(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     //? }
     @SuppressWarnings("UnstableApiUsage")
-    private void gnetum$wrapInfoBar(ContextualBarRenderer instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
+    //? >=26.2 {
+    /*private void gnetum$wrapInfoBar(ContextualBar instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original)
+    *///? } else {
+    private void gnetum$wrapInfoBar(ContextualBarRenderer instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original)
+    //? }
+    {
         if (!Gnetum.config.isEnabled() || !Gnetum.rendering) {
             original.call(instance, guiGraphics, deltaTracker);
             return;

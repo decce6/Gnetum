@@ -1,11 +1,15 @@
 package me.decce.gnetum;
 
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.decce.gnetum.mixins.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+//? >=26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+*///? }
 //? <1.21.10 {
 /*import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.blaze3d.platform.GlConst;
@@ -14,6 +18,7 @@ import org.joml.Matrix4f;
 
 public class Framebuffers {
 	private final Minecraft mc = Minecraft.getInstance();
+	private final Vector4fc clearColor = new Vector4f(0);
 	private RenderTarget back;
 	private RenderTarget front;
 	private RenderTarget backupMainRenderTarget;
@@ -30,7 +35,10 @@ public class Framebuffers {
 	private boolean downscale;
 
 	public Framebuffers() {
-		//? >=1.21.10 {
+		//? >=26.2 {
+		/*back = new TextureTarget("gnetum_back", 1, 1, true, GpuFormat.RGBA8_UNORM);
+		front = new TextureTarget("gnetum_front", 1, 1, true, GpuFormat.RGBA8_UNORM);
+		*///? } else >=1.21.10 {
 		back = new TextureTarget("gnetum_back", 1, 1, true);
 		front = new TextureTarget("gnetum_front", 1, 1, true);
 		//?} else {
@@ -116,23 +124,25 @@ public class Framebuffers {
 	}
 
 	public void bind() {
-		var accessor = (MinecraftAccessor) mc;
-		backupMainRenderTarget = accessor.gnetum$getMainRenderTarget();
-		accessor.gnetum$setMainRenderTarget(Gnetum.framebuffers().back());
+		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
+		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
 		//? <=1.21.1 {
 		/*back.bindWrite(true);
 		*///?}
 	}
 
 	public void unbind() {
-		((MinecraftAccessor) mc).gnetum$setMainRenderTarget(backupMainRenderTarget);
+		VersionCompatUtil.setMainRenderTarget(backupMainRenderTarget);
 		//?	<=1.21.1 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 		*///?}
 	}
 
 	public void clear() {
-		//? >=1.21.10 {
+		//? >=26.2 {
+		/*RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), clearColor,
+				back.getDepthTexture(), 1.0);
+		*///? } >=1.21.10 {
 		RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), 0,
 				back.getDepthTexture(), 1.0);
 		//?} else {

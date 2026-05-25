@@ -15,7 +15,10 @@ import com.mojang.blaze3d.pipeline.BlendFunction;
 
 @Mixin(RenderPipeline.class)
 public interface RenderPipelineAccessor {
-	//? if >=26 {
+	//? if >=26.2 {
+	/*@Accessor @Mutable
+	void setColorTargetStates(ColorTargetState[] color);
+	*///? } else if >=26 {
 	/*@Accessor @Mutable
 	void setColorTargetState(ColorTargetState color);
 	*///? } else if >=1.21.10 {

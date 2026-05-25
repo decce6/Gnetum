@@ -44,17 +44,14 @@ public class GameRendererMixin {
 	@Final
 	private Minecraft minecraft;
 	@Unique
-	//? >=1.21.10 {
-	private final Matrix3x2f gnetum$lastGuiMatrix = new Matrix3x2f();
-	//?} else {
-	/*private final Matrix4f gnetum$lastGuiMatrix = new Matrix4f();
-	 *///?}
-	@Unique
 	private boolean gnetum$wasScreenOpen;
 	@Unique
 	private boolean gnetum$wasHudHidden;
 
-	//? >26 {
+	//? >=26.2 {
+	/*@Inject(method = "extract", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V"))
+	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+	*///? } else >26 {
 	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 	*///? } else {
@@ -72,11 +69,16 @@ public class GameRendererMixin {
 			HudDeltaTracker.disable();
 		}
 
-		gnetum$checkForPoseCatchUp(guiGraphics);
+		// The other half is in GuiMixin
+		//? <=26.1 {
+		Gnetum.checkForPoseCatchUp(guiGraphics);
+		//? }
 	}
 
 	//? >=1.21.10 {
-	//? >26 {
+	//? >=26.2 {
+	/*@Inject(method = "extract", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V"))
+	*///? } else >26 {
 	/*@Inject(method = "extractGui", at = @At("HEAD"))
 	*///? } else {
 	@Inject(method = "render", at = @At("HEAD"))
@@ -163,32 +165,16 @@ public class GameRendererMixin {
 	*///? }
 
 	@Unique
-	private void gnetum$checkForPoseCatchUp(GuiGraphics guiGraphics) {
-		var pose = guiGraphics.pose();
-		//? >= 1.21.10 {
-		if (!pose.equals(gnetum$lastGuiMatrix, 0.01F)) {
-			gnetum$lastGuiMatrix.set(pose);
-			Gnetum.framebuffers().markForCatchUp();
-		}
-		//?} else {
-		/*if (!pose.last().pose().equals(gnetum$lastGuiMatrix, 0.01F)) {
-			gnetum$lastGuiMatrix.set(pose.last().pose());
-			Gnetum.framebuffers().markForCatchUp();
-		}
-        *///?}
-	}
-
-	@Unique
 	private void gnetum$checkForScreenCatchUp() {
 		var minecraft = Minecraft.getInstance();
 
-		boolean screenOpen = minecraft.screen != null;
+		boolean screenOpen = VersionCompatUtil.isInScreen();
 		if (screenOpen != gnetum$wasScreenOpen) {
 			gnetum$wasScreenOpen = screenOpen;
 			Gnetum.framebuffers().markForCatchUp();
 		}
 
-		boolean hudHidden = minecraft.options.hideGui;
+		boolean hudHidden = VersionCompatUtil.isHudHidden();
 		if (hudHidden != gnetum$wasHudHidden) {
 			gnetum$wasHudHidden = hudHidden;
 			Gnetum.framebuffers().markForCatchUp();
@@ -229,7 +215,8 @@ public class GameRendererMixin {
 		}
 	}
 
-	//? if >=1.21.10 {
+	//Note: 26.2+ is in GuiMixin
+	//? if >=1.21.10 && <= 26.1 {
 	//? if >26 {
 	/*@WrapOperation(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractDebugOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
 	*///? } else {

@@ -10,6 +10,24 @@ stonecutter parameters {
     constants["jade"] = node.project.hasProperty("deps.jade")
     constants["xaerominimap"] = node.project.hasProperty("deps.xaerominimap")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"
+    swaps["import_blend_factors"] = when {
+        eval(current.version, ">=26.2") -> "import com.mojang.blaze3d.platform.BlendFactor;"
+        else -> "import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;"
+    }
+    swaps["src_factor"] = when {
+        eval(current.version, ">=26.2") -> "BlendFactor.$1"
+        else -> "SourceFactor.$1"
+    }
+    swaps["dest_factor"] = when {
+        eval(current.version, ">=26.2") -> "BlendFactor.$1"
+        else -> "DestFactor.$1"
+    }
+    replacements.string(current.parsed >= "26.2") {
+        replace("sourceAlpha()", "alpha().sourceFactor()")
+        replace("destAlpha()", "alpha().destFactor()")
+        replace("sourceColor()", "color().sourceFactor()")
+        replace("destColor()", "color().destFactor()")
+    }
     replacements.string(current.parsed >= "1.21.11") {
         replace("ResourceLocation", "Identifier")
         replace("location()", "identifier()")

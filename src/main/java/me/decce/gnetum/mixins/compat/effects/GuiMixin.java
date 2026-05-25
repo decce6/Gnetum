@@ -2,14 +2,19 @@ package me.decce.gnetum.mixins.compat.effects;
 
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+//? >=26.2 {
+/*import net.minecraft.client.gui.Hud;
+@Mixin(Hud.class)
+*///? } else {
+import net.minecraft.client.gui.Gui;
 @Mixin(Gui.class)
+//? }
 public class GuiMixin {
     //? >26 {
     /*@Inject(method = "extractEffects", at = @At("HEAD"))

@@ -10,10 +10,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MinecraftAccessor {
     @Accessor
     long getLastTime();
+    //? <=26.1 {
     // Append gnetum$ prefixes to accessors because method "getMainRenderTarget" exists in target class
     @Accessor("mainRenderTarget")
     @Mutable
     void gnetum$setMainRenderTarget(RenderTarget target);
     @Accessor("mainRenderTarget")
     RenderTarget gnetum$getMainRenderTarget();
+    //? }
 }

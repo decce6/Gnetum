@@ -1,10 +1,9 @@
 package me.decce.gnetum.mixins;
 
 //? >=1.21.10 {
-
 import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
+//$ import_blend_factors
+import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.versioned.StatefulHudHandler;
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
@@ -20,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
-
+//? >=26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+*///? }
 //? >26 {
 /*import com.mojang.blaze3d.pipeline.ColorTargetState;
 *///? }
@@ -65,11 +66,11 @@ public class GuiRenderStateMixin {
 		}
 		var pipeline = state.pipeline();
 		//? >26 {
-		/*var optionalBlend = pipeline.getColorTargetState().blendFunction();
-		if (optionalBlend.isEmpty()) {
+		/*var colorTargetState = pipeline.getColorTargetState();
+		if (colorTargetState == null || colorTargetState.blendFunction().isEmpty()) {
 			return;
 		}
-		var blend = optionalBlend.get();
+		var blend = colorTargetState.blendFunction().get();
 		*///? } else {
 		var optionalBlend = pipeline.getBlendFunction();
 		if (optionalBlend.isEmpty()) {
@@ -78,10 +79,17 @@ public class GuiRenderStateMixin {
 		var blend = optionalBlend.get();
 		//? }
 		var pipelineAccessor = (RenderPipelineAccessor) pipeline;
-		if (blend.sourceAlpha() != SourceFactor.ONE || blend.destAlpha() != DestFactor.ONE_MINUS_SRC_ALPHA) {
+		if (blend.sourceAlpha() != /*$src_factor ONE*/ SourceFactor.ONE
+				|| blend.destAlpha() != /*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
+		) {
 			// TODO: optimize alloc
-			blend = new BlendFunction(blend.sourceColor(), blend.destColor(), SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
-			//? >26 {
+			blend = new BlendFunction(blend.sourceColor(), blend.destColor(),
+					/*$src_factor ONE*/ SourceFactor.ONE
+					,/*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
+			);
+			//? >=26.2 {
+			/*pipelineAccessor.setColorTargetStates(new ColorTargetState[] { new ColorTargetState(Optional.of(blend), GpuFormat.RGBA8_UNORM, pipeline.getColorTargetState().writeMask()) } );
+			*///? } else >26 {
 			/*pipelineAccessor.setColorTargetState(new ColorTargetState(Optional.of(blend), pipeline.getColorTargetState().writeMask()));
 			*///? } else {
 			pipelineAccessor.setBlendFunction(Optional.of(blend));
@@ -100,11 +108,29 @@ public class GuiRenderStateMixin {
 	@Unique
 	private boolean gnetum$isBlendIncompatible(BlendFunction blend) {
 		if (gnetum$isUsingDestColor(blend.sourceColor()) || gnetum$isUsingDestColor(blend.destColor())) return true;
-		if (blend.destColor() == DestFactor.SRC_COLOR || blend.destColor() == DestFactor.ONE_MINUS_SRC_COLOR) return true;
-		if (blend.sourceColor() == SourceFactor.ONE && blend.destColor() == DestFactor.ONE) return true;
+		if (blend.destColor() ==
+				/*$dest_factor SRC_COLOR*/ DestFactor.SRC_COLOR
+				|| blend.destColor() ==
+				/*$dest_factor ONE_MINUS_SRC_COLOR*/ DestFactor.ONE_MINUS_SRC_COLOR
+		) {
+			return true;
+		}
+		if (blend.sourceColor() ==
+				/*$src_factor ONE*/ SourceFactor.ONE
+				&& blend.destColor() ==
+				/*$dest_factor ONE*/ DestFactor.ONE
+		) {
+			return true;
+		}
 		return false;
 	}
 
+	//? >=26.2 {
+	/*@Unique
+	private static boolean gnetum$isUsingDestColor(BlendFactor factor) {
+		return factor == BlendFactor.DST_COLOR || factor == BlendFactor.ONE_MINUS_DST_COLOR;
+	}
+	*///? } else {
 	@Unique
 	private static boolean gnetum$isUsingDestColor(SourceFactor factor) {
 		return factor == SourceFactor.DST_COLOR || factor == SourceFactor.ONE_MINUS_DST_COLOR;
@@ -114,6 +140,7 @@ public class GuiRenderStateMixin {
 	private static boolean gnetum$isUsingDestColor(DestFactor factor) {
 		return factor == DestFactor.DST_COLOR || factor == DestFactor.ONE_MINUS_DST_COLOR;
 	}
+	//? }
 }
 //?} else {
 

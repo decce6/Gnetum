@@ -5,7 +5,9 @@ import me.decce.gnetum.platform.Platform;
 import me.decce.gnetum.time.GlfwTimeSource;
 import me.decce.gnetum.time.TimeSource;
 import me.decce.gnetum.util.AnyBooleanValue;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.Identifier;
+import org.joml.Matrix3x2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +27,15 @@ public class Gnetum {
 	private static Framebuffers framebuffers;
 	public static int pass = 1;
 	public static boolean rendering;
+	public static boolean flushing;
 	public static GnetumConfig config;
 	public static CachedElement currentElement;
+
+	//? >=1.21.10 {
+	public static final Matrix3x2f lastGuiMatrix = new Matrix3x2f();
+	//?} else {
+	/*public static final Matrix4f lastGuiMatrix = new Matrix4f();
+	 *///?}
 
 	private static final Platform PLATFORM = createPlatformInstance();
 
@@ -58,6 +67,21 @@ public class Gnetum {
 		Distributor.resolve();
 		framebuffers().swapFramebuffers();
 		HudDeltaTracker.reset();
+	}
+
+	public static void checkForPoseCatchUp(GuiGraphics guiGraphics) {
+		var pose = guiGraphics.pose();
+		//? >= 1.21.10 {
+		if (!pose.equals(lastGuiMatrix, 0.01F)) {
+			lastGuiMatrix.set(pose);
+			Gnetum.framebuffers().markForCatchUp();
+		}
+		//?} else {
+		/*if (!pose.last().pose().equals(lastGuiMatrix, 0.01F)) {
+			lastGuiMatrix.set(pose.last().pose());
+			Gnetum.framebuffers().markForCatchUp();
+		}
+        *///?}
 	}
 
 	public static String getFpsString() {

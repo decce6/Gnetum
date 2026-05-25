@@ -2,6 +2,7 @@ package me.decce.gnetum.util;
 
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
+import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.resources.language.I18n;
 
 import java.util.Arrays;
@@ -13,7 +14,7 @@ public class Beautifier {
 			return I18n.get("gnetum.config.unknown_element");
 		}
 		String key1 = "gnetum.config.element." + string.replace(':', '.');
-		if (I18n.exists(key1)) {
+		if (VersionCompatUtil.i18nExists(key1)) {
 			return I18n.get(key1);
 		}
 		if (!string.contains(":")) {

@@ -10,8 +10,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
+	//? >=26.2 {
+	/*@Inject(method = "onGameLoadFinished", at = @At("TAIL"))
+	private void gnetum$finishInitialization(CallbackInfo ci)
+	*///? } else {
 	@Inject(method = "buildInitialScreens", at = @At("TAIL"))
-	private void gnetum$finishInitialization(CallbackInfoReturnable<Runnable> cir) {
+	private void gnetum$finishInitialization(CallbackInfoReturnable<Runnable> cir)
+	//? }
+	{
 		Gnetum.platform().elementGatherer().gather();
 		Gnetum.config.save();
 	}
