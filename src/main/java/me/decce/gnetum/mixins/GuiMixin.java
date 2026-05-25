@@ -85,77 +85,8 @@ public class GuiMixin {
 	}
 
 	//? } else {
-	/*@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/LayeredDraw;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
-	private void gnetum$render(LayeredDraw layeredDraw, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-		if (!Gnetum.config.isEnabled()) {
-			original.call(layeredDraw, guiGraphics, deltaTracker);
-			return;
-		}
 
-		SharedValues.guiGraphics = guiGraphics;
-		SharedValues.deltaTracker = deltaTracker;
-
-		guiGraphics.pose().pushPose();
-
-		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
-
-		Gnetum.framebuffers().resize();
-		if (Gnetum.pass == 0) {
-			VersionCompatUtil.profilerPush("sleep");
-		}
-		else {
-			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
-			VersionCompatUtil.flush(guiGraphics);
-			Gnetum.framebuffers().bind();
-		}
-
-		Gnetum.rendering = true;
-
-		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsCached);
-
-
-		if (Gnetum.pass > 0) {
-			VersionCompatUtil.flush(guiGraphics);
-		}
-		VersionCompatUtil.profilerPop();
-
-		Gnetum.rendering = false;
-
-		Gnetum.nextPass();
-		Gnetum.framebuffers().unbind();
-
-		if (Gnetum.framebuffers().needsCatchUp()) {
-			original.call(layeredDraw, guiGraphics, deltaTracker);
-		}
-		else {
-			Gnetum.framebuffers().blit(guiGraphics);
-		}
-
-		guiGraphics.pose().popPose();
-
-		SharedValues.guiGraphics = null;
-		SharedValues.deltaTracker = null;
-	}
-
-	@Unique
-	private void gnetum$renderVanillaHuds(Predicate<CachedElement> check) {
-		for (int i = 0; i < HudManager.huds.size(); i++) {
-			var hud = HudManager.huds.get(i);
-			var element = Gnetum.getElement(hud.id());
-			if (hud.isDummy() || check.test(element)) {
-				if (Gnetum.rendering) {
-					element.begin();
-					hud.render();
-					element.end();
-				}
-				else {
-					hud.render();
-				}
-				guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
-			}
-		}
-	}
-	*///? }
+	//? }
 
 
 }

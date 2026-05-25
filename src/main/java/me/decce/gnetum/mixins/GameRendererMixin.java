@@ -21,8 +21,16 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//? >=1.21.10 {
 
+import java.util.function.Predicate;
+
+//? <=1.21.1 {
+/*import me.decce.gnetum.CachedElement;
+import me.decce.gnetum.hud.HudManager;
+import me.decce.gnetum.hud.SharedValues;
+import static me.decce.gnetum.hud.SharedValues.guiGraphics;
+*///? }
+//? >=1.21.10 {
 import me.decce.gnetum.versioned.StatefulHudHandler;
 import org.joml.Matrix3x2f;
 //?}
@@ -67,19 +75,93 @@ public class GameRendererMixin {
 		gnetum$checkForPoseCatchUp(guiGraphics);
 	}
 
+	//? >=1.21.10 {
 	//? >26 {
 	/*@Inject(method = "extractGui", at = @At("HEAD"))
 	private void gnetum$updateScreenCatchup(CallbackInfo ci) {
 	*///? } else {
 	@Inject(method = "render", at = @At("HEAD"))
-	private void gnetum$updateScreenCatchup(CallbackInfo ci) {
 	//? }
+	private void gnetum$updateScreenCatchup(CallbackInfo ci) {
 		if (!Gnetum.config.isEnabled()) {
 			return;
 		}
 
 		gnetum$checkForScreenCatchUp();
 	}
+	//? }
+
+	//? <=1.21.1 {
+	/*@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+	private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
+		if (!Gnetum.config.isEnabled() || Minecraft.getInstance().options.hideGui) {
+			original.call(instance, guiGraphics, deltaTracker);
+			return;
+		}
+
+		SharedValues.guiGraphics = guiGraphics;
+		SharedValues.deltaTracker = deltaTracker;
+
+		guiGraphics.pose().pushPose();
+
+		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
+
+		Gnetum.framebuffers().resize();
+		if (Gnetum.pass == 0) {
+			VersionCompatUtil.profilerPush("sleep");
+		}
+		else {
+			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
+			VersionCompatUtil.flush(guiGraphics);
+			Gnetum.framebuffers().bind();
+		}
+
+		Gnetum.rendering = true;
+
+		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsCached);
+
+		if (Gnetum.pass > 0) {
+			VersionCompatUtil.flush(guiGraphics);
+		}
+		VersionCompatUtil.profilerPop();
+
+		Gnetum.rendering = false;
+
+		Gnetum.nextPass();
+		Gnetum.framebuffers().unbind();
+
+		if (Gnetum.framebuffers().needsCatchUp()) {
+			original.call(instance, guiGraphics, deltaTracker);
+		}
+		else {
+			Gnetum.framebuffers().blit(guiGraphics);
+		}
+
+		guiGraphics.pose().popPose();
+
+		SharedValues.guiGraphics = null;
+		SharedValues.deltaTracker = null;
+	}
+
+	@Unique
+	private void gnetum$renderVanillaHuds(Predicate<CachedElement> check) {
+		for (int i = 0; i < HudManager.huds.size(); i++) {
+			var hud = HudManager.huds.get(i);
+			var element = Gnetum.getElement(hud.id());
+			if (hud.isDummy() || check.test(element)) {
+				if (Gnetum.rendering) {
+					element.begin();
+					hud.render();
+					element.end();
+				}
+				else {
+					hud.render();
+				}
+				guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
+			}
+		}
+	}
+	*///? }
 
 	@Unique
 	private void gnetum$checkForPoseCatchUp(GuiGraphics guiGraphics) {
