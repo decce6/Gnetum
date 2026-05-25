@@ -78,7 +78,6 @@ public class GameRendererMixin {
 	//? >=1.21.10 {
 	//? >26 {
 	/*@Inject(method = "extractGui", at = @At("HEAD"))
-	private void gnetum$updateScreenCatchup(CallbackInfo ci) {
 	*///? } else {
 	@Inject(method = "render", at = @At("HEAD"))
 	//? }
