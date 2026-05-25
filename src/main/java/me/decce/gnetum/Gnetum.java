@@ -1,6 +1,5 @@
 package me.decce.gnetum;
 
-import me.decce.gnetum.gl.GLSM;
 import me.decce.gnetum.platform.Platform;
 
 import me.decce.gnetum.time.GlfwTimeSource;
@@ -32,7 +31,6 @@ public class Gnetum {
 	private static final Platform PLATFORM = createPlatformInstance();
 
 	public static void init() {
-		GLSM.set(new GlImpl());
 		GnetumConfig.reload();
 		config.save();
 	}
