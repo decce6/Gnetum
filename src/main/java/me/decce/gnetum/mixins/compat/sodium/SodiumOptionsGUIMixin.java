@@ -1,5 +1,7 @@
 package me.decce.gnetum.mixins.compat.sodium;
 
+import org.spongepowered.asm.mixin.Mixin;
+
 //? <=1.21.1 {
 /*import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.compat.sodium.LegacySodiumPage;
@@ -7,7 +9,6 @@ import net.caffeinemc.mods.sodium.client.gui.SodiumOptionsGUI;
 import net.caffeinemc.mods.sodium.client.gui.options.OptionPage;
 import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,4 +31,7 @@ public class SodiumOptionsGUIMixin {
         this.pages.add(new LegacySodiumPage());
     }
 }
-*///?}
+*///?} else {
+@Mixin(targets = {})
+public class SodiumOptionsGUIMixin {}
+//? }

@@ -21,6 +21,7 @@
     "compat.bossbar.BossHealthOverlayMixin",
     "compat.jade.ClientProxyMixin",
     "compat.effects.GuiMixin",
+    "compat.sodium.SodiumOptionsGUIMixin",
     "compat.xaerominimap.ClientEventsMixin",
     "compat.xaerominimap.XaeroMinimapCoreMixin"
   ],
