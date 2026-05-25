@@ -23,7 +23,9 @@ public abstract class ElementGatherer {
 		gatherImpl(newMap);
 
 		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement(Constants.UNKNOWN_ELEMENTS));
+		//? >=1.21.10 {
 		newMap.put(Constants.DEBUG_OVERLAY, new CachedElement(Constants.DEBUG_OVERLAY));
+		//? }
 
 		for (var entry : newMap.entrySet()) {
 			if (Gnetum.config.map.containsKey(entry.getKey())) {
@@ -32,7 +34,9 @@ public abstract class ElementGatherer {
 			}
 		}
 
+		//? >=1.21.10 {
 		newMap.get(Constants.DEBUG_OVERLAY).enabled.defaultValue = false;
+		//? }
 		newMap.get(Constants.HAND_ELEMENT).enabled.defaultValue = false;
 
 		Gnetum.config.map = newMap;
