@@ -10,10 +10,9 @@ import net.minecraft.resources.Identifier;
 *///? } else {
 import net.minecraft.client.resources.language.I18n;
 import me.decce.gnetum.mixins.MinecraftAccessor;
-import net.minecraft.client.renderer.fog.FogRenderer;
 //? }
 //? >=1.21.10 {
-
+import net.minecraft.client.renderer.fog.FogRenderer;
 //? }
 
 public class VersionCompatUtil {

@@ -5,7 +5,6 @@ import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
-import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.platform.ElementGatherer;
 //? fabric && <1.21.10 {
 /*import me.decce.gnetum.hud.Hud;
@@ -22,9 +21,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //? >=1.21.10 {
 import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
-//?} else {
-/*import me.decce.gnetum.versioned.HudHandler;
-*///?}
+//? }
+
+//? <=1.21.1 {
+/*import me.decce.gnetum.versioned.NamedHudRenderCallback;
+import me.decce.gnetum.versioned.HudHandler;
+*///? }
 
 @SuppressWarnings("UnstableApiUsage")
 public class ElementGathererFabricImpl extends ElementGatherer {
@@ -84,6 +86,13 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 			var modid = Gnetum.platform().getModId(callback.getClass());
 			map.putIfAbsent(modid, new CachedElement(modid));
 		}
+		//? <=1.21.1 {
+		/*HudHandler.callbacks = new NamedHudRenderCallback[handlers.length];
+		for (int i = 0; i < handlers.length; i++) {
+			var modid = Gnetum.platform().getModId(handlers[i].getClass());
+			HudHandler.callbacks[i] = new NamedHudRenderCallback(modid, handlers[i]);
+		}
+		*///? }
 		//? }
 	}
 

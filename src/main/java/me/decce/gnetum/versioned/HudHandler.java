@@ -4,6 +4,7 @@ package me.decce.gnetum.versioned;
 
 /*public class HudHandler {
 	//? fabric {
+    public static NamedHudRenderCallback[] callbacks;
     //? }
 }
 *///?}

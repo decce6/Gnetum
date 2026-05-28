@@ -28,6 +28,9 @@ import java.util.function.Predicate;
 /*import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.hud.HudManager;
 import me.decce.gnetum.hud.SharedValues;
+import me.decce.gnetum.versioned.HudHandler;
+
+import static me.decce.gnetum.hud.SharedValues.deltaTracker;
 import static me.decce.gnetum.hud.SharedValues.guiGraphics;
 *///? }
 //? >=1.21.10 {
@@ -106,6 +109,7 @@ public class GameRendererMixin {
 		guiGraphics.pose().pushPose();
 
 		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
+		gnetum$renderFabricHuds(CachedElement::shouldRenderAsUncached);
 
 		Gnetum.framebuffers().resize();
 		if (Gnetum.pass == 0) {
@@ -120,6 +124,7 @@ public class GameRendererMixin {
 		Gnetum.rendering = true;
 
 		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsCached);
+		gnetum$renderFabricHuds(CachedElement::shouldRenderAsCached);
 
 		if (Gnetum.pass > 0) {
 			VersionCompatUtil.flush(guiGraphics);
@@ -157,6 +162,25 @@ public class GameRendererMixin {
 				}
 				else {
 					hud.render();
+				}
+				guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
+			}
+		}
+	}
+
+	@Unique
+	private void gnetum$renderFabricHuds(Predicate<CachedElement> check) {
+		for (int i = 0; i < HudHandler.callbacks.length; i++) {
+			var element = Gnetum.getElement(HudHandler.callbacks[i].name());
+			var callback = HudHandler.callbacks[i].callback();
+			if (check.test(element)) {
+				if (Gnetum.rendering) {
+					element.begin();
+					callback.onHudRender(guiGraphics, deltaTracker);
+					element.end();
+				}
+				else {
+					callback.onHudRender(guiGraphics, deltaTracker);
 				}
 				guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
 			}
