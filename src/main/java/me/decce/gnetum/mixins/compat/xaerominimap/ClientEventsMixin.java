@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "xaero.common.events.ClientEvents", remap = false)
 public class ClientEventsMixin {
     //? if xaerominimap {
-    /*@Inject(method = "handleRenderGameOverlayEventPre", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleRenderGameOverlayEventPre", at = @At("HEAD"), cancellable = true)
     private static void gnetum$beforeIngameGuiRender(CallbackInfo ci) {
         if (Gnetum.rendering && !XaeroMinimapCompat.error && !XaeroMinimapCompat.shouldRenderWaypoint) {
             ci.cancel();
         }
     }
-    *///? }
+    //? }
 }

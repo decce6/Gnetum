@@ -5,6 +5,7 @@ import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.compat.legacy_fapi.ArrayBackedEventAccessor;
+import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.platform.ElementGatherer;
 //? fabric && <1.21.10 {
 /*import me.decce.gnetum.hud.Hud;
@@ -62,10 +63,11 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 
 	private void gatherCompatPre(Map<String, CachedElement> map) {
 		//? xaerominimap {
-		/*if (XaeroMinimapCompat.INSTALLED) {
-			map.putIfAbsent(XaeroMinimapCompat.ELEMENT, new CachedElement(XaeroMinimapCompat.ELEMENT));
+		if (XaeroMinimapCompat.INSTALLED) {
+			// Latest Xaero's Minimap uses Fabric API for HUD rendering, making explicit compat no longer necessary
+			// map.putIfAbsent(XaeroMinimapCompat.ELEMENT, new CachedElement(XaeroMinimapCompat.ELEMENT));
 		}
-		*///? }
+		//? }
 	}
 
 	//? >=1.21.10 {
