@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "xaero.common.core.XaeroMinimapCore", remap = false)
 public class XaeroMinimapCoreMixin {
     //? if xaerominimap {
-    @Inject(method = "beforeIngameGuiRender", at = @At("HEAD"))
+    /*@Inject(method = "beforeIngameGuiRender", at = @At("HEAD"))
     private static void gnetum$beforeIngameGuiRender(CallbackInfo ci) {
         //? fabric {
         if (Gnetum.config.isEnabled()) {
@@ -40,5 +40,5 @@ public class XaeroMinimapCoreMixin {
         }
     }
     //? }
-    //? }
+    *///? }
 }

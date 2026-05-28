@@ -31,8 +31,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Predicate;
 *///?}
 //? xaerominimap {
-import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
-//? }
+/*import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+*///? }
 
 //? >=26.2 {
 /*@Mixin(value = Hud.class, priority = 5000)
@@ -79,9 +79,9 @@ public class HudMixin {
 		Gnetum.nextPass();
 
 		//? xaerominimap {
-		VersionCompatUtil.profilerPopPush("uncached");
+		/*VersionCompatUtil.profilerPopPush("uncached");
 		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
-		//? }
+		*///? }
 		if (Gnetum.framebuffers().needsCatchUp()) {
 			StatefulHudHandler.dropDeferredSubmission();
 			original.call(guiGraphics, deltaTracker);

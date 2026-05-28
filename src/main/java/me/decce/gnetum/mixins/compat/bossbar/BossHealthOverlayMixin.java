@@ -22,8 +22,8 @@ public class BossHealthOverlayMixin {
 		JadeCompat.bossBarShown = false;
 		//? }
 		//? if xaerominimap {
-		XaeroMinimapCompat.bossBarShown = false;
-		//? }
+		/*XaeroMinimapCompat.bossBarShown = false;
+		*///? }
 	}
 
 	//? >26 {
@@ -36,8 +36,8 @@ public class BossHealthOverlayMixin {
 		JadeCompat.bossBarShown = true;
 		//? }
 		//? if xaerominimap {
-		XaeroMinimapCompat.bossBarShown = true;
-		//? }
+		/*XaeroMinimapCompat.bossBarShown = true;
+		*///? }
 	}
 
 	//? >26 {
@@ -47,7 +47,7 @@ public class BossHealthOverlayMixin {
 	//? }
 	private void gnetum$drawBar(GuiGraphics guiGraphics, int i, int j, BossEvent bossEvent, CallbackInfo ci) {
 		//? if xaerominimap {
-		XaeroMinimapCompat.bossBarHeight = j + 19;
-		//? }
+		/*XaeroMinimapCompat.bossBarHeight = j + 19;
+		*///? }
 	}
 }

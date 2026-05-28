@@ -60,10 +60,10 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 
 	private void gatherCompatPre(Map<String, CachedElement> map) {
 		//? xaerominimap {
-		if (XaeroMinimapCompat.INSTALLED) {
+		/*if (XaeroMinimapCompat.INSTALLED) {
 			map.putIfAbsent(XaeroMinimapCompat.ELEMENT, new CachedElement(XaeroMinimapCompat.ELEMENT));
 		}
-		//? }
+		*///? }
 	}
 
 	//? >=1.21.10 {
