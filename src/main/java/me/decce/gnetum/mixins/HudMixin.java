@@ -27,6 +27,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 
 import java.util.function.Predicate;
 *///?}
@@ -93,5 +95,16 @@ public class HudMixin {
 		}
 		VersionCompatUtil.profilerPop();
 	}
-	//? }
+	//? } else {
+    /*@SuppressWarnings({"MixinAnnotationTarget", "InvalidInjectorMethodSignature"})
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/api/client/rendering/v1/HudRenderCallback;onHudRender(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", remap = false), require = 0)
+    private boolean gnetum$renderInjection$fabric(HudRenderCallback instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        return !Gnetum.renderingGuiInjection;
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/LayeredDraw;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean gnetum$renderInjection(LayeredDraw instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        return !Gnetum.renderingGuiInjection;
+    }
+    *///? }
 }

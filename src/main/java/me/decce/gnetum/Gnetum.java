@@ -33,6 +33,7 @@ public class Gnetum {
 	public static int pass = 1;
 	public static boolean rendering;
 	public static boolean flushing;
+	public static boolean renderingGuiInjection;
 	public static GnetumConfig config;
 	public static CachedElement currentElement;
 
