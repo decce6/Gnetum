@@ -7,6 +7,7 @@ stonecutter active "1.21.11-fabric"
 stonecutter parameters {
     constants.match(node.metadata.project.substringAfterLast('-'), "fabric", "neoforge", "forge")
     constants["sodium"] = node.project.hasProperty("deps.sodium")
+    constants["sodium_legacy"] = node.project.hasProperty("deps.sodium_legacy")
     constants["jade"] = node.project.hasProperty("deps.jade")
     constants["xaerominimap"] = node.project.hasProperty("deps.xaerominimap")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"

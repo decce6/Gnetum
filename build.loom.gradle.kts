@@ -3,7 +3,7 @@ import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
     id("me.decce.gnetum.gradle.gnetum-common-conventions")
-    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT"
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -18,6 +18,9 @@ dependencies {
 
     if (hasProperty("deps.sodium")) {
         modCompileOnly("${prop("deps.sodium")}")
+    }
+    if (hasProperty("deps.sodium_legacy")) {
+        modCompileOnly("${prop("deps.sodium_legacy")}")
     }
     if (hasProperty("deps.jade")) {
         modCompileOnly("maven.modrinth:jade:${prop("deps.jade")}")

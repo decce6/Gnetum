@@ -2,7 +2,7 @@ package me.decce.gnetum.mixins.compat.sodium;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-//? <=1.21.1 {
+//? if sodium_legacy {
 /*import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.compat.sodium.LegacySodiumPage;
 import net.caffeinemc.mods.sodium.client.gui.SodiumOptionsGUI;

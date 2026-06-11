@@ -15,6 +15,9 @@ dependencies {
     if (hasProperty("deps.sodium")) {
         compileOnly("${prop("deps.sodium")}")
     }
+    if (hasProperty("deps.sodium_legacy")) {
+        compileOnly("${prop("deps.sodium_legacy")}")
+    }
     if (hasProperty("deps.jade")) {
         compileOnly("maven.modrinth:jade:${prop("deps.jade")}")
     }

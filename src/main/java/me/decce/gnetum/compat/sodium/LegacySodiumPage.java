@@ -1,6 +1,6 @@
 package me.decce.gnetum.compat.sodium;
 
-//? <=1.21.1 {
+//? if sodium_legacy {
 /*import com.google.common.collect.ImmutableList;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
