@@ -8,7 +8,7 @@
   "gnetum.config.fastBlit": "Fast Framebuffer Blitting",
   "gnetum.config.fastBlit.tooltip": "Discard pixels that are fully transparent, which offers some GPU performance uplift.",
   "gnetum.config.numberOfPasses": "Number of Passes",
-  "gnetum.config.numberOfPasses.tooltip": "Specifies the total number of passes. Higher number provides better performance, but will make the HUD update slower.\n\nThe maximum framerate of the HUD will be the quotient of the game FPS divided by the number of passes.",
+  "gnetum.config.numberOfPasses.tooltip": "Specifies the total number of passes. Higher number provides better performance, but will make the HUD update slower.\n\nThe maximum HUD framerate equals the game's FPS divided by the number of passes.",
   "gnetum.config.maxFps": "HUD Framerate Limit",
   "gnetum.config.maxFps.tooltip": "Specifies the maximum framerate of the HUD. Priority is lower than the number of passes setting.",
   "gnetum.config.screenMaxFps": "HUD Framerate Limit (GUI)",
@@ -20,9 +20,7 @@
   "gnetum.config.tooltip.on": "ON: Caching for this element is forcibly enabled.",
   "gnetum.config.tooltip.off": "OFF: Caching for this element is forcibly disabled.",
   "gnetum.config.auto": "AUTO",
-
   "gnetum.config.unknown_element": "Unknown Elements",
-
   "gnetum.config.element.hand.tooltip": "Set to ON to enable hand caching. This option is currently not enabled on AUTO.",
   "gnetum.config.element.debug_overlay.tooltip": "Set to ON to enable caching for debug overlay (F3). Only works when in game and no GUI screen is open. This option is currently not enabled on AUTO."
 }
