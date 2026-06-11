@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 
 //? <=1.21.1 {
 /*import me.decce.gnetum.CachedElement;
+import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.hud.HudManager;
 import me.decce.gnetum.hud.SharedValues;
 import me.decce.gnetum.versioned.HudHandler;
@@ -109,6 +110,7 @@ public class GameRendererMixin {
 
 		guiGraphics.pose().pushPose();
 
+		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
 		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
 		gnetum$renderFabricHuds(guiGraphics, deltaTracker);
 
