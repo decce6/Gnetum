@@ -1,0 +1,28 @@
+{
+  "gnetum.config.enabled": "启用",
+  "gnetum.config.enabled.tooltip": "决定是否启用 Gnetum, 该模组将 HUD 更新分摊至多帧进行渲染, 以提升性能",
+  "gnetum.config.showFps": "在 F3 中显示 HUD FPS",
+  "gnetum.config.showFps.tooltip": "在 F3 调试屏幕中添加一行, 用于显示 HUD 的帧率",
+  "gnetum.config.downscale": "降低 HUD 帧缓冲分辨率",
+  "gnetum.config.downscale.tooltip": "根据当前 GUI 缩放比例, 以较低分辨率渲染 HUD 帧缓冲, 可能会导致 HUD 看起来“模糊”, 且可能不兼容部分模组",
+  "gnetum.config.fastBlit": "快速帧缓冲传输",
+  "gnetum.config.fastBlit.tooltip": "丢弃完全透明的像素, 可在一定程度上提升 GPU 性能",
+  "gnetum.config.numberOfPasses": "渲染遍数",
+  "gnetum.config.numberOfPasses.tooltip": "指定总渲染遍数, 数值越高性能越好, 但 HUD 更新速度会变慢\n\nHUD 的最高帧率为游戏帧率与渲染遍数的商",
+  "gnetum.config.maxFps": "HUD 帧率上限",
+  "gnetum.config.maxFps.tooltip": "指定 HUD 的最高帧率, 优先级低于“渲染遍数”设置",
+  "gnetum.config.screenMaxFps": "HUD 帧率上限 (GUI 界面)",
+  "gnetum.config.screenMaxFps.tooltip": "当该值低于“HUD 帧率上限”时, 可在打开 GUI 界面时临时降低 HUD 帧率, 有助于提升 GUI 下的性能",
+  "gnetum.config.reset": "重置配置...",
+  "gnetum.config.confirmReset": "确定要重置所有配置吗？\n\n重置配置可能有助于解决某些问题, 但此操作无法撤销",
+  "gnetum.config.pass": "渲染遍次",
+  "gnetum.config.tooltip.auto": "自动: 尽可能启用缓存, 但当元素不兼容缓存时会自动禁用 (当前: %s)",
+  "gnetum.config.tooltip.on": "开启: 强制为此元素启用缓存",
+  "gnetum.config.tooltip.off": "关闭: 强制为此元素禁用缓存",
+  "gnetum.config.auto": "自动",
+
+  "gnetum.config.unknown_element": "未知元素",
+
+  "gnetum.config.element.hand.tooltip": "设为“开启”以启用手部缓存, 此选项目前在“自动”模式下不会启用",
+  "gnetum.config.element.debug_overlay.tooltip": "设为“开启”以启用调试屏幕 (F3) 缓存, 仅在游戏内且未打开任何 GUI 界面时生效, 此选项目前在“自动”模式下不会启用"
+}

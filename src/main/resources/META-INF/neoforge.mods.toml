@@ -11,6 +11,7 @@ displayURL = "${mod_link}"
 modUrl = "${mod_link}"
 logoFile = "assets/gnetum/gnetum.png"
 authors = "${mod_authors}"
+credits = "AlanChrisa"
 logoBlur = false
 
 description = '''${mod_description}'''

@@ -4,6 +4,7 @@
   "name": "${mod_name}",
   "version": "${mod_version_full}",
   "authors": ["${mod_authors}"],
+  "contributors": ["AlanChrisa"],
   "contact": {
     "sources": "${mod_sources}",
     "issues": "${mod_issues}",
