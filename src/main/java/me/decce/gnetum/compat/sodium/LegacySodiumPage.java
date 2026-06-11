@@ -69,6 +69,18 @@ public class LegacySodiumPage extends OptionPage {
 					}
 				}, opts -> Gnetum.config.showHudFps.get())
 				.build());
+		general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
+				.setEnabled(enabledOption::getValue)
+				.setName(Component.translatable("gnetum.config.downscale"))
+				.setTooltip(Component.translatable("gnetum.config.downscale.tooltip"))
+				.setImpact(OptionImpact.LOW)
+				.setControl(TickBoxControl::new)
+				.setBinding((opts, value) -> {
+					if (Gnetum.config.downscale.get() != value) {
+						Gnetum.config.downscale.next();
+					}
+				}, opts -> Gnetum.config.downscale.get())
+				.build());
 		general.add(OptionImpl.createBuilder(int.class, STORAGE)
 				.setEnabled(enabledOption::getValue)
 				.setName(Component.translatable("gnetum.config.numberOfPasses"))
@@ -84,6 +96,14 @@ public class LegacySodiumPage extends OptionPage {
 				.setImpact(OptionImpact.MEDIUM)
 				.setControl(option -> new SliderControl(option, 5, Constants.UNLIMITED_FPS, 5, i -> i == Constants.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
 				.setBinding((opts, value) -> Gnetum.config.setMaxFps(value), opts -> Gnetum.config.getRawMaxFps())
+				.build());
+		general.add(OptionImpl.createBuilder(int.class, STORAGE)
+				.setEnabled(enabledOption::getValue)
+				.setName(Component.translatable("gnetum.config.screenMaxFps"))
+				.setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
+				.setImpact(OptionImpact.MEDIUM)
+				.setControl(option -> new SliderControl(option, 5, Constants.SCREEN_UNLIMITED_FPS, 5, i -> i == Constants.SCREEN_UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
+				.setBinding((opts, value) -> Gnetum.config.screenMaxFps = value, opts -> Gnetum.config.screenMaxFps)
 				.build());
 
 		groups.add(general.build());
