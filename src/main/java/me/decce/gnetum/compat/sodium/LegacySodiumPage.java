@@ -16,6 +16,7 @@ import net.caffeinemc.mods.sodium.client.gui.options.control.CyclingControl;
 import net.caffeinemc.mods.sodium.client.gui.options.control.SliderControl;
 import net.caffeinemc.mods.sodium.client.gui.options.control.TickBoxControl;
 import net.caffeinemc.mods.sodium.client.gui.options.storage.OptionStorage;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -97,18 +98,27 @@ public class LegacySodiumPage extends OptionPage {
 		int i = 0;
 		for (var element : Gnetum.config.map.entrySet()) {
 			var name = Beautifier.beautify(element.getKey());
-			var tooltip = Component.literal(name).append("\n\n").append(Component.translatable("gnetum.config.element.tooltip"));
+			var tooltip = elementTooltip(element.getKey());
 			group.add(OptionImpl.createBuilder(AnyBooleanValue.class, STORAGE)
 					.setName(Component.literal(name))
 					.setTooltip(tooltip)
-					//.setElementNameProvider(AnyBooleanValue::text)
-					//.setDefaultValue(AnyBooleanValue.AUTO)
 					.setEnabled(enabledOption::getValue)
 					.setBinding((opts, v) -> element.getValue().enabled.value = v, (opts) -> element.getValue().enabled.value)
 					.setControl(opts -> new CyclingControl<>(opts, AnyBooleanValue.class))
 					.setImpact(OptionImpact.VARIES).build());
 		}
 		return group.build();
+	}
+
+	private static Component elementTooltip(String name) {
+		var key = "gnetum.config.element." + name + ".tooltip";
+		boolean hasTooltip = I18n.exists(key);
+		if (hasTooltip) {
+			return Component.literal(I18n.get(key));
+		}
+		else {
+			return Component.literal(Beautifier.beautify(name));
+		}
 	}
 }
 *///?}
