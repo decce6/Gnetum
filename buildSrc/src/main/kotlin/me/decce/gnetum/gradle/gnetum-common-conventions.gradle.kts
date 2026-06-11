@@ -1,6 +1,7 @@
 package me.decce.gnetum.gradle
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dev.kikugie.stonecutter.build.StonecutterBuildExtension
+import me.modmuss50.mpp.ReleaseType
 import java.nio.file.Files
 
 plugins {
@@ -119,7 +120,12 @@ tasks {
 }
 
 publishMods {
-    type = STABLE
+    if (hasProperty("release_type")) {
+        type = ReleaseType.of(prop("release_type"))
+    }
+    else {
+        type = STABLE
+    }
     version = fullModVersion()
     dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
     changelog = fetchLatestChangelog()
