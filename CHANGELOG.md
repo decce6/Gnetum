@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.4.0
+
+- Added 26.2 support
+- Fixed minor HUD offset when the window width / height is not a multiple of the GUI scale
+- Slightly improved performance when Downscale HUD Framebuffer is not enabled
+- Reimplemented Fast Framebuffer Blitting
+- [Fabric] Marked Fabric API as required
+- Added zh_cn.json (Thanks @AlanChrisa!)
+
 ## 4.3.2
 
 - Fixed player locator bar
