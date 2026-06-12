@@ -8,7 +8,6 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -45,29 +44,7 @@ public class FramebufferBlitter {
             , /*$src_factor ONE*/ SourceFactor.ONE
             , /*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
     );
-    public static final RenderPipeline GNETUM_FBO_BLIT_PIPELINE = configure(RenderPipeline.builder())
-            .withLocation(Identifier.parse("gnetum:fbo_blit_pipeline"))
-            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
-            .withFragmentShader("core/position_tex")
-            //? >=26.2 {
-            /*.withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
-            *///? } else {
-            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES)
-            //? }
-            .build();
-    public static final RenderPipeline GNETUM_DOWNSCALED_FBO_BLIT_PIPELINE = configure(RenderPipeline.builder())
-            .withLocation(Identifier.parse("gnetum:downscaled_fbo_blit_pipeline"))
-            .withVertexShader("core/position_tex")
-            .withFragmentShader("core/position_tex")
-            //? >=26.2 {
-            /*.withPrimitiveTopology(PrimitiveTopology.QUADS)
-            *///? } else {
-            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
-            //? }
-            .build();
-
-    private static RenderPipeline.Builder configure(RenderPipeline.Builder builder) {
-        return builder
+    public static final RenderPipeline.Snippet SNIPPET = RenderPipeline.builder()
             //? >=26.2 {
             /*.withBindGroupLayout(BindGroupLayouts.GLOBALS)
             .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
@@ -90,12 +67,46 @@ public class FramebufferBlitter {
             .withDepthWrite(false)
             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
             //? }
-        ;
-    }
+            .buildSnippet();
+    public static final RenderPipeline.Snippet TRIANGLES_SNIPPET = RenderPipeline.builder()
+            //? >=26.2 {
+            /*.withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+             *///? } else {
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES)
+            //? }
+            .buildSnippet();
+    public static final RenderPipeline.Snippet QUADS_SNIPPET = RenderPipeline.builder()
+            //? >=26.2 {
+            /*.withPrimitiveTopology(PrimitiveTopology.QUADS)
+             *///? } else {
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
+            //? }
+            .buildSnippet();
+    public static final RenderPipeline FAST_BLIT = RenderPipeline.builder(SNIPPET, TRIANGLES_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:fast_blit_pipeline"))
+            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
+            .withFragmentShader(Identifier.parse("gnetum:position_tex_fast"))
+            .build();
+    public static final RenderPipeline BLIT = RenderPipeline.builder(SNIPPET, TRIANGLES_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:blit_pipeline"))
+            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
+            .withFragmentShader(Identifier.parse("gnetum:position_tex"))
+            .build();
+    public static final RenderPipeline DOWNSCALED_FAST_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:downscaled_fast_blit_pipeline"))
+            .withVertexShader("core/position_tex")
+            .withFragmentShader(Identifier.parse("gnetum:position_tex_fast"))
+            .build();
+    public static final RenderPipeline DOWNSCALED_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:downscaled_blit_pipeline"))
+            .withVertexShader("core/position_tex")
+            .withFragmentShader(Identifier.parse("gnetum:position_tex"))
+            .build();
 
     public static void blit(RenderTarget source, GuiGraphics guiGraphics) {
         if (Gnetum.config.downscale.get()) {
-            ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(GNETUM_DOWNSCALED_FBO_BLIT_PIPELINE,
+            ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(
+                    Gnetum.config.fastFboBlit.get() ? DOWNSCALED_FAST_BLIT : DOWNSCALED_BLIT,
                     source.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
                     0,
@@ -125,7 +136,7 @@ public class FramebufferBlitter {
 
         @Override
         public RenderPipeline pipeline() {
-            return GNETUM_FBO_BLIT_PIPELINE;
+            return Gnetum.config.fastFboBlit.get() ? FAST_BLIT : BLIT;
         }
 
         @Override
