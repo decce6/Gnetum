@@ -3,6 +3,7 @@ package me.decce.gnetum.compat.sodium;
 //? sodium {
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
+import me.decce.gnetum.VersionCompatUtil;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.Beautifier;
 import me.decce.gnetum.util.TwoStateBoolean;
@@ -130,7 +131,7 @@ public class SodiumEntrypoint implements ConfigEntryPoint {
 	private Function<AnyBooleanValue, Component> elementTooltip(String name) {
 		var displayName = Beautifier.beautify(name);
 		var key = "gnetum.config.element." + name + ".tooltip";
-		boolean hasTooltip = I18n.exists(key);
+		boolean hasTooltip = VersionCompatUtil.i18nExists(key);
 		String tooltip = I18n.get(key);
 		return v -> {
 			var ret = Component.literal(displayName).append(" (").append(name).append(")\n\n");
