@@ -54,7 +54,7 @@ public class Framebuffers {
 
 	public void blit(GuiGraphics guiGraphics) {
 		//? >=1.21.10 {
-		FramebufferBlitter.blit(front.getColorTextureView(), guiGraphics);
+		FramebufferBlitter.blit(front, guiGraphics);
 		//?} else {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();

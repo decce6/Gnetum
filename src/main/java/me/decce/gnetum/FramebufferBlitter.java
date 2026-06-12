@@ -3,15 +3,20 @@ package me.decce.gnetum;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 //$ import_blend_factors
 import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import me.decce.gnetum.mixins.Gui_Graphics_Accessor;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
@@ -41,32 +46,45 @@ public class FramebufferBlitter {
             , /*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
     );
     public static final RenderPipeline GNETUM_FBO_BLIT_PIPELINE = configure(RenderPipeline.builder())
-            .withLocation(Identifier.parse("gnetum:fast_fbo_blit_pipeline"))
+            .withLocation(Identifier.parse("gnetum:fbo_blit_pipeline"))
+            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
+            .withFragmentShader("core/position_tex")
+            //? >=26.2 {
+            /*.withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+            *///? } else {
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES)
+            //? }
+            .build();
+    public static final RenderPipeline GNETUM_DOWNSCALED_FBO_BLIT_PIPELINE = configure(RenderPipeline.builder())
+            .withLocation(Identifier.parse("gnetum:downscaled_fbo_blit_pipeline"))
+            .withVertexShader("core/position_tex")
+            .withFragmentShader("core/position_tex")
+            //? >=26.2 {
+            /*.withPrimitiveTopology(PrimitiveTopology.QUADS)
+            *///? } else {
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
+            //? }
             .build();
 
     private static RenderPipeline.Builder configure(RenderPipeline.Builder builder) {
         return builder
-            .withVertexShader("core/position_tex")
-            .withFragmentShader("core/position_tex")
             //? >=26.2 {
-            /*.withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            /*.withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
             .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
-            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX)
             .withColorTargetState(new ColorTargetState(Optional.of(GNETUM_FBO_BLEND), GpuFormat.RGBA8_UNORM, ColorTargetState.WRITE_COLOR))
             .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
             *///? } else if >=26 {
             /*.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withSampler("Sampler0")
-            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
             .withColorTargetState(new ColorTargetState(Optional.of(GNETUM_FBO_BLEND), ColorTargetState.WRITE_COLOR))
             .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
             *///? } else {
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withSampler("Sampler0")
-            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
             .withBlend(GNETUM_FBO_BLEND)
             .withColorWrite(true, false)
             .withDepthWrite(false)
@@ -75,19 +93,55 @@ public class FramebufferBlitter {
         ;
     }
 
-    public static void blit(GpuTextureView source, GuiGraphics guiGraphics) {
-        ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(GNETUM_FBO_BLIT_PIPELINE,
-                source,
-                RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
-                0,
-                0,
-                guiGraphics.guiWidth(),
-                guiGraphics.guiHeight(),
-                0,
-                1,
-                1,
-                0,
-                0xFFFFFFFF);
+    public static void blit(RenderTarget source, GuiGraphics guiGraphics) {
+        if (Gnetum.config.downscale.get()) {
+            ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(GNETUM_DOWNSCALED_FBO_BLIT_PIPELINE,
+                    source.getColorTextureView(),
+                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
+                    0,
+                    0,
+                    guiGraphics.guiWidth(),
+                    guiGraphics.guiHeight(),
+                    0,
+                    1,
+                    1,
+                    0,
+                    0xFFFFFFFF);
+        }
+        else {
+            ((Gui_Graphics_Accessor)guiGraphics).getGuiRenderState().submitGuiElement(new FramebufferRenderState(source));
+        }
+    }
+
+    public record FramebufferRenderState(RenderTarget target) implements GuiElementRenderState {
+        @Override
+        public void buildVertices(VertexConsumer vertexConsumer) {
+            // Dummy vertices to bypass the "Cannot build mesh with no position element" limitation
+            // See position_tex_fullscreen.vsh
+            vertexConsumer.addVertex(0, 0, 0).setUv(0, 0);
+            vertexConsumer.addVertex(0, 0, 0).setUv(0, 0);
+            vertexConsumer.addVertex(0, 0, 0).setUv(0, 0);
+        }
+
+        @Override
+        public RenderPipeline pipeline() {
+            return GNETUM_FBO_BLIT_PIPELINE;
+        }
+
+        @Override
+        public TextureSetup textureSetup() {
+            return TextureSetup.singleTexture(target.getColorTextureView(), RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST));
+        }
+
+        @Override
+        public ScreenRectangle scissorArea() {
+            return null;
+        }
+
+        @Override
+        public ScreenRectangle bounds() {
+            return new ScreenRectangle(0, 0, target.width, target.height);
+        }
     }
 }
 //? }
