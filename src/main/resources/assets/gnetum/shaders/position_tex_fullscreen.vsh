@@ -6,7 +6,7 @@
 // Keep the position and uv attributes even though we don't use them.
 // This is needed due to the Blaze3D limitation of "Cannot build mesh with no position element"
 in vec3 Position;
-in vec2 UV;
+in vec2 UV0;
 
 out vec2 texCoord0;
 
