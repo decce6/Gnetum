@@ -2,11 +2,16 @@ package me.decce.gnetum.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //? >=26.2 {
 /*import net.minecraft.client.gui.Hud;
@@ -26,7 +31,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 
@@ -34,6 +38,7 @@ import java.util.function.Predicate;
 *///?}
 //? xaerominimap {
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? }
 
 //? >=26.2 {
@@ -107,4 +112,13 @@ public class HudMixin {
         return !Gnetum.renderingGuiInjection;
     }
     *///? }
+
+	//? >=26 {
+	/*@Inject(method = "extractSubtitleOverlay", at = @At("HEAD"))
+	*///? } else {
+	@Inject(method = "renderSubtitleOverlay", at = @At("HEAD"))
+	//? }
+	private void gnetum$doNotDeferSubtitles(GuiGraphics guiGraphics, boolean bl, CallbackInfo ci, @Local(argsOnly = true)LocalBooleanRef defer) {
+		defer.set(false);
+	}
 }
