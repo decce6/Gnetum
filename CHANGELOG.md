@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.4.1
+
+- Added 26.2 NeoForge support
+- Fixed subtitles HUD flickering
+
 ## 4.4.0
 
 - Added 26.2 support
