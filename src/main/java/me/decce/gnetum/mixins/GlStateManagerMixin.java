@@ -40,12 +40,12 @@ public class GlStateManagerMixin {
         }
         if (FramebufferTracker.getCurrentlyBoundFbo() == Gnetum.framebuffers().back().frameBufferId && gnetum$isBlendFuncDangerous(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha)) {
             Gnetum.disableCachingForCurrentElement(String.format("Blending Function (%d, %d, %d, %d)", srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha));
-            //TODO : check xaero's compat
         }
     }
 
     @Unique
     private static boolean gnetum$isBlendFuncDangerous(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha) {
+        if (srcFactor == GlConst.GL_ONE_MINUS_DST_COLOR && dstFactor == GlConst.GL_ZERO) return false; // Do not disable cache for Xaero's Minimap
         if (gnetum$isUsingDestColor(srcFactor) || gnetum$isUsingDestColor(dstFactor)) return true;
         if (dstFactor == GlConst.GL_SRC_COLOR || dstFactor == GlConst.GL_ONE_MINUS_SRC_COLOR) return true;
         if (srcFactor == GlConst.GL_ONE && dstFactor == GlConst.GL_ONE) return true;

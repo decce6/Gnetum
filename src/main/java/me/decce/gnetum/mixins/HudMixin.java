@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,16 +22,10 @@ import net.minecraft.client.gui.Gui;
 //? >=1.21.10 {
 import me.decce.gnetum.versioned.StatefulHudHandler;
 //?} else {
-/*import static me.decce.gnetum.hud.SharedValues.guiGraphics;
-import me.decce.gnetum.hud.HudManager;
-import me.decce.gnetum.hud.SharedValues;
+/*import static me.decce.gnetum.hud.SharedValues.deltaTracker;
+import static me.decce.gnetum.hud.SharedValues.guiGraphics;
+import me.decce.gnetum.versioned.HudHandler;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 
@@ -47,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = Gui.class, priority = 5000)
 //? }
 public class HudMixin {
-	//? if >=1.21.10 {
+    //? if >=1.21.10 {
 	//? if >26 {
 	/*@WrapMethod(method = "extractRenderState")
 	*///? } else {
@@ -111,8 +106,20 @@ public class HudMixin {
     private boolean gnetum$renderInjection(LayeredDraw instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         return !Gnetum.renderingGuiInjection;
     }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void gnetum$init(Minecraft minecraft, CallbackInfo ci, @Local(ordinal = 0) LayeredDraw layeredDraw) {
+        // Some mods (e.g. InventoryHUD) adds their HUDs to the LayeredDraw, detect them for compat
+        for (LayeredDraw.Layer layer : ((LayeredDrawAccessor)layeredDraw).getLayers()) {
+            var clazz = layer.getClass();
+            if (!clazz.getName().startsWith("net.minecraft")) {
+                HudHandler.unknownElements.add(() -> layer.render(guiGraphics(), deltaTracker()));
+            }
+        }
+    }
     *///? }
 
+    //? >=1.21.11 {
 	//? >=26 {
 	/*@Inject(method = "extractSubtitleOverlay", at = @At("HEAD"))
 	*///? } else {
@@ -121,4 +128,5 @@ public class HudMixin {
 	private void gnetum$doNotDeferSubtitles(GuiGraphics guiGraphics, boolean bl, CallbackInfo ci, @Local(argsOnly = true)LocalBooleanRef defer) {
 		defer.set(false);
 	}
+    //? }
 }

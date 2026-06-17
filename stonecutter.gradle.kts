@@ -10,6 +10,8 @@ stonecutter parameters {
     constants["sodium_legacy"] = node.project.hasProperty("deps.sodium_legacy")
     constants["jade"] = node.project.hasProperty("deps.jade")
     constants["xaerominimap"] = node.project.hasProperty("deps.xaerominimap")
+    constants["journeymap"] = node.project.hasProperty("deps.journeymap")
+    constants["immediatelyfast"] = node.project.hasProperty("deps.immediatelyfast")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"
     swaps["import_blend_factors"] = when {
         eval(current.version, ">=26.2") -> "import com.mojang.blaze3d.platform.BlendFactor;"

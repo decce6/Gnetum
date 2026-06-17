@@ -2,6 +2,7 @@ package me.decce.gnetum.hud;
 
 //? fabric && <=1.21.10 {
 /*import me.decce.gnetum.mixins.GuiAccessor;
+import me.decce.gnetum.versioned.HudHandler;
 import net.minecraft.client.Minecraft;
 
 import static me.decce.gnetum.hud.SharedValues.*;
@@ -105,6 +106,12 @@ public class VanillaHuds {
             .blend(true)
             .depth(true)
             .onRender(() -> accessor().invokeRenderSavingIndicator(guiGraphics, deltaTracker))
+            .build();
+    public static final Hud UNKNOWN_MODDED_HUDS = Hud.builder()
+            .id("unknown_element")
+            .blend(true)
+            .depth(true)
+            .onRender(() -> HudHandler.unknownElements.forEach(Runnable::run))
             .build();
 
     public static void init() {

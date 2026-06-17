@@ -28,6 +28,12 @@ dependencies {
     if (hasProperty("deps.xaerominimap")) {
         modCompileOnly("maven.modrinth:xaeros-minimap:${prop("deps.xaerominimap")}")
     }
+    if (hasProperty("deps.journeymap")) {
+        modCompileOnly("maven.modrinth:journeymap:${prop("deps.journeymap")}")
+    }
+    if (hasProperty("deps.immediatelyfast")) {
+        modCompileOnly("maven.modrinth:immediatelyfast:${prop("deps.immediatelyfast")}")
+    }
 }
 
 tasks {

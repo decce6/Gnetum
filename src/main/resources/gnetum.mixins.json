@@ -15,6 +15,7 @@
     "GuiRendererAccessor",
     "GuiRenderStateMixin",
     "HudMixin",
+    "LayeredDrawAccessor",
     "MappableRingBufferMixin",
     "MinecraftAccessor",
     "MinecraftMixin",
@@ -25,7 +26,8 @@
     "compat.jade.ClientProxyMixin",
     "compat.sodium.SodiumOptionsGUIMixin",
     "compat.xaerominimap.ClientEventsMixin",
-    "compat.xaerominimap.XaeroMinimapCoreMixin"
+    "compat.xaerominimap.XaeroMinimapCoreMixin",
+    "compat.journeymap.HudOverlayHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

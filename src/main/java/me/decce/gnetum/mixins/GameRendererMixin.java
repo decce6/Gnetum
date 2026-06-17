@@ -29,10 +29,9 @@ import java.util.function.Predicate;
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.hud.HudManager;
 import me.decce.gnetum.hud.SharedValues;
-import me.decce.gnetum.versioned.HudHandler;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
-import static me.decce.gnetum.hud.SharedValues.deltaTracker;
 import static me.decce.gnetum.hud.SharedValues.guiGraphics;
 *///? }
 //? >=1.21.10 {
@@ -42,6 +41,11 @@ import org.joml.Matrix3x2f;
 //? >26 {
 /*import org.joml.Matrix4fc;
 *///? }
+
+//? immediatelyfast
+//import me.decce.gnetum.compat.immediatelyfast.ImmediatelyFastCompat;
+//? journeymap
+//import me.decce.gnetum.compat.journeymap.JourneyMapCompat;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -110,9 +114,12 @@ public class GameRendererMixin {
 
 		guiGraphics.pose().pushPose();
 
-		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
-		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
-		gnetum$renderFabricHuds(guiGraphics, deltaTracker);
+		ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+			JourneyMapCompat.invokeRenderWaypointDecos(guiGraphics);
+			XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
+			gnetum$renderVanillaHuds(CachedElement::shouldRenderAsUncached);
+			gnetum$renderFabricHuds(guiGraphics, deltaTracker);
+		});
 
 		Gnetum.framebuffers().resize();
 		if (Gnetum.pass == 0) {
@@ -120,19 +127,17 @@ public class GameRendererMixin {
 		}
 		else {
 			VersionCompatUtil.profilerPush("pass" + Gnetum.pass);
-			VersionCompatUtil.flush(guiGraphics);
 			Gnetum.framebuffers().bind();
 		}
 
 		Gnetum.rendering = true;
 
-		gnetum$renderGuiInjection(instance, guiGraphics, deltaTracker);
-		gnetum$renderVanillaHuds(CachedElement::shouldRenderAsCached);
-		gnetum$renderFabricHuds(guiGraphics, deltaTracker);
+		ImmediatelyFastCompat.batchIfInstalled(guiGraphics, () -> {
+			gnetum$renderGuiInjection(instance, guiGraphics, deltaTracker);
+			gnetum$renderVanillaHuds(CachedElement::shouldRenderAsCached);
+			gnetum$renderFabricHuds(guiGraphics, deltaTracker);
+		});
 
-		if (Gnetum.pass > 0) {
-			VersionCompatUtil.flush(guiGraphics);
-		}
 		VersionCompatUtil.profilerPop();
 
 		Gnetum.rendering = false;
@@ -171,11 +176,13 @@ public class GameRendererMixin {
 				if (Gnetum.rendering) {
 					element.begin();
 					hud.render();
+					ImmediatelyFastCompat.flushIfInstalledAndUsingHudBatching(guiGraphics); // Duplicates ImmediatelyFast behavior: https://github.com/RaphiMC/ImmediatelyFast/blob/e05390bbc2c2bdc3d19cad458d894dc4f605d3fb/common/src/main/java/net/raphimc/immediatelyfast/injection/mixins/hud_batching/MixinLayeredDrawer.java#L32-L37
 					element.end();
 				}
 				else {
 					hud.render();
 				}
+				RenderSystem.enableDepthTest(); // Fixes GL state leak by some mods
 				guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
 			}
 		}

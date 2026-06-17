@@ -18,5 +18,13 @@ public class SharedValues {
     public static GuiAccessor guiAccessor() {
         return (GuiAccessor) gui();
     }
+
+    public static GuiGraphics guiGraphics() {
+        return guiGraphics;
+    }
+
+    public static DeltaTracker deltaTracker() {
+        return deltaTracker;
+    }
 }
 *///? }
