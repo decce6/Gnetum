@@ -2,6 +2,7 @@ package me.decce.gnetum;
 
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlConst;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
@@ -97,9 +98,13 @@ public class FramebufferManager {
         Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ClientHooks.getGuiFarPlane());
         RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
 
-        RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
+        // Note: some mods leak GL states in their HUD rendering code. When such HUD elements are cached, they create
+        // flickering between frames where they are rendered and they are not. We manually correct the GL states here
+        // to prevent such issues.
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        Lighting.setupFor3DItems();
 
         mc.getProfiler().pop();
     }
