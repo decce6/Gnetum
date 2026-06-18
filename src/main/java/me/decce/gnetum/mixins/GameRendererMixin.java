@@ -215,7 +215,7 @@ public class GameRendererMixin {
 
 	@WrapMethod(method = "renderItemInHand")
 	//? if >26 {
-	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, DeltaTracker deltaTracker, Matrix4fc modelViewMatrix, Operation<Void> original) {
+	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, float deltaPartialTicks, Matrix4fc modelViewMatrix, Operation<Void> original) {
 	*///? } else if >=1.21.10 {
 	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
 	//? } else if >=1.21.1 {
@@ -226,7 +226,7 @@ public class GameRendererMixin {
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
 		Runnable callOriginal = () ->
 				//? if >26 {
-				/*original.call(cameraState, deltaTracker, modelViewMatrix);
+				/*original.call(cameraState, deltaPartialTicks, modelViewMatrix);
 				 *///? } else if >=1.21.10 {
 				original.call(f, bl, matrix4f);
 				//? } else if >=1.21.1 {
