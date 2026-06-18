@@ -17,6 +17,10 @@ stonecutter parameters {
         eval(current.version, ">=26.2") -> "import com.mojang.blaze3d.platform.BlendFactor;"
         else -> "import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;"
     }
+    swaps["import_delta_tracker"] = when {
+        eval(current.version, ">=1.21.1") -> "import net.minecraft.client.DeltaTracker;"
+        else -> "// No delta tracker in this version"
+    }
     swaps["src_factor"] = when {
         eval(current.version, ">=26.2") -> "BlendFactor.$1"
         else -> "SourceFactor.$1"
@@ -36,6 +40,10 @@ stonecutter parameters {
         replace("location()", "identifier()")
         replace("com.mojang.blaze3d.platform.GlStateManager", "com.mojang.blaze3d.opengl.GlStateManager")
     }
+    replacements.string(current.parsed >= "1.21.1") {
+        replace("new ResourceLocation", "ResourceLocation.fromNamespaceAndPath")
+        replace("float deltaTracker", "DeltaTracker deltaTracker")
+    }
     replacements.string(current.parsed >= "26.1") {
         replace("GuiGraphics", "GuiGraphicsExtractor")
         replace("net.minecraft.client.gui.render.state", "net.minecraft.client.renderer.state.gui")
@@ -43,6 +51,11 @@ stonecutter parameters {
         replace("submitPicturesInPictureState", "addPicturesInPictureState")
         replace("submitItem", "addItem")
         replace("submitGuiElement", "addGuiElement")
+    }
+    replacements.string(
+        node.project.hasProperty("deps.sodium_legacy.old_namespace")
+            && node.project.property("deps.sodium_legacy.old_namespace") == "true") {
+        replace("net.caffeinemc.mods", "me.jellysquid.mods")
     }
 }
 

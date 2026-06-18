@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins.compat.effects;
 
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
+//$ import_delta_tracker
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,6 +1,7 @@
 package me.decce.gnetum.compat.xaerominimap;
 
 import me.decce.gnetum.Gnetum;
+//$ import_delta_tracker
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 //? if xaerominimap {

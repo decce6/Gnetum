@@ -107,7 +107,8 @@ public class HudMixin {
         return !Gnetum.renderingGuiInjection;
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    //? 1.21.1 {
+    /^@Inject(method = "<init>", at = @At("TAIL"))
     private void gnetum$init(Minecraft minecraft, CallbackInfo ci, @Local(ordinal = 0) LayeredDraw layeredDraw) {
         // Some mods (e.g. InventoryHUD) adds their HUDs to the LayeredDraw, detect them for compat
         for (LayeredDraw.Layer layer : ((LayeredDrawAccessor)layeredDraw).getLayers()) {
@@ -117,6 +118,7 @@ public class HudMixin {
             }
         }
     }
+    ^///? }
     *///? }
 
     //? >=1.21.11 {

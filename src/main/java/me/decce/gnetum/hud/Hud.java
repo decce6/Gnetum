@@ -68,12 +68,12 @@ public class Hud {
         private Runnable runnable;
 
         public Builder id(String id) {
-            this.id = Identifier.fromNamespaceAndPath("minecraft", id);
+            this.id = ResourceLocation.fromNamespaceAndPath("minecraft", id);
             return this;
         }
 
         public Builder id(String namespace, String id) {
-            this.id = Identifier.fromNamespaceAndPath(namespace, id);
+            this.id = ResourceLocation.fromNamespaceAndPath(namespace, id);
             return this;
         }
 

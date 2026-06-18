@@ -4,10 +4,12 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.VersionCompatUtil;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -213,21 +215,25 @@ public class GameRendererMixin {
 
 	@WrapMethod(method = "renderItemInHand")
 	//? if >26 {
-	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, float deltaPartialTick, Matrix4fc modelViewMatrix, Operation<Void> original) {
+	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, DeltaTracker deltaTracker, Matrix4fc modelViewMatrix, Operation<Void> original) {
 	*///? } else if >=1.21.10 {
 	private void gnetum$wrapRenderItemInHand(float f, boolean bl, Matrix4f matrix4f, Operation<Void> original) {
-	//? } else {
+	//? } else if >=1.21.1 {
 	/*private void gnetum$wrapRenderItemInHand(net.minecraft.client.Camera camera, float f, Matrix4f matrix4f, Operation<Void> original) {
+	*///? } else {
+	/*private void gnetum$wrapRenderItemInHand(PoseStack poseStack, Camera camera, float f, Operation<Void> original) {
 	*///? }
 		var hand = Gnetum.getElement(Constants.HAND_ELEMENT);
 		Runnable callOriginal = () ->
 				//? if >26 {
-				/*original.call(cameraState, deltaPartialTick, modelViewMatrix);
+				/*original.call(cameraState, deltaTracker, modelViewMatrix);
 				 *///? } else if >=1.21.10 {
 				original.call(f, bl, matrix4f);
-				//? } else {
+				//? } else if >=1.21.1 {
 				/*original.call(camera, f, matrix4f);
-				 *///? }
+				*///? } else {
+				/*original.call(poseStack, camera, f);
+				*///? }
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
 			callOriginal.run();
 			return;

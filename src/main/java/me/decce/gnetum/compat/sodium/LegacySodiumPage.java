@@ -58,8 +58,7 @@ public class LegacySodiumPage extends OptionPage {
 				}, opts -> Gnetum.config.enabled.get())
 				.build();
 		general.add(enabledOption);
-		general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
-				.setEnabled(enabledOption::getValue)
+		general.add(configure(OptionImpl.createBuilder(boolean.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.showFps"))
 				.setTooltip(Component.translatable("gnetum.config.showFps.tooltip"))
 				.setControl(TickBoxControl::new)
@@ -69,8 +68,7 @@ public class LegacySodiumPage extends OptionPage {
 					}
 				}, opts -> Gnetum.config.showHudFps.get())
 				.build());
-		general.add(OptionImpl.createBuilder(boolean.class, STORAGE)
-				.setEnabled(enabledOption::getValue)
+		general.add(configure(OptionImpl.createBuilder(boolean.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.downscale"))
 				.setTooltip(Component.translatable("gnetum.config.downscale.tooltip"))
 				.setImpact(OptionImpact.LOW)
@@ -81,24 +79,21 @@ public class LegacySodiumPage extends OptionPage {
 					}
 				}, opts -> Gnetum.config.downscale.get())
 				.build());
-		general.add(OptionImpl.createBuilder(int.class, STORAGE)
-				.setEnabled(enabledOption::getValue)
+		general.add(configure(OptionImpl.createBuilder(int.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.numberOfPasses"))
 				.setTooltip(Component.translatable("gnetum.config.numberOfPasses.tooltip"))
 				.setImpact(OptionImpact.MEDIUM)
 				.setControl(option -> new SliderControl(option, 2, 10, 1, ControlValueFormatter.number()))
 				.setBinding((opts, value) -> Gnetum.config.setNumberOfPasses(value), opts -> Gnetum.config.getNumberOfPasses())
 				.build());
-		general.add(OptionImpl.createBuilder(int.class, STORAGE)
-				.setEnabled(enabledOption::getValue)
+		general.add(configure(OptionImpl.createBuilder(int.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.maxFps"))
 				.setTooltip(Component.translatable("gnetum.config.maxFps.tooltip"))
 				.setImpact(OptionImpact.MEDIUM)
 				.setControl(option -> new SliderControl(option, 5, Constants.UNLIMITED_FPS, 5, i -> i == Constants.UNLIMITED_FPS ? Component.translatable("options.framerateLimit.max") : Component.translatable("options.framerate", i)))
 				.setBinding((opts, value) -> Gnetum.config.setMaxFps(value), opts -> Gnetum.config.getRawMaxFps())
 				.build());
-		general.add(OptionImpl.createBuilder(int.class, STORAGE)
-				.setEnabled(enabledOption::getValue)
+		general.add(configure(OptionImpl.createBuilder(int.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.screenMaxFps"))
 				.setTooltip(Component.translatable("gnetum.config.screenMaxFps.tooltip"))
 				.setImpact(OptionImpact.MEDIUM)
@@ -119,10 +114,9 @@ public class LegacySodiumPage extends OptionPage {
 		for (var element : Gnetum.config.map.entrySet()) {
 			var name = Beautifier.beautify(element.getKey());
 			var tooltip = elementTooltip(element.getKey());
-			group.add(OptionImpl.createBuilder(AnyBooleanValue.class, STORAGE)
+			group.add(configure(OptionImpl.createBuilder(AnyBooleanValue.class, STORAGE))
 					.setName(Component.literal(name))
 					.setTooltip(tooltip)
-					.setEnabled(enabledOption::getValue)
 					.setBinding((opts, v) -> element.getValue().enabled.value = v, (opts) -> element.getValue().enabled.value)
 					.setControl(opts -> new CyclingControl<>(opts, AnyBooleanValue.class))
 					.setImpact(OptionImpact.VARIES).build());
@@ -139,6 +133,14 @@ public class LegacySodiumPage extends OptionPage {
 		else {
 			return Component.literal(Beautifier.beautify(name));
 		}
+	}
+
+	private static <S, T> OptionImpl.Builder<S, T> configure(OptionImpl.Builder<S, T> builder) {
+		//? >=1.21.1 {
+		return builder.setEnabled(enabledOption::getValue);
+		//? } else {
+		/^return builder;
+		^///? }
 	}
 }
 *///?}

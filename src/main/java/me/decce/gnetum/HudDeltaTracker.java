@@ -1,5 +1,6 @@
 package me.decce.gnetum;
 
+//$ import_delta_tracker
 import net.minecraft.client.DeltaTracker;
 
 import java.util.Arrays;
@@ -12,14 +13,22 @@ public class HudDeltaTracker {
     private static float[] gameTimeDeltaTicks;
     private static boolean logOnce;
 
+    //? >=1.21.1 {
     public static void update(DeltaTracker.Timer timer) {
+    //? } else {
+    /*public static void update(float f) {
+    *///? }
         int len = Gnetum.config.getNumberOfPasses() + 1;
         int curr = Gnetum.pass;
         if (realtimeDeltaTicks == null || realtimeDeltaTicks.length != len) {
             reset();
         }
+        //? >=1.21.1 {
         realtimeDeltaTicks[curr] += timer.getRealtimeDeltaTicks();
         gameTimeDeltaTicks[curr] += timer.getGameTimeDeltaTicks();
+        //? } else {
+        /*gameTimeDeltaTicks[curr] += f;
+        *///? }
     }
 
     public static void reset() {
