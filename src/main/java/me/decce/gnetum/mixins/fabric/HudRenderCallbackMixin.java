@@ -34,6 +34,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.decce.gnetum.Gnetum;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+//$ import_delta_tracker
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +42,11 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = HudRenderCallback.class, remap = false)
 public interface HudRenderCallbackMixin {
+    //? >=1.21.1 {
     @WrapOperation(method = "lambda$static$0", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/api/client/rendering/v1/HudRenderCallback;onHudRender(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    //? } else {
+    /^@WrapOperation(method = "lambda$static$0", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/api/client/rendering/v1/HudRenderCallback;onHudRender(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+    ^///? }
     private static void gnetum$render(HudRenderCallback callback, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
         if (Gnetum.renderingGuiInjection) {
             return;

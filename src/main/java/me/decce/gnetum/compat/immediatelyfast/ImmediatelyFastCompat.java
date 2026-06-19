@@ -5,14 +5,21 @@ package me.decce.gnetum.compat.immediatelyfast;
 import net.minecraft.client.gui.GuiGraphics;
 import net.raphimc.immediatelyfast.ImmediatelyFast;
 import net.raphimc.immediatelyfast.feature.batching.BatchingBuffers;
+import net.raphimc.immediatelyfastapi.ImmediatelyFastApi;
 
 public class ImmediatelyFastCompat {
     public static final boolean INSTALLED = Gnetum.platform().isModLoaded("immediatelyfast");
+    //? >=1.21.1 {
+    public static final boolean USE_BATCHING = true;
+    //? } else {
+    /^public static final boolean USE_BATCHING = false;
+    ^///? }
     private static boolean suppressError;
 
     public static void batchIfInstalled(GuiGraphics guiGraphics, Runnable runnable) {
-        if (INSTALLED) {
+        if (INSTALLED && USE_BATCHING) {
             try {
+                //?>= 1.21.1
                 BatchingBuffers.runBatched(guiGraphics, runnable);
             }
             catch (Throwable throwable) {

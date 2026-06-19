@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? journeymap {
+//? journeymap && >=1.21.1 {
 /*import journeymap.client.event.handlers.HudOverlayHandler;
 
 @Pseudo

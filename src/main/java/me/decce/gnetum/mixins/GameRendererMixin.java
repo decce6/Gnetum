@@ -10,6 +10,7 @@ import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import me.decce.gnetum.VersionCompatUtil;
 import net.minecraft.client.Camera;
+//$ import_delta_tracker
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -65,20 +66,27 @@ public class GameRendererMixin {
 	*///? } else >26 {
 	/*@Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
-	*///? } else {
+	*///? } else >=1.21.1 {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
-	//? }
+	//? } else {
+	/*@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, long l, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+	*///? }
 		if (!Gnetum.config.isEnabled()) {
 			return;
 		}
 
+		//? >=1.21.1 {
 		if (deltaTracker instanceof DeltaTracker.Timer timer) {
 			HudDeltaTracker.update(timer);
 		}
 		else {
 			HudDeltaTracker.disable();
 		}
+		//? } else {
+		/*HudDeltaTracker.update(deltaTracker);
+		*///? }
 
 		// The other half is in GuiMixin
 		//? <=26.1 {
@@ -103,7 +111,7 @@ public class GameRendererMixin {
 	}
 	//? }
 
-	//? <=1.21.1 {
+	//? 1.21.1 {
 	/*@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled() || Minecraft.getInstance().options.hideGui) {
@@ -157,7 +165,8 @@ public class GameRendererMixin {
 		guiGraphics.pose().popPose();
 
 		SharedValues.guiGraphics = null;
-		SharedValues.deltaTracker = null;
+		//? >=1.21.1
+		//SharedValues.deltaTracker = null;
 	}
 
 	@Unique

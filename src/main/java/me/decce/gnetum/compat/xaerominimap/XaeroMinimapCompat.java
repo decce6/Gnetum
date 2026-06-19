@@ -35,9 +35,11 @@ public class XaeroMinimapCompat {
 			shouldRenderWaypoint = true;
 			//? >26 {
 			/*HudMod.INSTANCE.getEvents().handleRenderGameOverlayEventPre();
-			*///? } else {
+			*///? } else >=1.21.1 {
 			HudMod.INSTANCE.getEvents().handleRenderGameOverlayEventPre(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true));
-			//? }
+			//? } else {
+			/*HudMod.INSTANCE.getEvents().handleRenderGameOverlayEventPre(guiGraphics, deltaTracker);
+			*///? }
 			shouldRenderWaypoint = false;
 		});
 	}

@@ -22,7 +22,7 @@ public class GuiMixin {
     *///? } else {
     @Inject(method = "renderEffects", at = @At("HEAD"))
     //? }
-    private void gnetum$renderEffects$0(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void gnetum$renderEffects$0(CallbackInfo ci) {
         XaeroMinimapCompat.statusEffectsShown = false;
     }
 
@@ -31,7 +31,7 @@ public class GuiMixin {
     *///? } else {
     @Inject(method = "renderEffects", at = @At(value = "CONSTANT", args = "intValue=0", ordinal = 0))
     //? }
-    private void gnetum$renderEffects$1(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void gnetum$renderEffects$1(CallbackInfo ci) {
         XaeroMinimapCompat.statusEffectsShown = true;
     }
 }

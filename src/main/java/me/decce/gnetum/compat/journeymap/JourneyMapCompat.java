@@ -10,7 +10,12 @@ public class JourneyMapCompat {
 
 	public static void invokeRenderWaypointDecos(GuiGraphics graphics) {
 		if (INSTALLED) {
+			// TODO
+			//? >=1.21.1 {
 			HudOverlayHandler.getInstance().renderWaypointDecos(graphics);
+			//? } else {
+
+			//? }
 		}
 	}
 }
