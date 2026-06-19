@@ -24,6 +24,8 @@
   "gnetum.config.tooltip.off": "Caching for this element is forcibly disabled.",
   "gnetum.config.auto": "AUTO",
   "gnetum.config.searchHint": "Search...",
+  "gnetum.config.external": "More Options...",
+  "gnetum.config.external.tooltip": "Open the Gnetum config screen for more options, including control for element caching settings",
 
   "gnetum.config.analysis.title.good": "Performance: Good",
   "gnetum.config.analysis.title.suboptimal": "Performance: Suboptimal",
