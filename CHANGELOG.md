@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.5
+
+- Added basic integration with Sodium 0.8+ Video Settings screen
+- Fixed flickering caused by lighting state leaks in some mods
+- Fixed item transparency issues with some mods
+
 ## 3.3.4
 
 - Significantly improved pose stack handling (improves mod compatibility)
