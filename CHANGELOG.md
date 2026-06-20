@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.6
+
+- Fixed flickering caused by lighting state leaks in some mods
+- Fixed item transparency issues with some mods
+
 ## 2.4.5
 
 - Significantly improved pose stack handling (improves mod compatibility)
