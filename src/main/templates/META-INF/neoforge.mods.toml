@@ -24,7 +24,7 @@ displayName="${mod_name}" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://www.curseforge.com/minecraft/mc-mods/gnetum/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="assets/gnetum/gnetum.png" #optional
+logoFile="gnetum.png" #optional
 # A text field displayed in the mod UI
 #credits="" #optional
 # A text field displayed in the mod UI
