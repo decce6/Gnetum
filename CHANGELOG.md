@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.6
+
+This version fixes a regression in 3.3.5 that caused the game to crash when opening the Video Settings screen if Embeddium is installed.
+
 ## 3.3.5
 
 - Added basic integration with Sodium 0.8+ Video Settings screen
