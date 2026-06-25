@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins.compat;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import me.decce.gnetum.Gnetum;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,12 @@ public class ItemRendererMixin {
     // Fixes https://github.com/decce6/Gnetum/issues/92
     @ModifyExpressionValue(method = "renderQuadList", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"))
     private int gnetum$getColor$fixAlpha(int original) {
-        return original | 0xFF000000;
+        if (Gnetum.rendering) {
+            return original | 0xFF000000;
+        }
+        else {
+            return original;
+        }
     }
 
     // https://github.com/CaffeineMC/sodium/blob/7b7f0d44a1f0e62c2e98f01e7834ecec94954e4a/common/src/main/java/net/caffeinemc/mods/sodium/mixin/features/render/model/item/ItemRendererMixin.java#L56-L99
@@ -24,6 +30,11 @@ public class ItemRendererMixin {
     @ModifyExpressionValue(method = "renderBakedItemQuads", remap = false, require = 0, expect = 0,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"))
     private int gnetum$getColor$fixAlpha$sodium(int original) {
-        return original | 0xFF000000;
+        if (Gnetum.rendering) {
+            return original | 0xFF000000;
+        }
+        else {
+            return original;
+        }
     }
 }
