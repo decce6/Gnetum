@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.5.0
+
+- Added support for 1.21.4 and 1.21.1 Fabric
+- Mods that use mixins to render HUDs can now be cached (controlled by the "Unknown Elements" option)
+
 ## 4.4.1
 
 - Added 26.2 NeoForge support
