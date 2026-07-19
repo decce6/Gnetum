@@ -131,13 +131,17 @@ public class Gnetum {
 		return element;
 	}
 
+	public static CachedElement getUnknownElement() {
+		return getElement(Constants.UNKNOWN_ELEMENTS);
+	}
+
 	public static boolean shouldRender(String id) {
 		return getElement(id).shouldRender();
 	}
 
 	public static boolean isCurrentElementUncached() {
 		if (currentElement == null) {
-			return true;
+			return getUnknownElement().isUncached();
 		}
 		return currentElement.isUncached();
 	}

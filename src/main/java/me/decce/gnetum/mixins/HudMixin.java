@@ -145,6 +145,23 @@ public class HudMixin {
     ^///? }
     *///? }
 
+	//? >=1.21.10 {
+	//? >26 {
+	/*@Inject(method = "extractRenderState", at = @At("RETURN"), order = 200, cancellable = true)
+	*///? } else {
+	@Inject(method = "render", at = @At("RETURN"), order = 200, cancellable = true)
+	//? }
+	private void gnetum$render$tail(CallbackInfo ci) {
+		// If we cache these unknown elements, make sure they only render once through all passes
+		if (!Gnetum.rendering || Gnetum.pass == Gnetum.config.getNumberOfPasses()) {
+			return;
+		}
+		if (!Gnetum.getUnknownElement().isUncached()) {
+			ci.cancel();
+		}
+	}
+	//? }
+
 	//? <=1.20.4 {
 	/*@Unique
 	private void gnetum$renderVanillaHuds(Predicate<CachedElement> check) {
