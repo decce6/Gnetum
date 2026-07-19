@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GlStateManager.class, remap = false)
 public class GlStateManagerMixin {
-    //? <=1.21.1 {
+    //? <=1.21.4 {
     /*@Inject(method = "_glBindFramebuffer", at = @At("TAIL"))
     private static void gnetum$bindFramebuffer(int target, int framebuffer, CallbackInfo ci) {
         if (target == GlConst.GL_FRAMEBUFFER) {

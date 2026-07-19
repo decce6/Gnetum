@@ -44,7 +44,7 @@ public class CachedElement {
 				(!enabled.get());
 	}
 
-	//? <=1.21.1{
+	//? <=1.21.4{
 	/*public boolean shouldRenderAsCached() {
 		return enabled.get() && Gnetum.pass == pass;
 	}

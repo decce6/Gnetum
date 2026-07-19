@@ -15,6 +15,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.GlConst;
 import org.joml.Matrix4f;
 *///?}
+//? 1.21.4
+//import com.mojang.blaze3d.ProjectionType;
 
 public class Framebuffers {
 	private final Minecraft mc = Minecraft.getInstance();
@@ -42,8 +44,13 @@ public class Framebuffers {
 		back = new TextureTarget("gnetum_back", 1, 1, true);
 		front = new TextureTarget("gnetum_front", 1, 1, true);
 		//?} else {
-		/*back = new TextureTarget(1, 1, true,Minecraft.ON_OSX);
+		/*//? >=1.21.4 {
+		back = new TextureTarget(1, 1, true);
+		front = new TextureTarget(1, 1, true);
+		//? } else {
+		/^back = new TextureTarget(1, 1, true,Minecraft.ON_OSX);
 		front = new TextureTarget(1, 1, true,Minecraft.ON_OSX);
+		^///? }
 		back.setClearColor(0, 0, 0, 0);
 		front.setClearColor(0, 0, 0, 0);
 		back.setFilterMode(GlConst.GL_NEAREST);
@@ -59,7 +66,11 @@ public class Framebuffers {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
 		RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
-		front.blitToScreen(width, height, false);
+		//? >=1.21.4 {
+		front.blitAndBlendToScreen(width, height);
+		//? } else {
+		/^front.blitToScreen(width, height, false);
+		^///? }
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -77,7 +88,11 @@ public class Framebuffers {
 		var far = 21000.0F;
 		//? }
 		Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)(window.getWidth() / window.getGuiScale()), (float)(window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, far);
-		RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
+		//? >=1.21.4 {
+		RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
+		//? } else {
+		/^RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
+		^///? }
 		*///?}
 	}
 
@@ -96,7 +111,7 @@ public class Framebuffers {
 			var fboWidth = downscale ? window.getGuiScaledWidth() : window.getWidth();
 			var fboHeight = downscale ? window.getGuiScaledHeight() : window.getHeight();
 
-			//? >=1.21.10 {
+			//? >=1.21.4 {
 			back.resize(fboWidth,  fboHeight);
 			front.resize(fboWidth, fboHeight);
 			//?} else {
@@ -126,14 +141,14 @@ public class Framebuffers {
 	public void bind() {
 		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
 		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
-		//? <=1.21.1 {
+		//? <=1.21.4 {
 		/*back.bindWrite(true);
 		*///?}
 	}
 
 	public void unbind() {
 		VersionCompatUtil.setMainRenderTarget(backupMainRenderTarget);
-		//?	<=1.21.1 {
+		//?	<=1.21.4 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 		*///?}
 	}
@@ -145,7 +160,9 @@ public class Framebuffers {
 		*///? } >=1.21.10 {
 		RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), 0,
 				back.getDepthTexture(), 1.0);
-		//?} else {
+		//?} else >=1.21.4 {
+		/*back.clear();
+		*///?} else {
 		/*back.clear(Minecraft.ON_OSX);
 		*///?}
 	}

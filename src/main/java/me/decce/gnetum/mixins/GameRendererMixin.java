@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Predicate;
 
-//? <=1.21.1 {
+//? <=1.21.4 {
 /*import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.compat.xaerominimap.XaeroMinimapCompat;
 import me.decce.gnetum.hud.HudManager;
@@ -111,7 +111,7 @@ public class GameRendererMixin {
 	}
 	//? }
 
-	//? 1.21.1 {
+	//? <=1.21.4 {
 	/*@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled() || Minecraft.getInstance().options.hideGui) {
@@ -166,7 +166,7 @@ public class GameRendererMixin {
 
 		SharedValues.guiGraphics = null;
 		//? >=1.21.1
-		//SharedValues.deltaTracker = null;
+		SharedValues.deltaTracker = null;
 	}
 
 	@Unique
@@ -187,7 +187,11 @@ public class GameRendererMixin {
 				if (Gnetum.rendering) {
 					element.begin();
 					hud.render();
+					//? 1.21.4 {
+					guiGraphics.flush();
+					//? } else {
 					ImmediatelyFastCompat.flushIfInstalledAndUsingHudBatching(guiGraphics); // Duplicates ImmediatelyFast behavior: https://github.com/RaphiMC/ImmediatelyFast/blob/e05390bbc2c2bdc3d19cad458d894dc4f605d3fb/common/src/main/java/net/raphimc/immediatelyfast/injection/mixins/hud_batching/MixinLayeredDrawer.java#L32-L37
+					//? }
 					element.end();
 				}
 				else {

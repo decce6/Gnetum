@@ -24,7 +24,7 @@ import me.decce.gnetum.mixins.fabric.HudElementRegistryImplAccessor;
 import net.fabricmc.fabric.impl.client.rendering.hud.HudElementRegistryImpl;
 //? }
 
-//? <=1.21.1 {
+//? <=1.21.4 {
 /*import me.decce.gnetum.versioned.NamedHudRenderCallback;
 import me.decce.gnetum.versioned.HudHandler;
 *///? }
@@ -88,7 +88,7 @@ public class ElementGathererFabricImpl extends ElementGatherer {
 			var modid = Gnetum.platform().getModId(callback.getClass());
 			map.putIfAbsent(modid, new CachedElement(modid));
 		}
-		//? <=1.21.1 {
+		//? <=1.21.4 {
 		/*HudHandler.callbacks = new NamedHudRenderCallback[handlers.length];
 		for (int i = 0; i < handlers.length; i++) {
 			var modid = Gnetum.platform().getModId(handlers[i].getClass());

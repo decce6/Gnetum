@@ -106,7 +106,7 @@ public interface GuiAccessor {
     void invokeRenderSavingIndicator(GuiGraphics guiGraphics, DeltaTracker deltaTracker);
     //? }
     *///? }
-    //? <=1.21.1 {
+    //? <=1.21.4 {
     /*@Accessor("subtitleOverlay")
     SubtitleOverlay gnetum$getSubtitleOverlay();
     *///? }

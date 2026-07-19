@@ -41,6 +41,14 @@ tasks {
         archiveClassifier = "slim"
     }
 
+    named<ShadowJar>("shadowJar") {
+        // On 1.21.4, the game throws an error due to nonexistent shader include even if we don't use the shaders
+        // We exclude the shaders files to prevent issues, as well as reduce the jar size by a bit
+        if (stonecutter.eval(stonecutter.current.version, "<=1.21.4")) {
+            exclude("assets/gnetum/shaders/**")
+        }
+    }
+
     named<RemapJarTask>("remapJar") {
         dependsOn(shadowJar)
         inputFile = shadowJar.flatMap { it.archiveFile }

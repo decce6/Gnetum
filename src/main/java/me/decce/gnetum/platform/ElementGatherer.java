@@ -21,9 +21,8 @@ public abstract class ElementGatherer {
 		newMap.put(Constants.HAND_ELEMENT, new CachedElement(Constants.HAND_ELEMENT));
 
 		gatherImpl(newMap);
-
-		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement(Constants.UNKNOWN_ELEMENTS));
 		//? >=1.21.10 {
+		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement(Constants.UNKNOWN_ELEMENTS));
 		newMap.put(Constants.DEBUG_OVERLAY, new CachedElement(Constants.DEBUG_OVERLAY));
 		//? }
 

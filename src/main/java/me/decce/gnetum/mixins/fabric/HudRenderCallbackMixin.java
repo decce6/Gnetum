@@ -28,7 +28,7 @@ public interface HudRenderCallbackMixin {
 		}
 	}
 }
-//?} else if fabric && <=1.21.1 {
+//?} else if fabric && <=1.21.4 {
 /*import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
