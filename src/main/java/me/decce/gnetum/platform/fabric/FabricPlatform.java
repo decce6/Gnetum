@@ -68,6 +68,9 @@ public class FabricPlatform implements Platform {
 		}
 		try {
 			var modid = pathToModId.get(Paths.get(cs.getLocation().toURI()));
+			if (modid == null) {
+				modid = Constants.UNKNOWN_ELEMENTS;
+			}
 			classToModId.put(clazz, modid);
 			return modid;
 		} catch (URISyntaxException e) {
