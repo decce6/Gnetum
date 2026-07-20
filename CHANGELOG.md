@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.5.1
+
+- Fixed a crash when opening config screen with specific mods
+
 ## 4.5.0
 
 - Added support for 1.21.4 and 1.21.1 Fabric

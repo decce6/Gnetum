@@ -188,8 +188,8 @@ public class GameRendererMixin {
 					element.begin();
 					hud.render();
 					//? 1.21.4 {
-					guiGraphics.flush();
-					//? } else {
+					/^guiGraphics.flush();
+					^///? } else {
 					ImmediatelyFastCompat.flushIfInstalledAndUsingHudBatching(guiGraphics); // Duplicates ImmediatelyFast behavior: https://github.com/RaphiMC/ImmediatelyFast/blob/e05390bbc2c2bdc3d19cad458d894dc4f605d3fb/common/src/main/java/net/raphimc/immediatelyfast/injection/mixins/hud_batching/MixinLayeredDrawer.java#L32-L37
 					//? }
 					element.end();
