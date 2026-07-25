@@ -20,12 +20,6 @@ repositories {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-loom {
-    forge {
-        mixinConfigs("gnetum.mixins.json")
-    }
-}
-
 dependencies {
     minecraft("com.mojang:minecraft:${prop("minecraft_version")}")
     mappings(loom.officialMojangMappings())
@@ -36,10 +30,9 @@ dependencies {
     include("io.github.llamalad7:mixinextras-forge:0.5.4")
     implementation("io.github.llamalad7:mixinextras-forge:0.5.4")
 
-    implementation("maven.modrinth:immediatelyfast:1.5.0+1.20.4-forge")
-    implementation("maven.modrinth:jade:11.13.2+forge")
-    implementation("maven.modrinth:embeddium:0.3.31+mc1.20.1")
-    implementation("maven.modrinth:gui-clock:1.20.1-4.7-fabric+forge+neo")
+    // modImplementation("maven.modrinth:jade:5.3.2")
+    // modImplementation("maven.modrinth:embeddium:0.3.18+mc1.18.2")
+    // modImplementation("maven.modrinth:gui-clock:1.18.2-4.3-forge+fabric")
 }
 
 repositories {

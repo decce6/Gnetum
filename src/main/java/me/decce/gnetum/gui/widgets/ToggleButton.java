@@ -1,19 +1,17 @@
 package me.decce.gnetum.gui.widgets;
 
 import me.decce.gnetum.util.AnyBoolean;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.function.Supplier;
 
-public class ToggleButton extends Button {
+public class ToggleButton extends TooltipButton {
     private Supplier<String> text;
     private Supplier<String> tooltip;
     private AnyBoolean value;
 
     public ToggleButton(int left, int top, int width, int height, AnyBoolean value, Supplier<String> text) {
-        super(left, top, width, height, Component.empty(), btn -> {}, Button.DEFAULT_NARRATION);
+        super(left, top, width, height, new TextComponent(""), btn -> {});
         this.text = text;
         this.value = value;
         this.updateMessage();
@@ -36,20 +34,19 @@ public class ToggleButton extends Button {
     }
 
     private void updateMessage() {
-        this.setMessage(Component.literal(String.format(text.get(), value.text())));
+        this.setMessage(new TextComponent(String.format(text.get(), value.text())));
         this.updateTooltip();
     }
 
     private void updateTooltip() {
         if (tooltip == null) {
-            super.setTooltip(null);
+            super.removeTooltip();
             return;
         }
         String str = tooltip.get();
         if (str != null && !str.isEmpty()) {
-            super.setTooltip(Tooltip.create(Component.literal(str)));
-            super.setTooltipDelay(0);
+            super.setTooltip(new TextComponent(str));
         }
-        else super.setTooltip(null);
+        else super.removeTooltip();
     }
 }

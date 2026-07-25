@@ -1,11 +1,14 @@
 package me.decce.gnetum.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.Gnetum;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class BaseScreen extends Screen {
     protected final Screen parent;
@@ -15,7 +18,7 @@ public class BaseScreen extends Screen {
     }
 
     protected BaseScreen(Screen parent) {
-        this(Component.literal("Gnetum"), parent);
+        this(new TextComponent("Gnetum"), parent);
     }
 
     protected BaseScreen(Component p_96550_, Screen parent) {
@@ -44,24 +47,20 @@ public class BaseScreen extends Screen {
     }
 
     protected void addDoneButton() {
-        Button btnClose = Button
-                .builder(Component.translatable("gui.done"), btn -> this.close())
-                .pos(width / 2 - 60, height / 2 + 90)
-                .size(120, 20)
-                .build();
+        Button btnClose = new Button(width / 2 - 60, height / 2 + 90, 120, 20, new TranslatableComponent("gui.done"), btn -> this.close());
         this.addRenderableWidget(btnClose);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(poseStack);
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
-        this.renderTitle(graphics);
+        this.renderTitle(poseStack);
     }
 
-    protected void renderTitle(GuiGraphics graphics) {
-        graphics.drawCenteredString(Minecraft.getInstance().font, "Gnetum", width / 2, 10, 0xFFFFFF);
+    protected void renderTitle(PoseStack poseStack) {
+        GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font, "Gnetum", width / 2, 10, 0xFFFFFF);
     }
 }

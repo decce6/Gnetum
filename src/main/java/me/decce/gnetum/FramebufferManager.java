@@ -4,10 +4,9 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexSorting;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ForgeHooksClient;
-import org.joml.Matrix4f;
 
 public class FramebufferManager {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -95,8 +94,10 @@ public class FramebufferManager {
         frontFramebuffer.blitToScreen(width, height, false);
 
         var window = mc.getWindow();
-        Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, ForgeHooksClient.getGuiFarPlane());
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
+        Matrix4f matrix4f = Matrix4f.orthographic(
+                0.0F, (float)(window.getWidth() / window.getGuiScale()), 0.0F, (float)(window.getHeight() / window.getGuiScale()), 1000.0F, ForgeHooksClient.getGuiFarPlane()
+        );
+        RenderSystem.setProjectionMatrix(matrix4f);
         // Note: some mods leak GL states in their HUD rendering code. When such HUD elements are cached, they create
         // flickering between frames where they are rendered and they are not. We manually correct the GL states here
         // to prevent such issues.

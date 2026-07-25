@@ -1,29 +1,28 @@
 package me.decce.gnetum;
 
-import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.client.gui.OverlayRegistry;
 
 import java.util.HashSet;
 
 public class PackedVanillaElements {
-    public static final String PACKED_STATUS_BAR = "gnetum:status_bar";
+    public static final String PACKED_STATUS_BAR = Gnetum.STATUS_BAR;
     public static HashSet<String> set;
 
     public static void init() {
         set = new HashSet<>();
-        var overlays = GuiOverlayManager.getOverlays();
+        var overlays = OverlayRegistry.orderedEntries();
         // Pack all elements on the status bar (see VanillaGuiOverlays)
         boolean pack = false;
         for (var overlay : overlays) {
-            if (overlay.id().equals(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id())) {
+            if ("Boss Health".equals(overlay.getDisplayName())) {
                 pack = true;
                 continue; // Start packing from the next element
             }
-            if (overlay.id().equals(VanillaGuiOverlay.JUMP_BAR.id())) {
+            if ("Jump Bar".equals(overlay.getDisplayName())) {
                 break;
             }
             if (pack) {
-                set.add(overlay.id().toString());
+                set.add(overlay.getDisplayName());
             }
         }
     }

@@ -1,7 +1,6 @@
 package me.decce.gnetum;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 
 import java.util.Set;
 
@@ -12,9 +11,8 @@ public class UncachedElements {
 
     public UncachedElements() {
         vanilla = ImmutableSet.of(
-                VanillaGuiOverlay.CROSSHAIR.id().toString(),
-                VanillaGuiOverlay.VIGNETTE.id().toString(),
-                "apoli:above_overlay" // Origins mod when origin is Phantom
+                "Crosshair",
+                "Vignette"
         );
         moddedPre = ImmutableSet.of(
                 "xaerominimap"

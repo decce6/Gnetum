@@ -1,27 +1,25 @@
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import me.decce.gnetum.compat.embeddium.GnetumEmbeddiumCompat;
 import me.decce.gnetum.gui.ConfigScreen;
 import me.decce.gnetum.util.AnyBooleanValue;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.embeddedt.embeddium.api.OptionGUIConstructionEvent;
 import org.lwjgl.glfw.GLFW;
 
 @Mod(value = Gnetum.MOD_ID)
@@ -30,6 +28,7 @@ public final class Gnetum {
     public static final String MOD_ID = "gnetum";
     public static final String HAND_ELEMENT = "gnetum:minecraft_hand";
     public static final String OTHER_MODS = "gnetum_unknown";
+    public static final String STATUS_BAR = "Status Bar";
 
     public static final FpsCounter FPS_COUNTER = new FpsCounter();
     public static GnetumConfig config;
@@ -54,18 +53,12 @@ public final class Gnetum {
         Gnetum.uncachedElements = new UncachedElements();
         GnetumConfig.reload();
 
-        //noinspection removal // we want the mod to be loadable on an older version of forge
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Gnetum::registerBindings);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(this::onCustomizeF3Text);
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
-        if (ModList.get().isLoaded("embeddium")) {
-            OptionGUIConstructionEvent.BUS.addListener(GnetumEmbeddiumCompat::onSodiumPagesRegister);
-        }
-
-        //noinspection removal
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ()-> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new ConfigScreen(parent)));
+        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, ()-> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new ConfigScreen(parent)));
     }
 
     public static CacheSetting getCacheSetting(String vanillaOverlay) {
@@ -89,6 +82,7 @@ public final class Gnetum {
         if (currentElement == null || currentElementType == null) return;
         CacheSetting cacheSetting = getCacheSetting(currentElement, currentElementType);
         if (cacheSetting.enabled.get() && cacheSetting.enabled.value == AnyBooleanValue.AUTO) {
+            if ("journeymap".equals(currentElement)) return; //TODO
             LOGGER.info("Disabling caching for element {}. Reason: {}", currentElement, reason);
             cacheSetting.enabled.defaultValue = false;
             FramebufferManager.getInstance().dropCurrentFrame();
@@ -96,8 +90,8 @@ public final class Gnetum {
     }
 
     @SubscribeEvent
-    public static void registerBindings(RegisterKeyMappingsEvent event) {
-        event.register(CONFIG_MAPPING.get());
+    public static void registerBindings(FMLClientSetupEvent event) {
+        ClientRegistry.registerKeyBinding(CONFIG_MAPPING.get());
     }
 
     public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -110,7 +104,7 @@ public final class Gnetum {
         }
     }
 
-    public void onCustomizeF3Text(CustomizeGuiOverlayEvent.DebugText event) {
+    public void onCustomizeF3Text(RenderGameOverlayEvent.Text event) {
         if (Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get() && Minecraft.getInstance().options.renderDebug) {
             var left = event.getLeft();
             if (left.size() > 2) {
@@ -119,7 +113,7 @@ public final class Gnetum {
         }
     }
 
-    public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+    public void onPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
         Gnetum.FPS_COUNTER.reset();
         FramebufferManager.getInstance().reset();
         PackedVanillaElements.reset();

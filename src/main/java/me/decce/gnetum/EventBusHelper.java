@@ -22,7 +22,7 @@ public class EventBusHelper {
             MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
             shutdown = privateLookup.findVarHandle(clazz, "shutdown", boolean.class);
             trackPhases = privateLookup.findVarHandle(clazz, "trackPhases", boolean.class);
-            checkTypesOnDispatch = privateLookup.findVarHandle(clazz, "checkTypesOnDispatch", boolean.class);
+            checkTypesOnDispatch = privateLookup.findStaticVarHandle(clazz, "checkTypesOnDispatch", boolean.class);
             baseType = privateLookup.findVarHandle(clazz, "baseType", Class.class);
             busID = privateLookup.findVarHandle(clazz, "busID", int.class);
             exceptionHandler = privateLookup.findVarHandle(clazz, "exceptionHandler", IEventExceptionHandler.class);
@@ -40,7 +40,7 @@ public class EventBusHelper {
     }
 
     public static boolean isCheckTypesOnDispatch() {
-        return (boolean)checkTypesOnDispatch.get(MinecraftForge.EVENT_BUS);
+        return (boolean)checkTypesOnDispatch.get();
     }
 
     public static Class<?> getBaseType() {

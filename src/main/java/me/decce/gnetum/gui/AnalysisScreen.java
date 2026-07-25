@@ -1,11 +1,12 @@
 package me.decce.gnetum.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.PerformanceAnalyzer;
+import me.decce.gnetum.gui.widgets.MultiLineTextWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 
 public class AnalysisScreen extends BaseScreen {
     public final PerformanceAnalyzer.Result analysis;
@@ -50,26 +51,26 @@ public class AnalysisScreen extends BaseScreen {
 
         int w = 300;
         int h = 150;
-        txt = new MultiLineTextWidget(width / 2 - w / 2, height / 2 - h / 2, Component.literal(str), font);
-        txt.setMaxWidth(w);
+        txt = new MultiLineTextWidget( width / 2, height / 2, w, h, str);
+        // txt.setMaxWidth(w);
         this.addRenderableWidget(txt);
 
         super.addDoneButton();
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
         String title = I18n.get(analysis.getIcon() == PerformanceAnalyzer.ResultIcon.TICK ? "gnetum.config.analysis.title.good" : "gnetum.config.analysis.title.suboptimal");
         int titleWidth = font.width(title);
         int xfont = width / 2 - titleWidth / 2 + 8 + 2;
         int xicon = xfont - 4 - 16;
         int y = height / 2 - 90;
-        graphics.blit(analysis.getIcon().icon(), xicon, y - 8, 16, 16, 0f, 0f, 16, 16, 16, 16);
 
-        graphics.drawString(font, title, xfont, y, 0xFFFFFF);
+        RenderSystem.setShaderTexture(0, analysis.getIcon().icon());
+        GuiComponent.blit(poseStack, xicon, y - 8, 16, 16, 0f, 0f, 16, 16, 16, 16);
 
-
+        GuiComponent.drawString(poseStack, font, title, xfont, y, 0xFFFFFF);
     }
 }

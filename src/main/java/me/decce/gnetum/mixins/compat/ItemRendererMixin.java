@@ -15,7 +15,7 @@ public class ItemRendererMixin {
     // See: https://github.com/BlakeBr0/MysticalAgriculture/blob/b38533ab79443a5d1622d96c1917e50cc814b700/src/main/java/com/blakebr0/mysticalagriculture/client/handler/ColorHandler.java#L15-L54
     // See: https://github.com/vadis365/Mob-Grinding-Utils/blob/e7e4a15d377899d7f988d0d33bbd0d7e9c2f897e/MobGrindingUtils/MobGrindingUtils/src/main/java/mob_grinding_utils/ModColourManager.java#L26-L56
     // Fixes https://github.com/decce6/Gnetum/issues/92
-    @ModifyExpressionValue(method = "renderQuadList", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"))
+    @ModifyExpressionValue(method = "renderQuadList", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"), require = 0, expect = 0)
     private int gnetum$getColor$fixAlpha(int original) {
         if (Gnetum.rendering) {
             return original | 0xFF000000;

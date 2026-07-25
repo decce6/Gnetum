@@ -5,11 +5,10 @@ import me.decce.gnetum.PerformanceAnalyzer;
 import me.decce.gnetum.gui.widgets.ToggleButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.TextAndImageButton;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class ConfigScreen extends BaseScreen {
     private Button btnMoreOptions;
@@ -29,12 +28,13 @@ public class ConfigScreen extends BaseScreen {
 
     public ConfigScreen(PerformanceAnalyzer.Result analysis) {
         super();
-        this.analysis = analysis;
+        // TODO fix analysis screen
+        // this.analysis = analysis;
     }
 
     public ConfigScreen(Screen parent, PerformanceAnalyzer.Result analysis) {
         super(parent);
-        this.analysis = analysis;
+        // this.analysis = analysis;
     }
 
     @Override
@@ -46,32 +46,16 @@ public class ConfigScreen extends BaseScreen {
     protected void rebuild() {
         super.rebuild();
         var btnEnabled = new ToggleButton(width / 2 - 130, height / 2 - 90, 120, 20, Gnetum.config.enabled, () -> I18n.get("gnetum.config.enabled") + ": %s");
-        btnEnabled.setTooltip(Tooltip.create(Component.translatable("gnetum.config.enabled.tooltip")));
-        btnEnabled.setTooltipDelay(0);
+        btnEnabled.setTooltip(() -> I18n.get("gnetum.config.enabled.tooltip"));
         int w1 = analysis == null ? 120 : 120 - 20;
-        btnMoreOptions = Button
-                .builder(Component.translatable("gnetum.config.moreOptions"), b -> { Minecraft.getInstance().setScreen(new MoreOptionsScreen()); })
-                .pos(width / 2 + 10, height / 2 - 90)
-                .size(w1, 20)
-                .build();
+        btnMoreOptions = new Button(width / 2 + 10, height / 2 - 90, w1, 20, new TranslatableComponent("gnetum.config.moreOptions"), b -> { Minecraft.getInstance().setScreen(new MoreOptionsScreen()); });
         if (analysis != null) {
-            btnAnalysis = TextAndImageButton
-                    .builder(Component.empty(), analysis.getIcon().icon(), b -> { Minecraft.getInstance().setScreen(new AnalysisScreen(analysis)); })
-                    .textureSize(16, 16)
-                    .usedTextureSize(16, 16)
-                    .offset(0, 2)
-                    .build();
-            btnAnalysis.setPosition(width / 2 + 10 + 120 - 20, height / 2 - 90);
+            btnAnalysis = new ImageButton(16, 16, 16, 16, 0, 2, analysis.getIcon().icon(), b -> { Minecraft.getInstance().setScreen(new AnalysisScreen(analysis)); });
+            btnAnalysis.x = width / 2 + 10 + 120 - 20;
+            btnAnalysis.y = height / 2 - 90;
             btnAnalysis.setWidth(20);
             btnAnalysis.setHeight(20);
             btnAnalysis.active = !analysis.isOutdated();
-
-            Component tooltip = Component.translatable(
-                    analysis.isOutdated() ? "gnetum.config.analysis.outdated" :
-                            (analysis.getMessages().isEmpty() ? "gnetum.config.analysis.good" : "gnetum.config.analysis.suboptimal")
-            );
-            btnAnalysis.setTooltip(Tooltip.create(tooltip));
-            btnAnalysis.setTooltipDelay(0);
 
             this.addRenderableWidget(btnAnalysis);
         }
@@ -81,26 +65,11 @@ public class ConfigScreen extends BaseScreen {
         int margin = 8;
         int x = width / 2 - 130;
         int y = height / 2 - h / 2 - margin - h;
-        btnModdedPre = Button
-                .builder(Component.translatable("gnetum.config.moddedPre"),
-                        b -> { Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPre, false)); })
-                .pos(x, y)
-                .size(w, h)
-                .build();
+        btnModdedPre = new Button(x, y, w, h, new TranslatableComponent("gnetum.config.moddedPre"), b -> { Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPre, false)); });
         y += margin + h;
-        btnVanilla = Button
-                .builder(Component.translatable("gnetum.config.vanilla"),
-                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapVanillaElements, true)))
-                .pos(x, y)
-                .size(w, h)
-                .build();
+        btnVanilla = new Button(x, y, w, h, new TranslatableComponent("gnetum.config.vanilla"), b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapVanillaElements, true)));
         y += margin + h;
-        btnModdedPost = Button
-                .builder(Component.translatable("gnetum.config.moddedPost"),
-                        b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPost, false)))
-                .pos(x, y)
-                .size(w, h)
-                .build();
+        btnModdedPost = new Button(x, y, w, h, new TranslatableComponent("gnetum.config.moddedPost"), b -> Minecraft.getInstance().setScreen(new ElementsScreen(Gnetum.config.mapModdedElementsPost, false)));
         this.addRenderableWidget(btnEnabled);
         this.addRenderableWidget(btnMoreOptions);
         this.addRenderableWidget(btnModdedPre);
@@ -116,10 +85,10 @@ public class ConfigScreen extends BaseScreen {
         btnMoreOptions.active = Gnetum.config.enabled.get();
         if (btnAnalysis != null) {
             btnAnalysis.active = Gnetum.config.enabled.get() && !analysis.isOutdated();
-            btnAnalysis.setTooltipDelay(btnAnalysis.active ? 0 : Integer.MAX_VALUE);
-            if (Gnetum.config.enabled.get() && analysis.isOutdated()) {
-                btnAnalysis.setTooltipDelay(0); // tells the user that the analysis is outdated
-            }
+//            btnAnalysis.setTooltipDelay(btnAnalysis.active ? 0 : Integer.MAX_VALUE);
+//            if (Gnetum.config.enabled.get() && analysis.isOutdated()) {
+//                btnAnalysis.setTooltipDelay(0); // tells the user that the analysis is outdated
+//            }
         }
         btnVanilla.active = Gnetum.config.enabled.get();
         btnModdedPre.active = Gnetum.config.enabled.get();

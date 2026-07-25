@@ -5,24 +5,23 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import me.decce.gnetum.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.*;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.ASMEventHandler;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.IEventBusInvokeDispatcher;
 import net.minecraftforge.eventbus.api.IEventListener;
 import org.apache.logging.log4j.Logger;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,18 +32,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-@Mixin(ForgeGui.class)
-public class ForgeGuiMixin {
+@Mixin(ForgeIngameGui.class)
+public class ForgeIngameGuiMixin {
     @Unique
-    private Minecraft minecraft = Minecraft.getInstance();
+    private final Minecraft minecraft = Minecraft.getInstance();
     @Shadow @Final
     private static Logger LOGGER;
     @Shadow
-    public int leftHeight;
+    public int left_height;
     @Shadow
-    public int rightHeight;
+    public int right_height;
     @Shadow
     private Font font;
+    @Shadow
+    private RenderGameOverlayEvent eventParent;
     @Unique
     private int gnetum$lastLeftHeight = 39;
     @Unique
@@ -62,9 +63,9 @@ public class ForgeGuiMixin {
 
     private int gnetum$getLastVanillaOverlayIndex() {
         if (gnetum$lastVanillaOverlayIndex == -1) {
-            var layers = GuiOverlayManager.getOverlays();
+            var layers = OverlayRegistry.orderedEntries();
             for (int i = 0; i < layers.size(); i++) {
-                if (VanillaGuiOverlay.PLAYER_LIST.id().equals(layers.get(i).id())) {
+                if ("Player List".equals(layers.get(i).getDisplayName())) {
                     gnetum$lastVanillaOverlayIndex = i;
                     break;
                 }
@@ -80,11 +81,11 @@ public class ForgeGuiMixin {
 
     // We use WrapOperation in favor of Inject(at HEAD) because some mods inject into the tail of ForgeGui.render to
     // render their HUD. If the whole method is canceled their HUD will not render.
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/eventbus/api/IEventBus;post(Lnet/minecraftforge/eventbus/api/Event;)Z", ordinal = 0))
-    public boolean gnetum$render(IEventBus instance, Event event, Operation<Boolean> original, @Local(argsOnly = true) GuiGraphics guiGraphics, @Local(argsOnly = true) float partialTick)
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/client/gui/ForgeIngameGui;pre(Lnet/minecraftforge/client/event/RenderGameOverlayEvent$ElementType;Lcom/mojang/blaze3d/vertex/PoseStack;)Z", ordinal = 0))
+    public boolean gnetum$render(ForgeIngameGui instance, RenderGameOverlayEvent.ElementType type, PoseStack poseStack, Operation<Boolean> original, @Local(argsOnly = true) float partialTick)
     {
         if (!Gnetum.config.isEnabled()) {
-            return original.call(instance, event);
+            return original.call(instance, type, poseStack);
         }
 
         var chatScreenOpen = Minecraft.getInstance().screen instanceof ChatScreen;
@@ -93,15 +94,16 @@ public class ForgeGuiMixin {
             FramebufferManager.getInstance().markForCatchUp();
         }
 
-        PoseStackHelper.beginHudRendering(guiGraphics.pose());
+        PoseStackHelper.beginHudRendering(poseStack);
 
         // Do not use cached HUD when transformation is used (e.g. OkZoomer mod)
         // Because uncached elements are rendered outside of here (in GameRendererMixin), transformation is not applied
         //  to them otherwise, creating inconsistencies
-        var pose = guiGraphics.pose().last().pose();
-        if (!pose.equals(gnetum$defaultGuiPose, 0.01F)) {
-            FramebufferManager.getInstance().markForCatchUp();
-        }
+        //TODO
+//        var pose = poseStack.last().pose();
+//        if (!pose.equals(gnetum$defaultGuiPose)) {
+//            FramebufferManager.getInstance().markForCatchUp();
+//        }
 
         if (Gnetum.passManager.current == 1) {
             gnetum$currentLeftHeight = 39;
@@ -117,10 +119,10 @@ public class ForgeGuiMixin {
 
         if (!needsCatchUp) {
             minecraft.getProfiler().push("uncached");
-            gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
-            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), 0, gnetum$getLastVanillaOverlayIndex());
+            gnetum$postEvent(new RenderGameOverlayEvent.Pre(poseStack, eventParent, type), poseStack, modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
+            gnetum$renderLayers(OverlayRegistry.orderedEntries(), poseStack, type, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), 0, gnetum$getLastVanillaOverlayIndex());
             if (Gnetum.passManager.current > 0) {
-                guiGraphics.flush();
+                // guiGraphics.flush();
             }
             minecraft.getProfiler().pop();
         }
@@ -137,26 +139,26 @@ public class ForgeGuiMixin {
             FramebufferManager.getInstance().bind();
             Gnetum.rendering = true;
 
-            Gnetum.renderingCanceled = gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE));
+            Gnetum.renderingCanceled = gnetum$postEvent(new RenderGameOverlayEvent.Pre(poseStack, eventParent, type), poseStack, modid -> Gnetum.passManager.shouldRender(modid, ElementType.PRE));
 
             if (Gnetum.passManager.current != 1) {
-                leftHeight = gnetum$currentLeftHeight;
-                rightHeight = gnetum$currentRightHeight;
+                left_height = gnetum$currentLeftHeight;
+                right_height = gnetum$currentRightHeight;
             }
             font = minecraft.font;
 
             gnetum$getGuiAccessor().getRandom().setSeed(gnetum$getGuiAccessor().getTickCount() * 312871L);
 
-            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, rl -> Gnetum.passManager.shouldRender(rl));
+            gnetum$renderLayers(OverlayRegistry.orderedEntries(), poseStack, type, partialTick, rl -> Gnetum.passManager.shouldRender(rl));
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
+            gnetum$postEvent(new RenderGameOverlayEvent.Post(poseStack, eventParent, type), poseStack, modid -> Gnetum.passManager.shouldRender(modid, ElementType.POST));
 
-            guiGraphics.flush();
+            // guiGraphics.flush();
 
-            gnetum$currentLeftHeight = leftHeight;
-            gnetum$currentRightHeight = rightHeight;
+            gnetum$currentLeftHeight = left_height;
+            gnetum$currentRightHeight = right_height;
 
             Gnetum.rendering = false;
             Gnetum.currentElement = null;
@@ -164,15 +166,15 @@ public class ForgeGuiMixin {
         Gnetum.passManager.end();
 
         if (Gnetum.passManager.current != Gnetum.config.numberOfPasses) {
-            leftHeight = gnetum$lastLeftHeight;
-            rightHeight = gnetum$lastRightHeight;
+            left_height = gnetum$lastLeftHeight;
+            right_height = gnetum$lastRightHeight;
         }
 
         Gnetum.passManager.nextPass();
 
         if (Gnetum.passManager.current == Gnetum.config.numberOfPasses) {
-            gnetum$lastLeftHeight = leftHeight;
-            gnetum$lastRightHeight = rightHeight;
+            gnetum$lastLeftHeight = left_height;
+            gnetum$lastRightHeight = right_height;
         }
 
         FramebufferManager.getInstance().unbind();
@@ -181,27 +183,26 @@ public class ForgeGuiMixin {
             FramebufferManager.getInstance().blit();
 
             minecraft.getProfiler().push("uncached");
-            gnetum$postEvent(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
-            gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), gnetum$getLastVanillaOverlayIndex() + 1, -1);
+            gnetum$postEvent(new RenderGameOverlayEvent.Post(poseStack, eventParent, type), poseStack, modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.POST));
+            gnetum$renderLayers(OverlayRegistry.orderedEntries(), poseStack, type, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), gnetum$getLastVanillaOverlayIndex() + 1, -1);
             minecraft.getProfiler().pop();
         }
         else {
-            PoseStackHelper.endHudRendering(guiGraphics.pose());
-            return original.call(instance, event);
+            PoseStackHelper.endHudRendering(poseStack);
+            return original.call(instance, type, poseStack);
         }
-        PoseStackHelper.endHudRendering(guiGraphics.pose());
+        PoseStackHelper.endHudRendering(poseStack);
         return true;
     }
 
     @Unique
-    private void gnetum$renderLayers(List<NamedGuiOverlay> list, GuiGraphics guiGraphics, float partialTick, Predicate<String> check) {
-        gnetum$renderLayers(list, guiGraphics, partialTick, check,0, -1);
+    private void gnetum$renderLayers(List<OverlayRegistry.OverlayEntry> list, PoseStack poseStack, RenderGameOverlayEvent.ElementType type, float partialTick, Predicate<String> check) {
+        gnetum$renderLayers(list, poseStack, type, partialTick, check,0, -1);
     }
 
     @Unique
-    private void gnetum$renderLayers(List<NamedGuiOverlay> list, GuiGraphics guiGraphics, float partialTick, Predicate<String> check, int startIndex, int endIndex) {
-        ForgeGui forgeGui = (ForgeGui)(Object)this;
-        //noinspection ForLoopReplaceableByForEach
+    private void gnetum$renderLayers(List<OverlayRegistry.OverlayEntry> list, PoseStack poseStack, RenderGameOverlayEvent.ElementType type, float partialTick, Predicate<String> check, int startIndex, int endIndex) {
+        ForgeIngameGui forgeGui = (ForgeIngameGui)(Object)this;
         for (int i = startIndex; i < list.size(); i++) {
             if (endIndex != -1 && i > endIndex) {
                 break;
@@ -209,35 +210,35 @@ public class ForgeGuiMixin {
             var entry = list.get(i);
             try
             {
-                String id = entry.id().toString();
-                if (check.test(entry.id().toString())) {
+                String id = entry.getDisplayName();
+                if (check.test(entry.getDisplayName())) {
                     if (Gnetum.rendering) {
                         Gnetum.currentElement = id;
                         Gnetum.currentElementType = ElementType.VANILLA;
                     }
-                    PoseStackHelper.checked(guiGraphics.pose(), () -> {
-                        IGuiOverlay overlay = entry.overlay();
-                        if (gnetum$pre(entry, guiGraphics)) return;
+                    PoseStackHelper.checked(poseStack, () -> {
+                        IIngameOverlay overlay = entry.getOverlay();
+                        if (gnetum$pre(entry, poseStack)) return;
                         var accessor = gnetum$getGuiAccessor();
-                        overlay.render(forgeGui, guiGraphics, partialTick, accessor.getScreenWidth(), accessor.getScreenHeight());
-                        gnetum$post(entry, guiGraphics);
+                        overlay.render(forgeGui, poseStack, partialTick, accessor.getScreenWidth(), accessor.getScreenHeight());
+                        gnetum$post(entry, poseStack);
                     });
                 }
             } catch (Exception e)
             {
-                LOGGER.error("Error rendering overlay '{}'", entry.id(), e);
+                LOGGER.error("Error rendering overlay '{}'", entry.getDisplayName(), e);
             }
         }
     }
 
     @Unique
-    public boolean gnetum$pre(NamedGuiOverlay overlay, GuiGraphics guiGraphics) {
-        return gnetum$postEvent(new RenderGuiOverlayEvent.Pre(this.minecraft.getWindow(), guiGraphics, this.minecraft.getFrameTime(), overlay), guiGraphics.pose());
+    public boolean gnetum$pre(OverlayRegistry.OverlayEntry overlay, PoseStack poseStack) {
+        return gnetum$postEvent(new RenderGameOverlayEvent.PreLayer(poseStack, eventParent, overlay.getOverlay()), poseStack);
     }
 
     @Unique
-    public void gnetum$post(NamedGuiOverlay overlay, GuiGraphics guiGraphics) {
-        gnetum$postEvent(new RenderGuiOverlayEvent.Post(this.minecraft.getWindow(), guiGraphics, this.minecraft.getFrameTime(), overlay), guiGraphics.pose());
+    public void gnetum$post(OverlayRegistry.OverlayEntry overlay, PoseStack poseStack) {
+        gnetum$postEvent(new RenderGameOverlayEvent.PostLayer(poseStack, eventParent, overlay.getOverlay()), poseStack);
     }
 
     @Unique
@@ -267,18 +268,18 @@ public class ForgeGuiMixin {
                         IEventListener listener = listeners[index];
                         if (listener instanceof ASMEventHandler asm) {
                             String modid = ASMEventHandlerHelper.tryGetModId(asm);
-                            if (event instanceof RenderGuiEvent.Pre) {
+                            if (event instanceof RenderGameOverlayEvent.Pre) {
                                 if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.PRE;
-                                if (check.test(modid)) {
+                                if (check == null || check.test(modid)) {
                                     gnetum$invokeWrapperSafe(poseStack, wrapper, listener, event);
                                 }
-                            } else if (event instanceof RenderGuiEvent.Post) {
+                            } else if (event instanceof RenderGameOverlayEvent.Post) {
                                 if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.POST;
-                                if (check.test(modid)) {
+                                if (check == null || check.test(modid)) {
                                     gnetum$invokeWrapperSafe(poseStack, wrapper, listener, event);
                                 }
                             }
@@ -290,7 +291,7 @@ public class ForgeGuiMixin {
                             // do not cache listeners that are not ASMEventHandler
                             // Listeners that listen to RenderGuiEvent may trigger this path 2 times each frame (one in uncached, one in cached), and we only actually render them once
                             // Listeners that listen to RenderGuiOverlayEvent only trigger this path 1 time
-                            if (!Gnetum.rendering || listener instanceof EventPriority || event instanceof RenderGuiOverlayEvent) {
+                            if (!Gnetum.rendering || listener instanceof EventPriority || event instanceof RenderGameOverlayEvent) {
                                 wrapper.invoke(listener, event);
                             }
                         }

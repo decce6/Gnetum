@@ -1,17 +1,19 @@
 package me.decce.gnetum.gui;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.CacheSetting;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.gui.widgets.IntSlider;
+import me.decce.gnetum.gui.widgets.MultiLineTextWidget;
 import me.decce.gnetum.gui.widgets.ToggleButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.ModList;
 import org.apache.commons.lang3.StringUtils;
 
@@ -65,8 +67,8 @@ public class ElementsScreen extends BaseScreen {
         int i = 0;
 
         if (this.searchBox == null) {
-            this.searchBox = new EditBox(Minecraft.getInstance().font, 0, 0, 0, 0, Component.literal(searchText));
-            this.searchBox.setHint(Component.translatable("gnetum.config.searchHint"));
+            this.searchBox = new EditBox(Minecraft.getInstance().font, 0, 0, 0, 0, new TextComponent(searchText));
+            this.searchBox.setSuggestion(I18n.get("gnetum.config.searchHint"));
             this.searchBox.setResponder(s -> {
                 if (!this.searchText.equals(s)) {
                     this.searchText = s;
@@ -74,8 +76,8 @@ public class ElementsScreen extends BaseScreen {
                 }
             });
         }
-        this.searchBox.setX(xlb + 2);
-        this.searchBox.setY(y - h - margin);
+        this.searchBox.x = xlb + 2;
+        this.searchBox.y = y - h - margin;
         this.searchBox.setWidth(2 * wb + 2 * ws);
         this.searchBox.setHeight(h);
         this.addRenderableWidget(searchBox);
@@ -106,17 +108,9 @@ public class ElementsScreen extends BaseScreen {
         int currentPage = map.isEmpty() ? 0 : this.page + 1;
         String pageString = currentPage + " / " + pageCount;
         int stringWidth = Minecraft.getInstance().font.width(pageString);
-        var page = new StringWidget(width / 2 - stringWidth / 2, y + lineHeight / 2, stringWidth, lineHeight, Component.literal(pageString), Minecraft.getInstance().font);
-        btnPrevPage = Button
-                .builder(Component.literal("<"), (btn) -> setPage(this.page - 1))
-                .pos(xlb, y)
-                .size(20, 20)
-                .build();
-        btnNextPage = Button
-                .builder(Component.literal(">"), (btn) -> setPage(this.page + 1))
-                .pos(xrs + ws - 20, y)
-                .size(20, 20)
-                .build();
+        var page = new MultiLineTextWidget(width / 2, y, stringWidth, lineHeight, pageString);
+        btnPrevPage = new Button(xlb, y, 20, 20, new TextComponent("<"), (btn) -> setPage(this.page - 1));
+        btnNextPage = new Button(xrs + ws - 20, y, 20, 20, new TextComponent(">"), (btn) -> setPage(this.page + 1));
         btnPrevPage.active = this.page > 0;
         btnNextPage.active = this.page < pageCount - 1;
         this.addRenderableWidget(page);
@@ -128,7 +122,18 @@ public class ElementsScreen extends BaseScreen {
     }
 
     @Override
-    protected void renderTitle(GuiGraphics graphics) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        if (this.searchBox.getValue().isEmpty()) {
+            this.searchBox.setSuggestion(I18n.get("gnetum.config.searchHint"));
+        }
+        else {
+            this.searchBox.setSuggestion(null);
+        }
+        super.render(poseStack, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    protected void renderTitle(PoseStack poseStack) {
 
     }
 
@@ -162,6 +167,7 @@ public class ElementsScreen extends BaseScreen {
             if (I18n.exists(key1)) {
                 return I18n.get(key1);
             }
+            if (!string.contains(":")) return string;
             String left = string.substring(0, string.indexOf(':'));
             String right = string.substring(string.indexOf(':') + 1);
 
