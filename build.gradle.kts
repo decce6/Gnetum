@@ -1,5 +1,5 @@
 plugins {
-    id ("org.relativitymc.neo-loom-remap") version "1.17-SNAPSHOT"
+    id ("dev.architectury.loom") version "1.13-SNAPSHOT"
     id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
 
@@ -20,12 +20,16 @@ repositories {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-loom.forgeExtraMixinConfigs.add("gnetum.mixins.json")
+loom {
+    forge {
+        mixinConfigs("gnetum.mixins.json")
+    }
+}
 
 dependencies {
     minecraft("com.mojang:minecraft:${prop("minecraft_version")}")
     mappings(loom.officialMojangMappings())
-    forgeUserdev("net.minecraftforge:forge:${prop("minecraft_version")}-${prop("forge_version")}:userdev")
+    forge("net.minecraftforge:forge:${prop("minecraft_version")}-${prop("forge_version")}")
 
     annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.4")
     implementation("io.github.llamalad7:mixinextras-common:0.5.4")
@@ -66,5 +70,11 @@ tasks {
         filesMatching(listOf("**/mods.toml", "**/pack.mcmeta")) {
             expand(propMap)
         }
+    }
+
+    named<Jar>("jar") {
+        manifest.attributes (
+            "MixinConfigs" to "$modid.mixins.json"
+        )
     }
 }

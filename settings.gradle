@@ -4,10 +4,8 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
-        maven {
-            name = 'RelativityMC'
-            url = 'https://repo.codemc.io/repository/relativitymc/'
-        }
+        maven { url = uri("https://maven.architectury.dev/") }
+        maven { url = uri("https://files.minecraftforge.net/maven/") }
         gradlePluginPortal()
     }
 }
