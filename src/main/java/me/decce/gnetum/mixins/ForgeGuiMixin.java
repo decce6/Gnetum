@@ -201,7 +201,6 @@ public class ForgeGuiMixin {
     @Unique
     private void gnetum$renderLayers(List<NamedGuiOverlay> list, GuiGraphics guiGraphics, float partialTick, Predicate<String> check, int startIndex, int endIndex) {
         ForgeGui forgeGui = (ForgeGui)(Object)this;
-        //noinspection ForLoopReplaceableByForEach
         for (int i = startIndex; i < list.size(); i++) {
             if (endIndex != -1 && i > endIndex) {
                 break;
@@ -271,14 +270,14 @@ public class ForgeGuiMixin {
                                 if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.PRE;
-                                if (check.test(modid)) {
+                                if (check == null || check.test(modid)) {
                                     gnetum$invokeWrapperSafe(poseStack, wrapper, listener, event);
                                 }
                             } else if (event instanceof RenderGuiEvent.Post) {
                                 if (modid == null) modid = Gnetum.OTHER_MODS;
                                 Gnetum.currentElement = modid;
                                 Gnetum.currentElementType = ElementType.POST;
-                                if (check.test(modid)) {
+                                if (check == null || check.test(modid)) {
                                     gnetum$invokeWrapperSafe(poseStack, wrapper, listener, event);
                                 }
                             }
