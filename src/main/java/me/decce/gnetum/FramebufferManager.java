@@ -133,6 +133,6 @@ public class FramebufferManager {
     }
 
     public boolean needsCatchUp() {
-        return this.serialNumber - this.catchUpSerialNumber <= 1;
+        return this.serialNumber - this.catchUpSerialNumber <= 2;
     }
 }
