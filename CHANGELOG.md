@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0
+
+- Fixed a potential crash rendering HUDs
+- Fixed short flickering of the HUD when opening/closing chat screen
+
 ## 2.4.6
 
 - Fixed flickering caused by lighting state leaks in some mods
