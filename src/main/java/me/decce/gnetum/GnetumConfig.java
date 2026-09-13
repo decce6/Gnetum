@@ -2,6 +2,7 @@ package me.decce.gnetum;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TwoStateBoolean;
 import net.minecraft.client.Minecraft;
@@ -55,6 +56,8 @@ public class GnetumConfig {
             return config;
         } catch (IOException e) {
             Gnetum.LOGGER.error("Failed to read configuration!", e);
+        } catch (JsonSyntaxException e) {
+            Gnetum.LOGGER.error("Failed to parse JSON!", e);
         }
         return createDefault();
     }
