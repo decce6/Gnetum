@@ -35,7 +35,6 @@ public class Framebuffers {
 	/*private double guiScale;
 	*///? }
 	private boolean downscale;
-	private boolean bound;
 
 	public Framebuffers() {
 		//? >=26.2 {
@@ -139,12 +138,7 @@ public class Framebuffers {
 		this.dropCurrentFrame = true;
 	}
 
-	public boolean isBound() {
-		return bound;
-	}
-
 	public void bind() {
-		bound = true;
 		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
 		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
 		//? <=1.21.4 {
@@ -153,7 +147,6 @@ public class Framebuffers {
 	}
 
 	public void unbind() {
-		bound = false;
 		VersionCompatUtil.setMainRenderTarget(backupMainRenderTarget);
 		//?	<=1.21.4 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);

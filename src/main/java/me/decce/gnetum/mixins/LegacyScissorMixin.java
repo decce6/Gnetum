@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LegacyScissorMixin {
 	@Inject(method = "applyScissor", at = @At("HEAD"), cancellable = true)
 	private void gnetum$scissorInGuiSpace(ScreenRectangle rectangle, CallbackInfo ci) {
-		if (rectangle == null || !Gnetum.framebuffers().isBound() || !Gnetum.config.downscale.get()) {
+		if (rectangle == null || !Gnetum.rendering || !Gnetum.config.downscale.get()) {
 			return;
 		}
 		((GuiGraphics) (Object) this).flush();
