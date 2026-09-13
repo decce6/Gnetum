@@ -14,7 +14,7 @@ logoFile = "assets/gnetum/gnetum.png"
 iconFile = "assets/gnetum/gnetum.png"
 bannerFile = "assets/gnetum/gnetum.png"
 authors = "${mod_authors}"
-credits = "AlanChrisa"
+credits = "AlanChrisa, Wyvest"
 logoBlur = false
 
 description = '''${mod_description}'''

@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.5.5
+
+- Fixed game crash due to scissors when using downscaled HUD framebuffers (Thanks @Wyvest!)
+- Fixed game crash when the config file is corrupted
+
 ## 4.5.4
 
 - Fixed HUD flickering when opening chat screen on 1.21.1
