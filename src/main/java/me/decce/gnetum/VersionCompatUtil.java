@@ -45,17 +45,17 @@ public class VersionCompatUtil {
 	}
 
 	public static void flush(GuiGraphics guiGraphics) {
+		Gnetum.flushing = true;
 		//? >=26.2 {
-		/*Gnetum.flushing = true;
-		var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
+		/*var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
 		game.getGuiRenderer().render();
-		Gnetum.flushing = false;
 		*///?} else >=1.21.10 {
 		var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
 		game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
 		//?} else {
 		/*guiGraphics.flush();
 		 *///?}
+		Gnetum.flushing = false;
 	}
 
 	public static boolean isHudHidden() {
