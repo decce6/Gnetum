@@ -1,6 +1,7 @@
 package me.decce.gnetum;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import me.decce.gnetum.compat.iris.IrisCompat;
 import me.decce.gnetum.mixins.GameRendererAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,15 +47,17 @@ public class VersionCompatUtil {
 
 	public static void flush(GuiGraphics guiGraphics) {
 		Gnetum.flushing = true;
-		//? >=26.2 {
-		/*var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
-		game.getGuiRenderer().render();
-		*///?} else >=1.21.10 {
-		var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
-		game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
-		//?} else {
-		/*guiGraphics.flush();
-		 *///?}
+		IrisCompat.runOutsideLevel(() -> {
+			//? >=26.2 {
+			/*var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
+			game.getGuiRenderer().render();
+			*///?} else >=1.21.10 {
+			var game = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
+			game.getGuiRenderer().render(game.getFogRenderer().getBuffer(FogRenderer.FogMode.NONE));
+			//?} else {
+			/*guiGraphics.flush();
+			 *///?}
+		});
 		Gnetum.flushing = false;
 	}
 

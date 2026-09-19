@@ -29,6 +29,13 @@ java {
     targetCompatibility = JavaVersion.toVersion(javaVersion)
 }
 
+val stubs = sourceSets.create("stubs") {
+    java.setSrcDirs(listOf(layout.settingsDirectory.dir("src/stubs/java")))
+}
+dependencies {
+    "compileOnly"(stubs.output)
+}
+
 version = fullModVersion()
 group = prop("maven_group")
 base {
