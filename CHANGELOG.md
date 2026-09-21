@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.6.0
+
+- Fixed Iris 1.11.4+ compatibility (Thanks @Wyvest!)
+- Added 26.3 support
+
 ## 4.5.5
 
 - Fixed game crash due to scissors when using downscaled HUD framebuffers (Thanks @Wyvest!)
