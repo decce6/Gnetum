@@ -14,6 +14,7 @@ stonecutter parameters {
     constants["immediatelyfast"] = node.project.hasProperty("deps.immediatelyfast")
     swaps["mod_version_short"] = "\"" + property("mod_version") + "\";"
     swaps["import_blend_factors"] = when {
+        eval(current.version, ">=26.3") -> "import com.mojang.renderpearl.api.pipeline.BlendFactor;"
         eval(current.version, ">=26.2") -> "import com.mojang.blaze3d.platform.BlendFactor;"
         else -> "import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;"
     }
@@ -51,6 +52,18 @@ stonecutter parameters {
         replace("submitPicturesInPictureState", "addPicturesInPictureState")
         replace("submitItem", "addItem")
         replace("submitGuiElement", "addGuiElement")
+    }
+    replacements.string(current.parsed >= "26.3") {
+        replace("com.mojang.blaze3d.pipeline.BlendFunction", "com.mojang.renderpearl.api.pipeline.BlendFunction")
+        replace("com.mojang.blaze3d.pipeline.RenderPipeline", "com.mojang.renderpearl.api.pipeline.RenderPipeline")
+        replace("com.mojang.blaze3d.textures", "com.mojang.renderpearl.api.textures")
+        replace("com.mojang.blaze3d.vertex.VertexFormat", "com.mojang.renderpearl.api.vertex.VertexFormat")
+        replace("com.mojang.blaze3d.GpuFormat", "com.mojang.renderpearl.api.GpuFormat")
+        replace("com.mojang.blaze3d.PrimitiveTopology", "com.mojang.renderpearl.api.pipeline.PrimitiveTopology")
+        replace("com.mojang.blaze3d.platform.CompareOp", "com.mojang.renderpearl.api.pipeline.CompareOp")
+        replace("com.mojang.blaze3d.systems.RenderPass", "com.mojang.renderpearl.api.commands.RenderPass")
+        replace("com.mojang.blaze3d.pipeline.ColorTargetState", "com.mojang.renderpearl.api.pipeline.ColorTargetState")
+        replace("com.mojang.blaze3d.pipeline.DepthStencilState", "com.mojang.renderpearl.api.pipeline.DepthStencilState")
     }
     replacements.string(
         node.project.hasProperty("deps.sodium_legacy.old_namespace")

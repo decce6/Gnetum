@@ -4,6 +4,7 @@ package me.decce.gnetum.mixins;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 //$ import_blend_factors
 import com.mojang.blaze3d.platform.DestFactor; import com.mojang.blaze3d.platform.SourceFactor;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.versioned.StatefulHudHandler;
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
@@ -18,12 +19,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
+import java.util.Optional;import java.util.stream.Collectors;
 //? >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
 *///? }
 //? >26 {
 /*import com.mojang.blaze3d.pipeline.ColorTargetState;
+
+import javax.swing.text.html.Option;
 *///? }
 
 @Mixin(GuiRenderState.class)
@@ -65,7 +68,16 @@ public class GuiRenderStateMixin {
 			return;
 		}
 		var pipeline = state.pipeline();
-		//? >26 {
+		//? >= 26.3 {
+		/*var colorTargetStates = pipeline.getColorTargetStates();
+		for (var colorTargetState : colorTargetStates) {
+			if (colorTargetState == null || colorTargetState.blendFunction().isEmpty()) {
+				return;
+			}
+			var blend = colorTargetState.blendFunction().get();
+			gnetum$handleBlend(blend, pipeline);
+		}
+		*///? } else >26 {
 		/*var colorTargetState = pipeline.getColorTargetState();
 		if (colorTargetState == null || colorTargetState.blendFunction().isEmpty()) {
 			return;
@@ -77,22 +89,29 @@ public class GuiRenderStateMixin {
 			return;
 		}
 		var blend = optionalBlend.get();
+		gnetum$handleBlend(blend, pipeline);
 		//? }
+	}
+
+	@Unique
+	private void gnetum$handleBlend(BlendFunction blend, RenderPipeline pipeline) {
 		var pipelineAccessor = (RenderPipelineAccessor) pipeline;
 		if (blend.sourceAlpha() != /*$src_factor ONE*/ SourceFactor.ONE
 				|| blend.destAlpha() != /*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
 		) {
 			// TODO: optimize alloc
-			blend = new BlendFunction(blend.sourceColor(), blend.destColor(),
+			var replacementBlend = new BlendFunction(blend.sourceColor(), blend.destColor(),
 					/*$src_factor ONE*/ SourceFactor.ONE
 					,/*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
 			);
-			//? >=26.2 {
-			/*pipelineAccessor.setColorTargetStates(new ColorTargetState[] { new ColorTargetState(Optional.of(blend), GpuFormat.RGBA8_UNORM, pipeline.getColorTargetState().writeMask()) } );
-			*///? } else >26 {
-			/*pipelineAccessor.setColorTargetState(new ColorTargetState(Optional.of(blend), pipeline.getColorTargetState().writeMask()));
-			*///? } else {
-			pipelineAccessor.setBlendFunction(Optional.of(blend));
+			//? >=26.3 {
+			/*pipelineAccessor.setColorTargetStates(pipelineAccessor.getColorTargetStates().stream().map(s -> new ColorTargetState(Optional.of(replacementBlend), s.format(), s.writeMask())).toList());
+			*///? } else >=26.2 {
+			/*pipelineAccessor.setColorTargetStates(new ColorTargetState[] { new ColorTargetState(Optional.of(replacementBlend), GpuFormat.RGBA8_UNORM, pipeline.getColorTargetState().writeMask()) } );
+			 *///? } else >26 {
+			/*pipelineAccessor.setColorTargetState(new ColorTargetState(Optional.of(replacementBlend), pipeline.getColorTargetState().writeMask()));
+			 *///? } else {
+			pipelineAccessor.setBlendFunction(Optional.of(replacementBlend));
 			//? }
 		}
 		if (gnetum$isBlendIncompatible(blend) && !Gnetum.isCurrentElementForceCached()) {

@@ -2,7 +2,6 @@ package me.decce.gnetum;
 
 import me.decce.gnetum.platform.Platform;
 
-import me.decce.gnetum.time.GlfwTimeSource;
 import me.decce.gnetum.time.TimeSource;
 import me.decce.gnetum.util.AnyBooleanValue;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +27,11 @@ public class Gnetum {
 	public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 	public static final FpsCounter FPS_COUNTER = new FpsCounter();
 
-	private static final TimeSource time = new GlfwTimeSource();
+	//? >=26.3 {
+	/*private static final TimeSource time = new me.decce.gnetum.time.Blaze3DTimeSource();
+	*///? } else {
+	private static final TimeSource time = new me.decce.gnetum.time.GlfwTimeSource();
+	//? }
 	private static Framebuffers framebuffers;
 	public static int pass = 1;
 	public static boolean rendering;

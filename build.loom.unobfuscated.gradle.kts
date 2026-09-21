@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("me.decce.gnetum.gradle.gnetum-common-conventions")
-    id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.18-SNAPSHOT"
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -12,7 +12,7 @@ fun prop(name: String) = if (hasProperty(name)) findProperty(name) as String els
 
 dependencies {
     minecraft("com.mojang:minecraft:${prop("deps.minecraft")}")
-    implementation("net.fabricmc:fabric-loader:0.18.4")
+    implementation("net.fabricmc:fabric-loader:0.19.5")
     implementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric_api")}")
 
     if (hasProperty("deps.sodium")) {

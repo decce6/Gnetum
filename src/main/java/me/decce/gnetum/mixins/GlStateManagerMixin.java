@@ -1,9 +1,9 @@
 package me.decce.gnetum.mixins;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 //? <1.21.10{
-/*import com.mojang.blaze3d.platform.GlConst;
+/*import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.platform.GlConst;
 import me.decce.gnetum.FramebufferTracker;
 import me.decce.gnetum.Gnetum;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 *///?}
 
-@Mixin(value = GlStateManager.class, remap = false)
+//? <=1.21.4 {
+/*@Mixin(value = GlStateManager.class, remap = false)
 public class GlStateManagerMixin {
-    //? <=1.21.4 {
-    /*@Inject(method = "_glBindFramebuffer", at = @At("TAIL"))
+    @Inject(method = "_glBindFramebuffer", at = @At("TAIL"))
     private static void gnetum$bindFramebuffer(int target, int framebuffer, CallbackInfo ci) {
         if (target == GlConst.GL_FRAMEBUFFER) {
             FramebufferTracker.setCurrentlyBoundFbo(framebuffer);
@@ -56,6 +56,8 @@ public class GlStateManagerMixin {
     private static boolean gnetum$isUsingDestColor(int factor) {
         return factor == GlConst.GL_DST_COLOR || factor == GlConst.GL_ONE_MINUS_DST_COLOR;
     }
-    *///? }
-
 }
+*///? } else {
+@Mixin(targets = {})
+public class GlStateManagerMixin {}
+//? }

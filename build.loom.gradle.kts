@@ -3,7 +3,7 @@ import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
     id("me.decce.gnetum.gradle.gnetum-common-conventions")
-    id("net.fabricmc.fabric-loom-remap") version "1.17-SNAPSHOT"
+    id("net.fabricmc.fabric-loom-remap") version "1.18-SNAPSHOT"
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -13,7 +13,7 @@ fun prop(name: String) = if (hasProperty(name)) findProperty(name) as String els
 dependencies {
     minecraft("com.mojang:minecraft:${prop("deps.minecraft")}")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:0.18.4")
+    modImplementation("net.fabricmc:fabric-loader:0.19.5")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric_api")}")
 
     if (hasProperty("deps.sodium")) {

@@ -38,6 +38,15 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 //? }
 
 public class FramebufferBlitter {
+    //? >=26.3 {
+    /*public static final String POSITION_TEX_SHADER = "gnetum:shaderc/position_tex";
+    public static final String POSITION_TEX_FAST_SHADER = "gnetum:shaderc/position_tex_fast";
+    public static final String POSITION_TEX_FULLSCREEN_SHADER = "gnetum:shaderc/position_tex_fullscreen";
+    *///? } else {
+    public static final String POSITION_TEX_SHADER = "gnetum:position_tex";
+    public static final String POSITION_TEX_FAST_SHADER = "gnetum:position_tex_fast";
+    public static final String POSITION_TEX_FULLSCREEN_SHADER = "gnetum:position_tex_fullscreen";
+    //? }
     public static final BlendFunction GNETUM_FBO_BLEND = new BlendFunction(
             /*$src_factor ONE*/ SourceFactor.ONE
             , /*$dest_factor ONE_MINUS_SRC_ALPHA*/ DestFactor.ONE_MINUS_SRC_ALPHA
@@ -46,8 +55,12 @@ public class FramebufferBlitter {
     );
     public static final RenderPipeline.Snippet SNIPPET = RenderPipeline.builder()
             //? >=26.2 {
-            /*.withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            /*//? >=26.3 {
+            /^.withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+            ^///? } else {
             .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            //? }
+            .withBindGroupLayout(BindGroupLayouts.GLOBALS)
             .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
             .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX)
             .withColorTargetState(new ColorTargetState(Optional.of(GNETUM_FBO_BLEND), GpuFormat.RGBA8_UNORM, ColorTargetState.WRITE_COLOR))
@@ -69,6 +82,9 @@ public class FramebufferBlitter {
             //? }
             .buildSnippet();
     public static final RenderPipeline.Snippet TRIANGLES_SNIPPET = RenderPipeline.builder()
+            //? >=26.3 {
+            /*.withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            *///? }
             //? >=26.2 {
             /*.withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
              *///? } else {
@@ -84,23 +100,23 @@ public class FramebufferBlitter {
             .buildSnippet();
     public static final RenderPipeline FAST_BLIT = RenderPipeline.builder(SNIPPET, TRIANGLES_SNIPPET)
             .withLocation(Identifier.parse("gnetum:fast_blit_pipeline"))
-            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
-            .withFragmentShader(Identifier.parse("gnetum:position_tex_fast"))
+            .withVertexShader(Identifier.parse(POSITION_TEX_FULLSCREEN_SHADER))
+            .withFragmentShader(Identifier.parse(POSITION_TEX_FAST_SHADER))
             .build();
     public static final RenderPipeline BLIT = RenderPipeline.builder(SNIPPET, TRIANGLES_SNIPPET)
             .withLocation(Identifier.parse("gnetum:blit_pipeline"))
-            .withVertexShader(Identifier.parse("gnetum:position_tex_fullscreen"))
-            .withFragmentShader(Identifier.parse("gnetum:position_tex"))
+            .withVertexShader(Identifier.parse(POSITION_TEX_FULLSCREEN_SHADER))
+            .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
     public static final RenderPipeline DOWNSCALED_FAST_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
             .withLocation(Identifier.parse("gnetum:downscaled_fast_blit_pipeline"))
             .withVertexShader("core/position_tex")
-            .withFragmentShader(Identifier.parse("gnetum:position_tex_fast"))
+            .withFragmentShader(Identifier.parse(POSITION_TEX_FAST_SHADER))
             .build();
     public static final RenderPipeline DOWNSCALED_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
             .withLocation(Identifier.parse("gnetum:downscaled_blit_pipeline"))
             .withVertexShader("core/position_tex")
-            .withFragmentShader(Identifier.parse("gnetum:position_tex"))
+            .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
 
     public static void blit(RenderTarget source, GuiGraphics guiGraphics) {

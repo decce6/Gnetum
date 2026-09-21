@@ -37,7 +37,10 @@ public class Framebuffers {
 	private boolean downscale;
 
 	public Framebuffers() {
-		//? >=26.2 {
+		//? >=26.3 {
+		/*back = new TextureTarget("gnetum_back", 1, 1, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
+		front = new TextureTarget("gnetum_front", 1, 1, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
+		*///? } >=26.2 {
 		/*back = new TextureTarget("gnetum_back", 1, 1, true, GpuFormat.RGBA8_UNORM);
 		front = new TextureTarget("gnetum_front", 1, 1, true, GpuFormat.RGBA8_UNORM);
 		*///? } else >=1.21.10 {
