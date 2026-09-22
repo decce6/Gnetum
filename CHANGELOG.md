@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.6.1
+
+Hotfix for an important regression in 4.6.0 which broke crosshair and camera effect rendering.
+
 ## 4.6.0
 
 - Fixed Iris 1.11.4+ compatibility (Thanks @Wyvest!)
