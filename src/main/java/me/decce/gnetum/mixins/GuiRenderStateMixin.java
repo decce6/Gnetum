@@ -83,6 +83,7 @@ public class GuiRenderStateMixin {
 			return;
 		}
 		var blend = colorTargetState.blendFunction().get();
+		gnetum$handleBlend(blend, pipeline);
 		*///? } else {
 		var optionalBlend = pipeline.getBlendFunction();
 		if (optionalBlend.isEmpty()) {
