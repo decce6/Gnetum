@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.*;
+import me.decce.gnetum.compat.journeymap.JourneyMapCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -117,6 +118,7 @@ public class ForgeGuiMixin {
 
         if (!needsCatchUp) {
             minecraft.getProfiler().push("uncached");
+            JourneyMapCompat.invokeRenderWaypointDecos(guiGraphics);
             gnetum$postEvent(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick), guiGraphics.pose(), modid -> Gnetum.passManager.cachingDisabled(modid, ElementType.PRE));
             gnetum$renderLayers(GuiOverlayManager.getOverlays(), guiGraphics, partialTick, overlay -> Gnetum.passManager.cachingDisabled(overlay), 0, gnetum$getLastVanillaOverlayIndex());
             if (Gnetum.passManager.current > 0) {

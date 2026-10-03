@@ -15,7 +15,8 @@
     "compat.ItemRendererMixin",
     "compat.guiclock.ForgeGUIEventMixin",
     "compat.jade.BossHealthOverlayMixin",
-    "compat.jade.OverlayRendererMixin"
+    "compat.jade.OverlayRendererMixin",
+    "compat.journeymap.HudOverlayHandlerMixin"
   ],
   "mixins": [],
   "injectors": {

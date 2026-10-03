@@ -38,6 +38,7 @@ dependencies {
 
     implementation("maven.modrinth:immediatelyfast:1.5.0+1.20.4-forge")
     implementation("maven.modrinth:jade:11.13.2+forge")
+    implementation("maven.modrinth:journeymap:1.20.1-6.0.6+forge")
     implementation("maven.modrinth:embeddium:0.3.31+mc1.20.1")
     implementation("maven.modrinth:gui-clock:1.20.1-4.7-fabric+forge+neo")
 }
