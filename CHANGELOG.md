@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.1
+
+- Fixed compatibility with JourneyMap 6.0+ (waypoint icons & labels desync)
+
+This release (2.5.1) does not have a corresponding build for 1.18.2 because there is currently no 6.0+ versions of JourneyMap on that version.
+
 ## 2.5.0
 
 - Fixed a potential crash rendering HUDs
