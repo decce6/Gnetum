@@ -92,6 +92,9 @@ public class FramebufferBlitter {
             //? }
             .buildSnippet();
     public static final RenderPipeline.Snippet QUADS_SNIPPET = RenderPipeline.builder()
+            //? >=26.3 {
+            /*.withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            *///? }
             //? >=26.2 {
             /*.withPrimitiveTopology(PrimitiveTopology.QUADS)
              *///? } else {
