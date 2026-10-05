@@ -41,6 +41,12 @@ public abstract class ElementGatherer {
 		//? }
 		newMap.get(Constants.HAND_ELEMENT).enabled.defaultValue = false;
 
+		if (newMap.containsKey("journeymap")) {
+			// Disables caching for the in-game waypoint icons
+			// This does not affect the caching for the minimap.
+			newMap.get("journeymap").enabled.defaultValue = false;
+		}
+
 		Gnetum.config.map = newMap;
 	}
 
