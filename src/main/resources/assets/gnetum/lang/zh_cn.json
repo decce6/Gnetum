@@ -22,6 +22,7 @@
   "gnetum.config.auto": "自动",
 
   "gnetum.config.unknown_element": "未知元素",
+  "gnetum.config.unknown_listeners": "未知 HUD 事件监听器",
 
   "gnetum.config.element.hand.tooltip": "设为“开启”以启用手部缓存, 此选项目前在“自动”模式下不会启用",
   "gnetum.config.element.debug_overlay.tooltip": "设为“开启”以启用调试屏幕 (F3) 缓存, 仅在游戏内且未打开任何 GUI 界面时生效, 此选项目前在“自动”模式下不会启用"

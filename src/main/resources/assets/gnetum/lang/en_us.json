@@ -21,6 +21,7 @@
   "gnetum.config.tooltip.off": "OFF: Caching for this element is forcibly disabled.",
   "gnetum.config.auto": "AUTO",
   "gnetum.config.unknown_element": "Unknown Elements",
+  "gnetum.config.unknown_listeners": "Unknown HUD Listeners",
   "gnetum.config.element.hand.tooltip": "Set to ON to enable hand caching. This option is currently not enabled on AUTO.",
   "gnetum.config.element.debug_overlay.tooltip": "Set to ON to enable caching for debug overlay (F3). Only works when in game and no GUI screen is open. This option is currently not enabled on AUTO."
 }

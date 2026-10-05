@@ -68,7 +68,7 @@ public class GuiLayerManagerMixin {
 		try {
 			for (; index < listeners.length; index++) {
 				var listener = listeners[index];
-				var modid = EventListenerHelper.tryGetModId(listener).orElse(Constants.UNKNOWN_ELEMENTS);
+				var modid = EventListenerHelper.tryGetModId(listener).orElse(Constants.UNKNOWN_LISTENERS);
 				var element = Gnetum.getElement(modid);
 				if (element.shouldRender()) {
 					element.begin();

@@ -23,6 +23,7 @@ public abstract class ElementGatherer {
 		gatherImpl(newMap);
 		//? >=1.21.10 {
 		newMap.put(Constants.UNKNOWN_ELEMENTS, new CachedElement(Constants.UNKNOWN_ELEMENTS));
+		newMap.put(Constants.UNKNOWN_LISTENERS, new CachedElement(Constants.UNKNOWN_LISTENERS));
 		newMap.put(Constants.DEBUG_OVERLAY, new CachedElement(Constants.DEBUG_OVERLAY));
 		//? }
 
@@ -34,6 +35,7 @@ public abstract class ElementGatherer {
 		}
 
 		//? >=1.21.10 {
+		newMap.get(Constants.UNKNOWN_LISTENERS).enabled.defaultValue = true;
 		newMap.get(Constants.UNKNOWN_ELEMENTS).enabled.defaultValue = false;
 		newMap.get(Constants.DEBUG_OVERLAY).enabled.defaultValue = false;
 		//? }

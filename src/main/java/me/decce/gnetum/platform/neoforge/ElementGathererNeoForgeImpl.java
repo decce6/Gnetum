@@ -44,7 +44,7 @@ public class ElementGathererNeoForgeImpl extends ElementGatherer {
 		var bus = (EventBus) NeoForge.EVENT_BUS;
 		var listeners = EventBusAccessor.getListenerList(bus, event).getListeners();
 		for (var listener : listeners) {
-			var modid = EventListenerHelper.tryGetModId(listener).orElse(Constants.UNKNOWN_ELEMENTS);
+			var modid = EventListenerHelper.tryGetModId(listener).orElse(Constants.UNKNOWN_LISTENERS);
 			map.putIfAbsent(modid, new CachedElement(modid));
 		}
 	}
