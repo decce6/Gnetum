@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.6.3
+
+Hotfix for a regression in 4.6.2 which caused in-game waypoint icon skewing with JourneyMap.
+
 ## 4.6.2
 
 - Fixed game crash with Downscaled HUD Framebuffer option enabled on 26.3
