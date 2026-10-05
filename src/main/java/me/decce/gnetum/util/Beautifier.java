@@ -13,6 +13,9 @@ public class Beautifier {
 		if (string == null || Constants.UNKNOWN_ELEMENTS.equals(string)) {
 			return I18n.get("gnetum.config.unknown_element");
 		}
+		if (Constants.UNKNOWN_LISTENERS.equals(string)) {
+			return I18n.get("gnetum.config.unknown_listeners");
+		}
 		String key1 = "gnetum.config.element." + string.replace(':', '.');
 		if (VersionCompatUtil.i18nExists(key1)) {
 			return I18n.get(key1);
