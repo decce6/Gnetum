@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.6.2
+
+- Fixed game crash with Downscaled HUD Framebuffer option enabled on 26.3
+- Fixed JourneyMap compatibility (entity icons being invisible)
+
 ## 4.6.1
 
 Hotfix for an important regression in 4.6.0 which broke crosshair and camera effect rendering.
