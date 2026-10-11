@@ -7,6 +7,7 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 //? >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
 *///? }
@@ -35,6 +36,10 @@ public class Framebuffers {
 	/*private double guiScale;
 	*///? }
 	private boolean downscale;
+	private int backMinX, backMinY, backMaxX, backMaxY;
+	private int frontMinX, frontMinY, frontMaxX, frontMaxY;
+	private boolean backDirty = true;
+	private boolean frontDirty = true;
 
 	public Framebuffers() {
 		//? >=26.3 {
@@ -64,7 +69,10 @@ public class Framebuffers {
 
 	public void blit(GuiGraphics guiGraphics) {
 		//? >=1.21.10 {
-		FramebufferBlitter.blit(front, guiGraphics);
+		var area = frontBounds(guiGraphics.guiWidth(), guiGraphics.guiHeight());
+		if (area != null) {
+			FramebufferBlitter.blit(front, guiGraphics, area);
+		}
 		//?} else {
 		/*RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
@@ -121,6 +129,8 @@ public class Framebuffers {
 			/*back.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
 			front.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
 			*///?}
+			backDirty = true;
+			frontDirty = true;
 			markForCatchUp();
 		}
 	}
@@ -130,11 +140,46 @@ public class Framebuffers {
 			var temp = back;
 			this.back = this.front;
 			this.front = temp;
+			var tempDirty = backDirty;
+			this.backDirty = this.frontDirty;
+			this.frontDirty = tempDirty;
+			this.frontMinX = backMinX;
+			this.frontMinY = backMinY;
+			this.frontMaxX = backMaxX;
+			this.frontMaxY = backMaxY;
 			this.serialNumber++;
 			Gnetum.FPS_COUNTER.tick();
 		}
 		this.clear();
+		this.backMinX = this.backMinY = this.backMaxX = this.backMaxY = 0;
 		this.dropCurrentFrame = false;
+	}
+
+	public void includeBounds(int x0, int y0, int x1, int y1) {
+		if (backMinX >= backMaxX || backMinY >= backMaxY) {
+			backMinX = x0;
+			backMinY = y0;
+			backMaxX = x1;
+			backMaxY = y1;
+		} else {
+			backMinX = Math.min(backMinX, x0);
+			backMinY = Math.min(backMinY, y0);
+			backMaxX = Math.max(backMaxX, x1);
+			backMaxY = Math.max(backMaxY, y1);
+		}
+		backDirty = true;
+	}
+
+	public void includeAll() {
+		includeBounds(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	}
+
+	public ScreenRectangle frontBounds(int guiWidth, int guiHeight) {
+		int x0 = Math.max(frontMinX, 0);
+		int y0 = Math.max(frontMinY, 0);
+		int x1 = Math.min(frontMaxX, guiWidth);
+		int y1 = Math.min(frontMaxY, guiHeight);
+		return x0 < x1 && y0 < y1 ? new ScreenRectangle(x0, y0, x1 - x0, y1 - y0) : null;
 	}
 
 	public void dropCurrentFrame() {
@@ -144,6 +189,8 @@ public class Framebuffers {
 	public void bind() {
 		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
 		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
+		//? <1.21.10
+		//backDirty = true;
 		//? <=1.21.4 {
 		/*back.bindWrite(true);
 		*///?}
@@ -157,6 +204,10 @@ public class Framebuffers {
 	}
 
 	public void clear() {
+		if (!backDirty) {
+			return;
+		}
+		backDirty = false;
 		//? >=26.2 {
 		/*RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), clearColor,
 				back.getDepthTexture(), 1.0);

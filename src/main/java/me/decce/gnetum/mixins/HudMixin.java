@@ -123,7 +123,7 @@ public class HudMixin {
 
 		Gnetum.rendering = false;
 
-		//? xaerominimap {
+		//? if xaerominimap && <26.2 {
 		VersionCompatUtil.profilerPopPush("uncached");
 		XaeroMinimapCompat.tryRenderWaypoint(guiGraphics, deltaTracker);
 		//? }
