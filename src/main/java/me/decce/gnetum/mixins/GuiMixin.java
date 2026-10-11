@@ -39,6 +39,7 @@ public class GuiMixin {
                 guiRenderer.setRenderState(StatefulHudHandler.alternativeGuiRenderState);
 
                 Gnetum.framebuffers().bind();
+                Gnetum.framebuffers().includeAll();
 
                 original.call(hud, StatefulHudHandler.alternativeGuiGraphics);
                 VersionCompatUtil.flush(StatefulHudHandler.alternativeGuiGraphics);

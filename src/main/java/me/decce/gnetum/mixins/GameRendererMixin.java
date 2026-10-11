@@ -272,6 +272,7 @@ public class GameRendererMixin {
 			// No flush needed
 			hand.begin();
 			Gnetum.framebuffers().bind();
+			Gnetum.framebuffers().includeAll();
 			callOriginal.run();
 			Gnetum.framebuffers().unbind();
 			hand.end();
@@ -305,6 +306,7 @@ public class GameRendererMixin {
 				guiRenderer.setRenderState(StatefulHudHandler.alternativeGuiRenderState);
 
 				Gnetum.framebuffers().bind();
+				Gnetum.framebuffers().includeAll();
 
 				original.call(gui, StatefulHudHandler.alternativeGuiGraphics);
 				VersionCompatUtil.flush(StatefulHudHandler.alternativeGuiGraphics);

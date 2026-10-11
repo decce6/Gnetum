@@ -39,6 +39,19 @@ public class GuiRenderStateMixin {
 		if (Gnetum.isCurrentElementUncached()) {
 			gnetum$submitForUncached(state);
 			ci.cancel();
+		} else {
+			gnetum$trackCached(state);
+		}
+	}
+
+	@Unique
+	private static void gnetum$trackCached(ScreenArea state) {
+		if (Gnetum.pass == 0) {
+			return;
+		}
+		var bounds = state.bounds();
+		if (bounds != null) {
+			Gnetum.framebuffers().includeBounds(bounds.left(), bounds.top(), bounds.right(), bounds.bottom());
 		}
 	}
 
@@ -67,6 +80,7 @@ public class GuiRenderStateMixin {
 			ci.cancel();
 			return;
 		}
+		gnetum$trackCached(state);
 		var pipeline = state.pipeline();
 		//? >= 26.3 {
 		/*var colorTargetStates = pipeline.getColorTargetStates();

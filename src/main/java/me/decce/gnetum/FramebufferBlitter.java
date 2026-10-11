@@ -122,28 +122,30 @@ public class FramebufferBlitter {
             .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
 
-    public static void blit(RenderTarget source, GuiGraphics guiGraphics) {
+    public static void blit(RenderTarget source, GuiGraphics guiGraphics, ScreenRectangle area) {
         if (Gnetum.config.downscale.get()) {
+            float w = guiGraphics.guiWidth();
+            float h = guiGraphics.guiHeight();
             ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(
                     Gnetum.config.fastFboBlit.get() ? DOWNSCALED_FAST_BLIT : DOWNSCALED_BLIT,
                     source.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
-                    0,
-                    0,
-                    guiGraphics.guiWidth(),
-                    guiGraphics.guiHeight(),
-                    0,
-                    1,
-                    1,
-                    0,
+                    area.left(),
+                    area.top(),
+                    area.right(),
+                    area.bottom(),
+                    area.left() / w,
+                    area.right() / w,
+                    1 - area.top() / h,
+                    1 - area.bottom() / h,
                     0xFFFFFFFF);
         }
         else {
-            ((Gui_Graphics_Accessor)guiGraphics).getGuiRenderState().submitGuiElement(new FramebufferRenderState(source));
+            ((Gui_Graphics_Accessor)guiGraphics).getGuiRenderState().submitGuiElement(new FramebufferRenderState(source, area));
         }
     }
 
-    public record FramebufferRenderState(RenderTarget target) implements GuiElementRenderState {
+    public record FramebufferRenderState(RenderTarget target, ScreenRectangle area) implements GuiElementRenderState {
         @Override
         public void buildVertices(VertexConsumer vertexConsumer) {
             // Dummy vertices to bypass the "Cannot build mesh with no position element" limitation
@@ -165,12 +167,12 @@ public class FramebufferBlitter {
 
         @Override
         public ScreenRectangle scissorArea() {
-            return null;
+            return area;
         }
 
         @Override
         public ScreenRectangle bounds() {
-            return new ScreenRectangle(0, 0, target.width, target.height);
+            return area;
         }
     }
 }
