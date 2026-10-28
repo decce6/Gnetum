@@ -3,6 +3,7 @@ package me.decce.gnetum.mixins;
 //? >=26.2 {
 /*import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.decce.gnetum.AutoDisable;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
@@ -26,7 +27,11 @@ public class GuiMixin {
         if (this.minecraft.isGameLoadFinished() && (!this.minecraft.gui.hud.isHidden() || this.minecraft.gui.screen() != null)) {
             var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);
             if (minecraft.level == null || minecraft.gui.screen() != null || !Gnetum.config.isEnabled() || debug.isUncached()) {
+                boolean measured = !debug.isUncached() && AutoDisable.begin(AutoDisable.HUD);
                 original.call(hud, guiGraphics);
+                if (measured) {
+                    AutoDisable.end(AutoDisable.HUD);
+                }
                 return;
             }
             if (debug.shouldRender()) {
