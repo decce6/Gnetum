@@ -1,5 +1,7 @@
 package me.decce.gnetum;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -27,7 +29,21 @@ public class GnetumConfig {
 		PATH = directory.resolve("gnetum.json");
 	}
 
+    private static final Gson COST_GSON = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+            return f.getName().equals("showHudFps") || f.getName().equals("screenMaxFps");
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+    }).create();
+    private static String lastCostSettings;
+
     public TwoStateBoolean enabled = new TwoStateBoolean(AnyBooleanValue.ON);
+    public TwoStateBoolean autoDisable = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean showHudFps = new TwoStateBoolean(AnyBooleanValue.ON);
     public TwoStateBoolean downscale = new TwoStateBoolean(AnyBooleanValue.OFF);
     public TwoStateBoolean fastFboBlit = new TwoStateBoolean(AnyBooleanValue.ON);
@@ -39,7 +55,7 @@ public class GnetumConfig {
 
 
     public boolean isEnabled() {
-        return enabled.get();
+        return enabled.get() && !AutoDisable.suppressed();
     }
 
     private static GnetumConfig createDefault() {
@@ -83,6 +99,11 @@ public class GnetumConfig {
 
     public void save() {
         this.validate();
+        String costSettings = COST_GSON.toJson(this);
+        if (!costSettings.equals(lastCostSettings)) {
+            lastCostSettings = costSettings;
+            AutoDisable.reset();
+        }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(this);
         try {
