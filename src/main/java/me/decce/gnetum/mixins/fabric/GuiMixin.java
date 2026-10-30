@@ -26,8 +26,10 @@ import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
 @Mixin(value = Gui.class)
 //? }
 public class GuiMixin {
+    //? <26.3 {
     // Fabric API only wraps the renderBackground and renderExperienceLevel calls - we need to wrap the render call as well
     // Fixes https://github.com/decce6/Gnetum/issues/84
+    // No longer required as of Fabric API 0.165.0+26.3 - see https://github.com/FabricMC/fabric-api/pull/5659
     //? >=26.2 {
     /*@WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractRenderState(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     *///? } else >=26 {
@@ -57,6 +59,7 @@ public class GuiMixin {
         original.call(instance, guiGraphics, deltaTracker);
         element.end();
     }
+    //? }
 }
 //? } else {
 
