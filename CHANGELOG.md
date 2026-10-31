@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.6.4
+
+- Fixed info bar foreground flickering with latest Fabric API
+  - Not backwards compatible - make sure to use the latest version of Fabric API!
+- Made several small changes that slightly reduce the memory footprint
+
 ## 4.6.3
 
 Hotfix for a regression in 4.6.2 which caused in-game waypoint icon skewing with JourneyMap.
