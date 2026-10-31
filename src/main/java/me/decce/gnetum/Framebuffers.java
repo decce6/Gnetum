@@ -20,7 +20,6 @@ import org.joml.Matrix4f;
 
 public class Framebuffers {
 	private final Minecraft mc = Minecraft.getInstance();
-	private final Vector4fc clearColor = new Vector4f(0);
 	private RenderTarget back;
 	private RenderTarget front;
 	private RenderTarget backupMainRenderTarget;
@@ -35,6 +34,8 @@ public class Framebuffers {
 	/*private double guiScale;
 	*///? }
 	private boolean downscale;
+	//? >=26.2
+	//private final Vector4fc clearColor = new Vector4f(0);
 
 	public Framebuffers() {
 		//? >=26.3 {
