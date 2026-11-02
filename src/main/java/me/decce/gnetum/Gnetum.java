@@ -95,6 +95,9 @@ public class Gnetum {
 	}
 
 	public static String getFpsString() {
+		if (AutoDisable.suppressed()) {
+			return "HUD: Gnetum auto-disabled";
+		}
 		return String.format(Locale.ROOT, "HUD: %d fps T: %s (%d passes)", Gnetum.FPS_COUNTER.getFps(), Gnetum.config.getMaxFps() == Constants.UNLIMITED_FPS ? "inf" : Gnetum.config.getMaxFps(), Gnetum.config.getNumberOfPasses());
 	}
 
@@ -177,6 +180,7 @@ public class Gnetum {
 
 	public static void reset() {
 		FPS_COUNTER.reset();
+		AutoDisable.reset();
 		framebuffers().resize();
 		framebuffers().markForCatchUp();
 	}

@@ -122,6 +122,10 @@ public class FramebufferBlitter {
             .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
 
+    public static boolean isBlitPipeline(RenderPipeline pipeline) {
+        return pipeline == FAST_BLIT || pipeline == BLIT || pipeline == DOWNSCALED_FAST_BLIT || pipeline == DOWNSCALED_BLIT;
+    }
+
     public static void blit(RenderTarget source, GuiGraphics guiGraphics) {
         if (Gnetum.config.downscale.get()) {
             ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(

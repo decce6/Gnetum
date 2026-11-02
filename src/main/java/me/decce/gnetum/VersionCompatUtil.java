@@ -14,6 +14,7 @@ import me.decce.gnetum.mixins.MinecraftAccessor;
 //? }
 //? >=1.21.10 {
 import net.minecraft.client.renderer.fog.FogRenderer;
+import me.decce.gnetum.mixins.ToastManagerAccessor;
 //? }
 
 public class VersionCompatUtil {
@@ -75,6 +76,17 @@ public class VersionCompatUtil {
 		*///? } else {
 		return Minecraft.getInstance().screen != null;
 		//? }
+	}
+
+	public static boolean hasVisibleToasts() {
+		//? >=26.2 {
+		/*return !((ToastManagerAccessor) Minecraft.getInstance().gui.toastManager()).getVisibleToasts().isEmpty();
+		*///? } else >=1.21.10 {
+		return !((ToastManagerAccessor) Minecraft.getInstance().getToastManager()).getVisibleToasts().isEmpty();
+		//? } else {
+		/*// Toasts are drawn outside the measured HUD span here
+		return false;
+		*///? }
 	}
 
 	public static boolean i18nExists(String key) {
