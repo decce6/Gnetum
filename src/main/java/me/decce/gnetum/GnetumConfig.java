@@ -52,6 +52,7 @@ public class GnetumConfig {
             String json = Files.readString(PATH);
             Gson gson = new Gson();
             GnetumConfig config = gson.fromJson(json, GnetumConfig.class);
+            if (config == null) return createDefault();
             config.validate();
             return config;
         } catch (IOException e) {
