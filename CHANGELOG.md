@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.6.5
+
+- Fixed game crash when the config file is empty. (Thanks @saadndm!)
+
 ## 4.6.4
 
 - Fixed info bar foreground flickering with latest Fabric API
