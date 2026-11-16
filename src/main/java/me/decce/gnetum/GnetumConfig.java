@@ -2,6 +2,7 @@ package me.decce.gnetum;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import me.decce.gnetum.util.AnyBooleanValue;
 import me.decce.gnetum.util.TriStateBoolean;
 import me.decce.gnetum.util.TwoStateBoolean;
@@ -47,6 +48,9 @@ public class GnetumConfig {
             String json = Files.readString(PATH);
             Gson gson = new Gson();
             GnetumConfig config = gson.fromJson(json, GnetumConfig.class);
+            if (config == null) {
+                return createDefault();
+            }
             if (!config.mapVanillaElements.containsKey(Gnetum.HAND_ELEMENT)) {
                 config.mapVanillaElements.put(Gnetum.HAND_ELEMENT, new CacheSetting(1, new TriStateBoolean(AnyBooleanValue.AUTO, false)));
             }
@@ -55,6 +59,8 @@ public class GnetumConfig {
             return config;
         } catch (IOException e) {
             Gnetum.LOGGER.error("Failed to read configuration!", e);
+        } catch (JsonSyntaxException e) {
+            Gnetum.LOGGER.error("Failed to parse JSON!", e);
         }
         return createDefault();
     }
