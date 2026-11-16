@@ -67,7 +67,8 @@ public class Framebuffers {
 		//? >=1.21.10 {
 		FramebufferBlitter.blit(front, guiGraphics);
 		//?} else {
-		/*RenderSystem.enableBlend();
+		/*AutoDisable.begin(AutoDisable.BLIT);
+		RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
 		RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 		//? >=1.21.4 {
@@ -78,6 +79,7 @@ public class Framebuffers {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
+		AutoDisable.end(AutoDisable.BLIT);
 		*///?}
 
 		fixMatrix();
@@ -133,6 +135,7 @@ public class Framebuffers {
 			this.front = temp;
 			this.serialNumber++;
 			Gnetum.FPS_COUNTER.tick();
+			AutoDisable.onCycle();
 		}
 		this.clear();
 		this.dropCurrentFrame = false;
@@ -143,6 +146,7 @@ public class Framebuffers {
 	}
 
 	public void bind() {
+		AutoDisable.begin(AutoDisable.PASS);
 		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
 		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
 		//? <=1.21.4 {
@@ -151,6 +155,7 @@ public class Framebuffers {
 	}
 
 	public void unbind() {
+		AutoDisable.end(AutoDisable.PASS);
 		VersionCompatUtil.setMainRenderTarget(backupMainRenderTarget);
 		//?	<=1.21.4 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);

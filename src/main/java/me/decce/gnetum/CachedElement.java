@@ -36,6 +36,9 @@ public class CachedElement {
 		Gnetum.currentElement = null;
 		var timeEnd = Gnetum.time().get();
 		time[timeIndex] = timeEnd - timeBegin;
+		if (isUncached()) {
+			AutoDisable.excludeFromPass((long) ((timeEnd - timeBegin) * 1_000_000_000L));
+		}
 		next();
 	}
 

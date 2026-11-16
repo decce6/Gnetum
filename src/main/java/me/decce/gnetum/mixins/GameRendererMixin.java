@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.decce.gnetum.AutoDisable;
 import me.decce.gnetum.Constants;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
@@ -61,6 +62,13 @@ public class GameRendererMixin {
 	@Unique
 	private boolean gnetum$wasHudHidden;
 
+	//? <=1.21.11 {
+	@Inject(method = "render", at = @At("HEAD"))
+	private void gnetum$tickAutoDisable(CallbackInfo ci) {
+		AutoDisable.tick();
+	}
+	//? }
+
 	//? >=26.2 {
 	/*@Inject(method = "extract", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V"))
 	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
@@ -74,6 +82,9 @@ public class GameRendererMixin {
 	/*@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
 	private void gnetum$updateDeltaTrackerAndPoseCatchup(DeltaTracker deltaTracker, long l, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
 	*///? }
+		//? >26 {
+		/*AutoDisable.tick();
+		*///? }
 		if (!Gnetum.config.isEnabled()) {
 			return;
 		}
@@ -116,7 +127,15 @@ public class GameRendererMixin {
 	/*@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void gnetum$wrapGuiRender(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled() || Minecraft.getInstance().options.hideGui) {
-			original.call(instance, guiGraphics, deltaTracker);
+			if (AutoDisable.begin(AutoDisable.HUD)) {
+				original.call(instance, guiGraphics, deltaTracker);
+				// Batched draws would otherwise be flushed after the measured span
+				VersionCompatUtil.flush(guiGraphics);
+				AutoDisable.end(AutoDisable.HUD);
+			}
+			else {
+				original.call(instance, guiGraphics, deltaTracker);
+			}
 			return;
 		}
 
@@ -265,7 +284,11 @@ public class GameRendererMixin {
 				/*original.call(poseStack, camera, f);
 				*///? }
 		if (!Gnetum.config.isEnabled() || hand.isUncached()) {
+			boolean measured = !hand.isUncached() && AutoDisable.begin(AutoDisable.HUD);
 			callOriginal.run();
+			if (measured) {
+				AutoDisable.end(AutoDisable.HUD);
+			}
 			return;
 		}
 		if (hand.shouldRender()) {
@@ -292,7 +315,11 @@ public class GameRendererMixin {
 		if (minecraft.isGameLoadFinished() && (!minecraft.options.hideGui || minecraft.screen != null)) {
 			var debug = Gnetum.getElement(Constants.DEBUG_OVERLAY);
 			if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null || !Gnetum.config.isEnabled() || debug.isUncached()) {
+				boolean measured = !debug.isUncached() && AutoDisable.begin(AutoDisable.HUD);
 				original.call(gui, guiGraphics);
+				if (measured) {
+					AutoDisable.end(AutoDisable.HUD);
+				}
 				return;
 			}
 			if (debug.shouldRender()) {
