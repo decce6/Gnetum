@@ -13,6 +13,7 @@ public class AutoDisable {
 	private static final int MIN_CYCLES = 5;
 	private static final int AGREEING_WINDOWS = 3;
 	private static final long MARGIN_NANOS = 20_000L;
+	private static final int MAX_INVALID_GPU_WINDOWS = 10;
 
 	private static final int WRITING = -1;
 	private static final int ABANDONED = -2;
@@ -32,10 +33,13 @@ public class AutoDisable {
 	private static final long[] cost = new long[3];
 	private static int epoch;
 	private static long windowStart = -1;
+	private static long windowEnd = -1;
 	private static int frames;
 	private static int cycles;
 	private static int votes;
 	private static boolean windowDirty;
+	private static boolean invalidGpu;
+	private static int invalidGpuWindows;
 	private static boolean warmingUp;
 
 	private static boolean suppressed;
@@ -111,7 +115,9 @@ public class AutoDisable {
 	}
 
 	public static void onCycle() {
-		cycles++;
+		if (windowEnd < 0) {
+			cycles++;
+		}
 	}
 
 	public static void tick() {
@@ -132,19 +138,42 @@ public class AutoDisable {
 			warmingUp = true;
 			return;
 		}
-		frames++;
-		if (VersionCompatUtil.hasVisibleToasts()) {
+		if (windowEnd < 0) {
+			frames++;
+			if (VersionCompatUtil.hasVisibleToasts()) {
+				windowDirty = true;
+			}
+			if (now - windowStart < WINDOW_NANOS) {
+				return;
+			}
+			windowEnd = now;
+		}
+		poll();
+		if (tail != head) {
+			if (now - windowEnd < WINDOW_NANOS) {
+				return;
+			}
+			epoch++;
 			windowDirty = true;
+			invalidGpu = true;
 		}
-		if (now - windowStart >= WINDOW_NANOS) {
-			poll();
-			evaluate(now - windowStart);
-			startWindow(now);
+		if (!invalidGpu) {
+			invalidGpuWindows = 0;
 		}
+		if (invalidGpu && ++invalidGpuWindows == MAX_INVALID_GPU_WINDOWS) {
+			Gnetum.LOGGER.warn("GPU timer keeps returning invalid or late samples, measuring CPU time only");
+			GpuTimer.disable();
+			tail = head;
+			switchMode(false);
+		}
+		else {
+			evaluate(windowEnd - windowStart);
+		}
+		startWindow(now);
 	}
 
 	private static boolean shouldMeasure(int kind) {
-		if (windowStart < 0 || suppressed != (kind == HUD)) {
+		if (windowStart < 0 || windowEnd >= 0 || suppressed != (kind == HUD)) {
 			return false;
 		}
 		abandon(kind);
@@ -179,6 +208,10 @@ public class AutoDisable {
 		else {
 			if (slot >= 0) {
 				slotCpu[slot] = ABANDONED;
+			}
+			if (GpuTimer.supported()) {
+				windowDirty = true;
+				invalidGpu = true;
 			}
 			cost[kind] += cpu;
 		}
@@ -223,7 +256,12 @@ public class AutoDisable {
 			int ready = GpuTimer.read(tail, run);
 			for (int slot = tail; slot < tail + ready; slot++) {
 				if (slotEpoch[slot] == epoch) {
-					cost[slotKind[slot]] += Math.max(slotCpu[slot], GpuTimer.elapsed(slot));
+					long gpu = GpuTimer.elapsed(slot);
+					if (gpu < 0) {
+						windowDirty = true;
+						invalidGpu = true;
+					}
+					cost[slotKind[slot]] += Math.max(slotCpu[slot], gpu);
 				}
 			}
 			tail = (tail + ready) % SLOTS;
@@ -235,9 +273,11 @@ public class AutoDisable {
 
 	private static void startWindow(long now) {
 		windowStart = now;
+		windowEnd = -1;
 		frames = 0;
 		cycles = 0;
 		windowDirty = false;
+		invalidGpu = false;
 		cost[PASS] = cost[BLIT] = cost[HUD] = 0;
 	}
 

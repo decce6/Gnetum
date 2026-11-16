@@ -25,6 +25,7 @@
     "RenderPipelineAccessor",
     "ToastManagerAccessor",
     "GpuBufferPoolMixin",
+    "VulkanQueryPoolAccessor",
     "compat.bossbar.BossHealthOverlayMixin",
     "compat.effects.GuiMixin",
     "compat.jade.ClientProxyMixin",
