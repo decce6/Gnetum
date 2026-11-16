@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.2
+
+Fixed a possible game crash when parsing config file.
+
 ## 2.5.1
 
 - Fixed compatibility with JourneyMap 6.0+ (waypoint icons & labels desync)
