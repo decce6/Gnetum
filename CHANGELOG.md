@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.7
+
+- Fixed unnecessary item color alpha channel modification when not rendering cached HUD
+- Fixed a possible game crash when parsing config file.
+
+
 ## 3.3.6
 
 This version fixes a regression in 3.3.5 that caused the game to crash when opening the Video Settings screen if Embeddium is installed.
