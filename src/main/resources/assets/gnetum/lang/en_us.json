@@ -1,6 +1,8 @@
 {
   "gnetum.config.enabled": "Enabled",
   "gnetum.config.enabled.tooltip": "Determines whether to enable Gnetum, which distributes HUD updates over multiple frames to improve performance.",
+  "gnetum.config.autoDisable": "Auto-Disable If Slower",
+  "gnetum.config.autoDisable.tooltip": "Measures what the HUD costs to render on the CPU and GPU, and turns Gnetum off while caching it costs more than it saves. Gnetum turns back on when the HUD gets heavier.",
   "gnetum.config.showFps": "Show HUD FPS in F3",
   "gnetum.config.showFps.tooltip": "Adds a line to the F3 screen that shows the HUD FPS.",
   "gnetum.config.downscale": "Downscale HUD Framebuffer",

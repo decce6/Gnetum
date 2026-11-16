@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DebugEntryFpsMixin {
 	@Inject(method = "display", at = @At("RETURN"))
 	private void gnetum$displayHudFps(DebugScreenDisplayer displayer, Level level, LevelChunk levelChunk, LevelChunk levelChunk2, CallbackInfo ci) {
-		if (level != null && Gnetum.config.isEnabled() && Gnetum.config.showHudFps.get()) {
+		if (level != null && Gnetum.config.enabled.get() && Gnetum.config.showHudFps.get()) {
 			displayer.addPriorityLine(Gnetum.getFpsString());
 		}
 	}

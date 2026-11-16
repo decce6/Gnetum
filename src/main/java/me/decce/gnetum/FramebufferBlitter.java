@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import me.decce.gnetum.mixins.Gui_Graphics_Accessor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
@@ -111,35 +112,93 @@ public class FramebufferBlitter {
             .withVertexShader(Identifier.parse(POSITION_TEX_FULLSCREEN_SHADER))
             .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
-    public static final RenderPipeline DOWNSCALED_FAST_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
-            .withLocation(Identifier.parse("gnetum:downscaled_fast_blit_pipeline"))
+    public static final RenderPipeline QUAD_FAST_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:quad_fast_blit_pipeline"))
             .withVertexShader("core/position_tex")
             .withFragmentShader(Identifier.parse(POSITION_TEX_FAST_SHADER))
             .build();
-    public static final RenderPipeline DOWNSCALED_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
-            .withLocation(Identifier.parse("gnetum:downscaled_blit_pipeline"))
+    public static final RenderPipeline QUAD_BLIT = RenderPipeline.builder(SNIPPET, QUADS_SNIPPET)
+            .withLocation(Identifier.parse("gnetum:quad_blit_pipeline"))
             .withVertexShader("core/position_tex")
             .withFragmentShader(Identifier.parse(POSITION_TEX_SHADER))
             .build();
 
-    public static void blit(RenderTarget source, GuiGraphics guiGraphics) {
+    public static boolean isBlitPipeline(RenderPipeline pipeline) {
+        return pipeline == FAST_BLIT || pipeline == BLIT || pipeline == QUAD_FAST_BLIT || pipeline == QUAD_BLIT;
+    }
+
+    public static void blit(RenderTarget source, TileMask tiles, GuiGraphics guiGraphics) {
+        var state = ((Gui_Graphics_Accessor) guiGraphics).getGuiRenderState();
         if (Gnetum.config.downscale.get()) {
-            ((Gui_Graphics_Accessor) guiGraphics).invokeInnerBlit(
-                    Gnetum.config.fastFboBlit.get() ? DOWNSCALED_FAST_BLIT : DOWNSCALED_BLIT,
-                    source.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
-                    0,
-                    0,
-                    guiGraphics.guiWidth(),
-                    guiGraphics.guiHeight(),
-                    0,
-                    1,
-                    1,
-                    0,
-                    0xFFFFFFFF);
+            state.submitGuiElement(new TiledRenderState(source, tiles, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+        }
+        else if (tiles.isAll()) {
+            state.submitGuiElement(new FramebufferRenderState(source));
         }
         else {
-            ((Gui_Graphics_Accessor)guiGraphics).getGuiRenderState().submitGuiElement(new FramebufferRenderState(source));
+            var window = Minecraft.getInstance().getWindow();
+            state.submitGuiElement(new TiledRenderState(source, tiles,
+                    (float) window.getWidth() / window.getGuiScale(),
+                    (float) window.getHeight() / window.getGuiScale()));
+        }
+    }
+
+    public record TiledRenderState(RenderTarget target, TileMask tiles, float width, float height) implements GuiElementRenderState {
+        @Override
+        public void buildVertices(VertexConsumer vertexConsumer) {
+            if (tiles.isAll()) {
+                quad(vertexConsumer, 0, 0, width, height);
+                return;
+            }
+            for (int row = 0; row < tiles.rows(); row++) {
+                int column = 0;
+                while (column < tiles.columns()) {
+                    if (!tiles.isMarked(column, row)) {
+                        column++;
+                        continue;
+                    }
+                    int start = column;
+                    while (column < tiles.columns() && tiles.isMarked(column, row)) {
+                        column++;
+                    }
+                    quad(vertexConsumer,
+                            start * TileMask.TILE_SIZE,
+                            row * TileMask.TILE_SIZE,
+                            Math.min(column * TileMask.TILE_SIZE, width),
+                            Math.min((row + 1) * TileMask.TILE_SIZE, height));
+                }
+            }
+        }
+
+        private void quad(VertexConsumer vertexConsumer, float x0, float y0, float x1, float y1) {
+            float u0 = x0 / width;
+            float u1 = x1 / width;
+            float v0 = 1 - y0 / height;
+            float v1 = 1 - y1 / height;
+            vertexConsumer.addVertex(x0, y0, 0).setUv(u0, v0);
+            vertexConsumer.addVertex(x0, y1, 0).setUv(u0, v1);
+            vertexConsumer.addVertex(x1, y1, 0).setUv(u1, v1);
+            vertexConsumer.addVertex(x1, y0, 0).setUv(u1, v0);
+        }
+
+        @Override
+        public RenderPipeline pipeline() {
+            return Gnetum.config.fastFboBlit.get() ? QUAD_FAST_BLIT : QUAD_BLIT;
+        }
+
+        @Override
+        public TextureSetup textureSetup() {
+            return TextureSetup.singleTexture(target.getColorTextureView(), RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST));
+        }
+
+        @Override
+        public ScreenRectangle scissorArea() {
+            return null;
+        }
+
+        @Override
+        public ScreenRectangle bounds() {
+            return new ScreenRectangle(0, 0, target.width, target.height);
         }
     }
 

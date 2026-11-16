@@ -23,6 +23,9 @@ public class Framebuffers {
 	private RenderTarget back;
 	private RenderTarget front;
 	private RenderTarget backupMainRenderTarget;
+	private TileMask backTiles = new TileMask();
+	private TileMask frontTiles = new TileMask();
+	private boolean bound;
 	private boolean dropCurrentFrame;
 	private int catchUpSerialNumber;
 	private int serialNumber;
@@ -65,9 +68,10 @@ public class Framebuffers {
 
 	public void blit(GuiGraphics guiGraphics) {
 		//? >=1.21.10 {
-		FramebufferBlitter.blit(front, guiGraphics);
+		FramebufferBlitter.blit(front, frontTiles, guiGraphics);
 		//?} else {
-		/*RenderSystem.enableBlend();
+		/*AutoDisable.begin(AutoDisable.BLIT);
+		RenderSystem.enableBlend();
 		RenderSystem.disableDepthTest();
 		RenderSystem.blendFuncSeparate(GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 		//? >=1.21.4 {
@@ -78,6 +82,7 @@ public class Framebuffers {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
+		AutoDisable.end(AutoDisable.BLIT);
 		*///?}
 
 		fixMatrix();
@@ -122,6 +127,8 @@ public class Framebuffers {
 			/*back.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
 			front.resize(fboWidth, fboHeight, Minecraft.ON_OSX);
 			*///?}
+			backTiles.resize(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+			frontTiles.resize(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 			markForCatchUp();
 		}
 	}
@@ -131,8 +138,12 @@ public class Framebuffers {
 			var temp = back;
 			this.back = this.front;
 			this.front = temp;
+			var tempTiles = backTiles;
+			this.backTiles = this.frontTiles;
+			this.frontTiles = tempTiles;
 			this.serialNumber++;
 			Gnetum.FPS_COUNTER.tick();
+			AutoDisable.onCycle();
 		}
 		this.clear();
 		this.dropCurrentFrame = false;
@@ -143,6 +154,8 @@ public class Framebuffers {
 	}
 
 	public void bind() {
+		AutoDisable.begin(AutoDisable.PASS);
+		bound = true;
 		backupMainRenderTarget = VersionCompatUtil.getRawMainRenderTarget();
 		VersionCompatUtil.setMainRenderTarget(Gnetum.framebuffers().back());
 		//? <=1.21.4 {
@@ -151,6 +164,8 @@ public class Framebuffers {
 	}
 
 	public void unbind() {
+		AutoDisable.end(AutoDisable.PASS);
+		bound = false;
 		VersionCompatUtil.setMainRenderTarget(backupMainRenderTarget);
 		//?	<=1.21.4 {
 		/*Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
@@ -158,6 +173,7 @@ public class Framebuffers {
 	}
 
 	public void clear() {
+		backTiles.clear();
 		//? >=26.2 {
 		/*RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(back.getColorTexture(), clearColor,
 				back.getDepthTexture(), 1.0);
@@ -177,6 +193,18 @@ public class Framebuffers {
 
 	public boolean needsCatchUp() {
 		return this.serialNumber - this.catchUpSerialNumber <= 1;
+	}
+
+	public boolean isBound() {
+		return bound;
+	}
+
+	public void markTiles(int x, int y, int width, int height) {
+		backTiles.mark(x, y, width, height);
+	}
+
+	public void markAllTiles() {
+		backTiles.markAll();
 	}
 
 	public RenderTarget back() {

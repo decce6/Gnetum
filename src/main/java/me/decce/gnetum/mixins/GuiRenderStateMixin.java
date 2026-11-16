@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;import java.util.stream.Collectors;
 //? >=26.2 {
@@ -39,6 +40,14 @@ public class GuiRenderStateMixin {
 		if (Gnetum.isCurrentElementUncached()) {
 			gnetum$submitForUncached(state);
 			ci.cancel();
+		}
+	}
+
+	@Inject(method = "findAppropriateNode", at = @At("RETURN"))
+	private void gnetum$markTiles(ScreenArea area, CallbackInfoReturnable<Boolean> cir) {
+		if (cir.getReturnValueZ() && Gnetum.isFramebufferBound()) {
+			var bounds = area.bounds();
+			Gnetum.framebuffers().markTiles(bounds.left(), bounds.top(), bounds.width(), bounds.height());
 		}
 	}
 

@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.decce.gnetum.AutoDisable;
 import me.decce.gnetum.CachedElement;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.VersionCompatUtil;
@@ -80,7 +81,11 @@ public class HudMixin {
 	//? }
 	private void gnetum$wrapHudRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		if (!Gnetum.config.isEnabled()) {
+			//? >=1.21.10
+			AutoDisable.begin(AutoDisable.HUD);
 			original.call(guiGraphics, deltaTracker);
+			//? >=1.21.10
+			AutoDisable.end(AutoDisable.HUD);
 			return;
 		}
 

@@ -59,6 +59,16 @@ public class LegacySodiumPage extends OptionPage {
 				.build();
 		general.add(enabledOption);
 		general.add(configure(OptionImpl.createBuilder(boolean.class, STORAGE))
+				.setName(Component.translatable("gnetum.config.autoDisable"))
+				.setTooltip(Component.translatable("gnetum.config.autoDisable.tooltip"))
+				.setControl(TickBoxControl::new)
+				.setBinding((opts, value) -> {
+					if (Gnetum.config.autoDisable.get() != value) {
+						Gnetum.config.autoDisable.next();
+					}
+				}, opts -> Gnetum.config.autoDisable.get())
+				.build());
+		general.add(configure(OptionImpl.createBuilder(boolean.class, STORAGE))
 				.setName(Component.translatable("gnetum.config.showFps"))
 				.setTooltip(Component.translatable("gnetum.config.showFps.tooltip"))
 				.setControl(TickBoxControl::new)
