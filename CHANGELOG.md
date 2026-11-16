@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.2 - 1.18.2
+
+Fixed a possible game crash when parsing config file.
+
 ## 2.5.0 - 1.18.2
 
 This is the initial release of Gnetum on 1.18.2. It is backported from 1.20.1, and will roughly follow updates on that branch.
