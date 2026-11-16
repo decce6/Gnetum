@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.decce.gnetum.AutoDisable;
 import me.decce.gnetum.Constants;
@@ -25,6 +26,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Predicate;
 
@@ -57,6 +59,13 @@ public class GameRendererMixin {
 	@Shadow
 	@Final
 	private Minecraft minecraft;
+
+	//? >=26.2 {
+	/*@Inject(method = "mainRenderTarget", at = @At("HEAD"))
+	private void gnetum$onMainRenderTargetAccess(CallbackInfoReturnable<RenderTarget> cir) {
+		Gnetum.onMainRenderTargetAccess();
+	}
+	*///? }
 	@Unique
 	private boolean gnetum$wasScreenOpen;
 	@Unique
@@ -295,6 +304,7 @@ public class GameRendererMixin {
 			// No flush needed
 			hand.begin();
 			Gnetum.framebuffers().bind();
+			Gnetum.framebuffers().markAllTiles();
 			callOriginal.run();
 			Gnetum.framebuffers().unbind();
 			hand.end();

@@ -1,6 +1,7 @@
 package me.decce.gnetum.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import me.decce.gnetum.Gnetum;
 import me.decce.gnetum.HudDeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -28,6 +29,13 @@ public class MinecraftMixin {
 	private void gnetum$setLevel(CallbackInfo ci) {
 		Gnetum.reset();
 	}
+
+	//? if >=1.21.10 && <26.2 {
+	@Inject(method = "getMainRenderTarget", at = @At("HEAD"))
+	private void gnetum$onMainRenderTargetAccess(CallbackInfoReturnable<RenderTarget> cir) {
+		Gnetum.onMainRenderTargetAccess();
+	}
+	//? }
 
 	//? <=1.20.4 {
 	/*@ModifyReturnValue(method = "getDeltaFrameTime", at = @At("RETURN"))

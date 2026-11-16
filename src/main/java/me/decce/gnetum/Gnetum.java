@@ -163,6 +163,16 @@ public class Gnetum {
 		return framebuffers;
 	}
 
+	public static boolean isFramebufferBound() {
+		return framebuffers != null && framebuffers.isBound();
+	}
+
+	public static void onMainRenderTargetAccess() {
+		if (!flushing && isFramebufferBound()) {
+			framebuffers.markAllTiles();
+		}
+	}
+
 	public static Platform platform() {
 		return PLATFORM;
 	}
